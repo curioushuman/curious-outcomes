@@ -1,22 +1,20 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
+import { AppController } from './app/app.controller';
 import { AppModule } from './app/app.module';
 
+/**
+ * Standalone Nest application for Serverless context
+ * i.e. we don't load Express, for optimization purposes
+ *
+ * https://docs.nestjs.com/standalone-applications
+ * https://docs.nestjs.com/faq/serverless
+ */
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3333;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
+  const app = await NestFactory.createApplicationContext(AppModule);
+  const appController = app.get(AppController);
+  console.log(appController.getData());
+  await app.close();
 }
 
 bootstrap();
