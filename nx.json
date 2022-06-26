@@ -1,10 +1,8 @@
 {
-  "npmScope": "next",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "npmScope": "curious-outcomes",
   "affected": {
     "defaultBase": "main"
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/next"
   },
   "implicitDependencies": {
     "package.json": {
@@ -17,31 +15,22 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
-        "accessToken": "NGQ0YWY3MDMtNGYyMy00NzNiLWE1ZjctMjQ1NGI4YTViNTNifHJlYWQtd3JpdGU="
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ],
+        "accessToken": "MTFjZDA3OTEtMmNiNy00YzM0LTlkODQtZTJmYzMyNTE1NmZlfHJlYWQtd3JpdGU="
       }
     }
   },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
-    ]
-  },
-  "generators": {
-    "@nrwl/react": {
-      "application": {
-        "babel": true
-      }
-    },
-    "@nrwl/next": {
-      "application": {
-        "style": "scss",
-        "linter": "eslint"
-      }
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
     }
   },
-  "defaultProject": "api"
+  "defaultProject": "system"
 }
