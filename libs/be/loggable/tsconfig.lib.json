@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/libs/be/loggable",
+    "module": "commonjs",
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es2015"
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.ispec.ts",
+    "**/*.e2e.ts",
+    "**/__mocks__/**/*.ts",
+    "**/*.mock.ts"
+  ],
+  "include": ["**/*.ts"]
+}

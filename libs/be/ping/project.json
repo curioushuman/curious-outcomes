@@ -1,0 +1,33 @@
+{
+  "root": "libs/be/ping",
+  "sourceRoot": "libs/be/ping/src",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/be/ping",
+        "tsConfig": "libs/be/ping/tsconfig.lib.json",
+        "packageJson": "libs/be/ping/package.json",
+        "main": "libs/be/ping/src/index.ts",
+        "assets": ["libs/be/ping/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/be/ping/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/be/ping"],
+      "options": {
+        "jestConfig": "libs/be/ping/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

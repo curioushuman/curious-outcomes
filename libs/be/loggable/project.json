@@ -1,0 +1,33 @@
+{
+  "root": "libs/be/loggable",
+  "sourceRoot": "libs/be/loggable/src",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/be/loggable",
+        "tsConfig": "libs/be/loggable/tsconfig.lib.json",
+        "packageJson": "libs/be/loggable/package.json",
+        "main": "libs/be/loggable/src/index.ts",
+        "assets": ["libs/be/loggable/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/be/loggable/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/be/loggable"],
+      "options": {
+        "jestConfig": "libs/be/loggable/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

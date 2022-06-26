@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/libs/be/ping",
+    "module": "commonjs",
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.ispec.ts",
+    "**/*.e2e.ts",
+    "**/*.d.ts",
+    "**/__mocks__/**/*.ts",
+    "**/*.mock.ts"
+  ]
+}
