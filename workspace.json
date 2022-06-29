@@ -2,6 +2,10 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "co-common": "libs/co-common",
+    "error-factory": "libs/error-factory",
+    "fp-ts-utils": "libs/fp-ts-utils",
+    "loggable": "libs/loggable",
     "system": "apps/system"
   }
 }

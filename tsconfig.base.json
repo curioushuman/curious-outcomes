@@ -14,7 +14,12 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@curioushuman/co-common": ["libs/co-common/src/index.ts"],
+      "@curioushuman/error-factory": ["libs/error-factory/src/index.ts"],
+      "@curioushuman/fp-ts-utils": ["libs/fp-ts-utils/src/index.ts"],
+      "@curioushuman/loggable": ["libs/loggable/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
