@@ -1,4 +1,6 @@
+// import { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { APIGatewayEvent } from 'aws-lambda';
 
 import { EventsController } from './modules/events/infra/events.controller';
 import { EventsModule } from './modules/events/events.module';
@@ -14,13 +16,12 @@ import { EventsModule } from './modules/events/events.module';
  * https://docs.nestjs.com/faq/serverless
  */
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(EventsModule);
-
-  const eventsController = app.get(EventsController);
-
-  await eventsController.create();
-
-  await app.close();
+  return await NestFactory.createApplicationContext(EventsModule);
 }
 
-bootstrap();
+// export async function handler(event: APIGatewayEvent, context: Context) {
+export async function handler(event: APIGatewayEvent) {
+  const app = await bootstrap();
+  const eventsController = app.get(EventsController);
+  await eventsController.transform(JSON.parse(event.body));
+}
