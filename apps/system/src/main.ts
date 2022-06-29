@@ -1,6 +1,6 @@
 // import { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { APIGatewayEvent } from 'aws-lambda';
+import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 
 import { EventsController } from './modules/events/infra/events.controller';
 import { EventsModule } from './modules/events/events.module';
@@ -20,8 +20,26 @@ async function bootstrap() {
 }
 
 // export async function handler(event: APIGatewayEvent, context: Context) {
-export async function handler(event: APIGatewayEvent) {
+export const handler = async (
+  event: APIGatewayEvent,
+  context: Context
+): Promise<APIGatewayProxyResult> => {
   const app = await bootstrap();
   const eventsController = app.get(EventsController);
-  await eventsController.transform(JSON.parse(event.body));
-}
+
+  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+
+  const transformedEvent = await eventsController.transform(
+    JSON.parse(event.body)
+  );
+
+  const response: APIGatewayProxyResult = {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(transformedEvent),
+  };
+
+  return response;
+};

@@ -6,11 +6,14 @@
   "author": "Mike Kelly",
   "license": "MIT",
   "scripts": {
-    "build": "nx build",
+    "build": "nx build && npm run build:sam",
     "lint": "nx lint",
-    "prepare": "husky install",
-    "start": "nx serve",
-    "test": "nx test"
+    "start": "sam local start-api",
+    "test": "nx test",
+    "prep:lambda-layers": "rimraf lambda-layers && mkdir lambda-layers",
+    "prep:lambda-layer:co-node-modules": "mkdir -p lambda-layers/co-node-modules/nodejs && cp package.json package-lock.json lambda-layers/co-node-modules/nodejs && cd lambda-layers/co-node-modules/nodejs && npm install -production",
+    "prebuild:sam": "npm run prep:lambda-layers && npm run prep:lambda-layer:co-node-modules",
+    "build:sam": "sam build"
   },
   "private": true,
   "dependencies": {
@@ -52,6 +55,7 @@
     "jest-cucumber": "^3.0.1",
     "nx": "14.3.6",
     "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
     "run-script-webpack-plugin": "^0.1.1",
     "ts-jest": "27.1.4",
     "ts-node": "~10.8.0",

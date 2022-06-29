@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  curious-outcomes
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+
+  # Transform event
+  transformEvent:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/apps/system
+      Handler: dist/apps/system/main.handler
+      Layers:
+        - !Ref CoNodeModulesLayer
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Transforms an external event, into an acceptable internal format
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/events
+            Method: POST
+
+  CoNodeModulesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: curious-outcomes-node-modules
+      Description: Node modules for curious-outcomes
+      ContentUri: lambda-layers/co-node-modules
+      CompatibleRuntimes:
+        - nodejs16.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

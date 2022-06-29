@@ -1,0 +1,4 @@
+{
+  "httpMethod": "POST",
+  "body": "{\"id\": \"1e72ef98-f21e-4e0a-aff1-a45ed7328ae6\",\"type\": \"Course Source Created\", \"data\": {\"id\": \"06a9572f-5e77-4667-847d-3d9b9ed4520d\"}}"
+}

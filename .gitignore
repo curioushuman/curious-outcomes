@@ -40,3 +40,7 @@ Thumbs.db
 
 # secret files
 .env
+
+# AWS
+.aws-sam
+lambda-layers
