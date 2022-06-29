@@ -1,4 +1,4 @@
-import { CreateEventRequestDto } from '../../../infra/dto/create-event.request.dto';
+import { TransformEventRequestDto } from '../../../infra/dto/transform-event.request.dto';
 import { createEventId } from '../../../domain/value-objects/event-id';
 import { CoEvent } from '../../../domain/entities/co-event';
 
@@ -14,7 +14,7 @@ export class EventTransformerMapper {
    * - this function adds an EventId if one is lacking
    * - dto.type will have already been checked in the service
    */
-  public static fromRequestDto(dto: CreateEventRequestDto): CoEvent {
+  public static fromRequestDto(dto: TransformEventRequestDto): CoEvent {
     const id = dto.eventId || createEventId();
     const payload = {
       id: dto.data.id,

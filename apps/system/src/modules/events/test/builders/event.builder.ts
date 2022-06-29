@@ -1,6 +1,5 @@
-import { CreateEventDto } from '../../application/commands/create-event/create-event.dto';
 import { CoEvent } from '../../domain/entities/co-event';
-import { CreateEventRequestDto } from '../../infra/dto/create-event.request.dto';
+import { TransformEventRequestDto } from '../../infra/dto/transform-event.request.dto';
 
 /**
  * A builder for Events to play with in testing.
@@ -71,20 +70,12 @@ export const EventBuilder = () => {
       } as CoEvent;
     },
 
-    buildDto(): CreateEventDto {
-      return CreateEventDto.check({
-        eventId: this.buildNoCheck().id,
-        type: this.buildNoCheck().type,
-        data: this.buildNoCheck().payload,
-      });
-    },
-
-    buildRequestDto(): CreateEventRequestDto {
+    buildRequestDto(): TransformEventRequestDto {
       return {
         eventId: this.buildNoCheck().id,
         type: this.buildNoCheck().type,
         data: this.buildNoCheck().payload,
-      } as CreateEventRequestDto;
+      } as TransformEventRequestDto;
     },
   };
 };

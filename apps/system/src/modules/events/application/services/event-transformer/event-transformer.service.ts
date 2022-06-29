@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { LoggableLogger } from '@curioushuman/loggable';
 import { parseActionData } from '@curioushuman/fp-ts-utils';
 
-import { CreateEventRequestDto } from '../../../infra/dto/create-event.request.dto';
+import { TransformEventRequestDto } from '../../../infra/dto/transform-event.request.dto';
 import { CoEvent } from '../../../domain/entities/co-event';
 import { EventTransformerMapper } from './event-transformer.mapper';
 import { EventType } from '../../../domain/value-objects/event-type';
@@ -18,7 +18,7 @@ export class EventTransformerService {
   }
 
   transform = (
-    requestDto: CreateEventRequestDto
+    requestDto: TransformEventRequestDto
   ): TE.TaskEither<Error, CoEvent> => {
     return pipe(
       requestDto,
@@ -41,8 +41,8 @@ export class EventTransformerService {
    * to confirm what is being asked, is something we support
    */
   confirmEventType = (
-    dto: CreateEventRequestDto
-  ): TE.TaskEither<Error, CreateEventRequestDto> => {
+    dto: TransformEventRequestDto
+  ): TE.TaskEither<Error, TransformEventRequestDto> => {
     return pipe(
       dto.type,
       parseActionData(EventType.check, this.logger),

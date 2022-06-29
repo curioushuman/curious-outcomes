@@ -1,20 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
 import { LoggableModule } from '@curioushuman/loggable';
-// import { ErrorFactory } from '@curioushuman/error-factory';
 
 import { EventsController } from './infra/events.controller';
-import { CreateEventHandler } from './application/commands/create-event/create-event.command';
+import { EventTransformerService } from './application/services/event-transformer/event-transformer.service';
 
-const commandHandlers = [CreateEventHandler];
-
-// const services = [
-//   {
-//     provide: ErrorFactory,
-//     useClass: SalesforceApiRepositoryErrorFactory,
-//   },
-// ];
+const services = [EventTransformerService];
 
 /**
  * Events module
@@ -25,9 +16,9 @@ const commandHandlers = [CreateEventHandler];
  */
 
 @Module({
-  imports: [CqrsModule, LoggableModule],
+  imports: [LoggableModule],
   controllers: [EventsController],
-  providers: [...commandHandlers],
+  providers: [...services],
   exports: [],
 })
 export class EventsModule {}
