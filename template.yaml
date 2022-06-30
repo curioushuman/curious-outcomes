@@ -24,7 +24,7 @@ Resources:
   LayerCoNodeModules:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: curious-outcomes-node-modules
+      LayerName: co-layer-node-modules
       Description: Node modules for curious-outcomes
       ContentUri: lambda-layers/co-node-modules
       CompatibleRuntimes:
@@ -36,7 +36,11 @@ Resources:
   # Transform event
   # --------------------------------------------------------------------------
 
+  # API Gateway
+  # Endpoint receives the external event
+
   # Lambda / function
+  # Transform the external event into an internal one
   FunctionTransformEvent:
     Type: AWS::Serverless::Function
     Properties:
@@ -64,6 +68,7 @@ Resources:
   # --------------------------------------------------------------------------
 
   # SNS
+  # To handle external events
   SnsTopicCourseCreated:
     Type: AWS::SNS::Topic
     Properties:
@@ -73,6 +78,11 @@ Resources:
          Endpoint: !GetAtt SqsQueueSamTutorial.Arn
 
   # Lambda / function
+  # Create the course
+  # TBD
+
+  # SQS
+  # Send notification
   # TBD
 
   # --------------------------------------------------------------------------
@@ -80,6 +90,7 @@ Resources:
   # --------------------------------------------------------------------------
 
   # SNS
+  # To handle external events
   SnsTopicParticipantCreated:
     Type: AWS::SNS::Topic
     Properties:
@@ -92,6 +103,7 @@ Resources:
          Value: !Sub '${StackName}'
 
   # SQS
+  # Throttle (potentially) multiple concurrent events
   SqsParticipantCreated:
     Type: AWS::SQS::Queue
     Properties:
@@ -101,6 +113,11 @@ Resources:
           Value: !Sub '${ProjectName}'
 
   # Lambda / function
+  # Create the participant
+  # TBD
+
+  # SQS
+  # Send notification
   # TBD
 
 # ----------------------------------------------------------------------------
