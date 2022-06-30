@@ -66,7 +66,7 @@ export const handler = async (
   } catch (error) {
     response = {
       statusCode: error.status || 500,
-      body: error.message,
+      body: JSON.stringify(error),
     };
     logger.error(error);
     return response;
