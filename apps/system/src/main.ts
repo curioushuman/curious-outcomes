@@ -2,6 +2,8 @@ import { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 
+import { LoggableLogger } from '@curioushuman/loggable';
+
 import { EventsController } from './modules/events/infra/events.controller';
 import { EventsModule } from './modules/events/events.module';
 
@@ -11,6 +13,7 @@ import { EventsModule } from './modules/events/events.module';
  * https://towardsaws.com/serverless-love-story-nestjs-lambda-part-i-minimizing-cold-starts-4ba513e5ce02
  */
 let lambdaApp: INestApplicationContext;
+let logger: LoggableLogger;
 
 /**
  * Standalone Nest application for Serverless context
@@ -23,7 +26,12 @@ let lambdaApp: INestApplicationContext;
  * https://docs.nestjs.com/faq/serverless
  */
 async function bootstrap() {
-  return await NestFactory.createApplicationContext(EventsModule);
+  const app = await NestFactory.createApplicationContext(EventsModule, {
+    bufferLogs: true,
+  });
+  logger = new LoggableLogger();
+  app.useLogger(logger);
+  return app;
 }
 
 async function waitForApp() {
@@ -33,27 +41,34 @@ async function waitForApp() {
   return lambdaApp;
 }
 
-// export async function handler(event: APIGatewayEvent, context: Context) {
 export const handler = async (
   event: APIGatewayEvent,
-  context: Context
+  context?: Context
 ): Promise<APIGatewayProxyResult> => {
   const app = await waitForApp();
   const eventsController = app.get(EventsController);
 
-  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+  logger.debug(`Context: ${JSON.stringify(context, null, 2)}`);
 
-  const transformedEvent = await eventsController.transform(
-    JSON.parse(event.body)
-  );
-
-  const response: APIGatewayProxyResult = {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(transformedEvent),
-  };
-
-  return response;
+  let response: APIGatewayProxyResult;
+  try {
+    const transformedEvent = await eventsController.transform(
+      JSON.parse(event.body)
+    );
+    response = {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(transformedEvent),
+    };
+    return response;
+  } catch (error) {
+    response = {
+      statusCode: error.status || 500,
+      body: error.message,
+    };
+    logger.error(error);
+    return response;
+  }
 };
