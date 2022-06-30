@@ -25,7 +25,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /system/events
+            Path: /system/events/transform
             Method: POST
 
   CoNodeModulesLayer:

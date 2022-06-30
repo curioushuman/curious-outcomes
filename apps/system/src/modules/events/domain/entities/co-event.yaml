@@ -1,0 +1,17 @@
+type: object
+required:
+  - id
+  - type
+  - payload
+properties:
+  id:
+    type: string
+  type:
+    type: string
+  payload:
+    type: object
+    required:
+      - id
+    properties:
+      id:
+        type: string
