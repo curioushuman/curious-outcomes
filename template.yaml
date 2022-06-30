@@ -1,25 +1,49 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  curious-outcomes
+  curious-outcomes-api
 
 Transform:
 - AWS::Serverless-2016-10-31
 
+# ----------------------------------------------------------------------------
+
 Resources:
+
+  # --------------------------------------------------------------------------
+  # Shared
+  # --------------------------------------------------------------------------
+
+  # API Gateway
   CuriousOutcomesApi:
     Type: AWS::Serverless::Api
     Properties:
       DefinitionUri: dist/openapi.yaml
       StageName: dev
 
+  # Lambda layers
+  LayerCoNodeModules:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: curious-outcomes-node-modules
+      Description: Node modules for curious-outcomes
+      ContentUri: lambda-layers/co-node-modules
+      CompatibleRuntimes:
+        - nodejs16.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+
+  # --------------------------------------------------------------------------
   # Transform event
-  transformEvent:
+  # --------------------------------------------------------------------------
+
+  # Lambda / function
+  FunctionTransformEvent:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/apps/system
       Handler: dist/apps/system/main.handler
       Layers:
-        - !Ref CoNodeModulesLayer
+        - !Ref LayerCoNodeModules
       Runtime: nodejs16.x
       Architectures:
         - x86_64
@@ -35,16 +59,51 @@ Resources:
             RestApiId:
               Ref: CuriousOutcomesApi
 
-  CoNodeModulesLayer:
-    Type: AWS::Serverless::LayerVersion
+  # --------------------------------------------------------------------------
+  # Create course
+  # --------------------------------------------------------------------------
+
+  # SNS
+  SnsTopicCourseCreated:
+    Type: AWS::SNS::Topic
     Properties:
-      LayerName: curious-outcomes-node-modules
-      Description: Node modules for curious-outcomes
-      ContentUri: lambda-layers/co-node-modules
-      CompatibleRuntimes:
-        - nodejs16.x
-      LicenseInfo: 'MIT'
-      RetentionPolicy: Retain
+     TopicName: !Sub 'co-api-sns-course-created'
+     Subscription:
+       - Protocol: lambda
+         Endpoint: !GetAtt SqsQueueSamTutorial.Arn
+
+  # Lambda / function
+  # TBD
+
+  # --------------------------------------------------------------------------
+  # Create participant
+  # --------------------------------------------------------------------------
+
+  # SNS
+  SnsTopicParticipantCreated:
+    Type: AWS::SNS::Topic
+    Properties:
+     TopicName: !Sub '${StackName}-sns-participant-created'
+     Subscription:
+       - Protocol: sqs
+         Endpoint: !GetAtt SqsParticipantCreated.Arn
+     Tags:
+       - Key: Name
+         Value: !Sub '${StackName}'
+
+  # SQS
+  SqsParticipantCreated:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${ProjectName}'
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}'
+
+  # Lambda / function
+  # TBD
+
+# ----------------------------------------------------------------------------
 
 Outputs:
   WebEndpoint:

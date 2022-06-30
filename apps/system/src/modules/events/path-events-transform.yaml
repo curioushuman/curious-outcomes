@@ -1,6 +1,6 @@
 post:
   description: Transform an external event, into an internally accepted one
-  operationId: transformEvent
+  operationId: FunctionTransformEvent
   requestBody:
     required: true
     content:

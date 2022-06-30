@@ -8,7 +8,7 @@
       "invokeTarget": {
         "target": "template",
         "templatePath": "./template.yaml",
-        "logicalId": "transformEvent"
+        "logicalId": "FunctionTransformEvent"
       }
     }
   ]
