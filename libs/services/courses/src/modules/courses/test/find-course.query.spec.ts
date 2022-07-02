@@ -8,6 +8,7 @@ import { Course } from '../domain/entities/course';
 import { CourseBuilder } from './builders/course.builder';
 import { FindCourseController } from '../infra/find-course.controller';
 import { CourseResponseDto } from '../infra/dto/course.response.dto';
+import { RequestInvalidError } from '@curioushuman/error-factory';
 
 /**
  * INTEGRATION TEST
@@ -67,6 +68,29 @@ defineFeature(feature, (test) => {
 
     then('the matching course is returned', () => {
       expect(courseResponse.id).toEqual(course.id);
+    });
+  });
+
+  test('Fail; Invalid request', ({ given, when, then }) => {
+    let requestDto: FindCourseRequestDto;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
+
+    given('the request is invalid', () => {
+      requestDto = CourseBuilder().invalid().buildFindRequestDto();
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.find(requestDto);
+        expect(courseResponse).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RequestInvalidError/BadRequestException', () => {
+      expect(error).toBeInstanceOf(RequestInvalidError);
     });
   });
 });

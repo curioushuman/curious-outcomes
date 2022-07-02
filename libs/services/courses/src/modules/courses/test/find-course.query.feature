@@ -6,10 +6,10 @@ Scenario: Success; found requested course
   When I attempt to find a course
   Then the matching course is returned
 
-# Scenario: Fail; Invalid request
-#   Given the request is invalid
-#   When I attempt to find a course
-#   Then I should receive a RequestInvalidError/BadRequestException
+Scenario: Fail; Invalid request
+  Given the request is invalid
+  When I attempt to find a course
+  Then I should receive a RequestInvalidError/BadRequestException
 
 # Scenario: Fail; Source not found for ID provided
 #   Given the request is valid

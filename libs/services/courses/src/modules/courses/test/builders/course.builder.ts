@@ -118,9 +118,10 @@ export const CourseBuilder = () => {
     },
 
     buildFindRequestDto(): FindCourseRequestDto {
-      return {
-        externalId: this.buildNoCheck().externalId,
-      } as FindCourseRequestDto;
+      const dto = this.buildNoCheck().externalId
+        ? { externalId: this.buildNoCheck().externalId }
+        : {};
+      return dto as FindCourseRequestDto;
     },
 
     buildCourseResponseDto(): CourseResponseDto {
