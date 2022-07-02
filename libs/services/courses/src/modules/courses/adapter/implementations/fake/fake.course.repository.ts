@@ -38,7 +38,7 @@ export class FakeCourseRepository implements CourseRepository {
           )
         );
       },
-      (error: Error) => error as Error
+      (reason: unknown) => reason as Error
     );
   };
 
@@ -47,7 +47,7 @@ export class FakeCourseRepository implements CourseRepository {
       async () => {
         this.courses.push(course);
       },
-      (error: Error) => error as Error
+      (reason: unknown) => reason as Error
     );
   };
 

@@ -1,5 +1,14 @@
 {
   "name": "@curioushuman/courses",
   "version": "0.0.1",
-  "type": "commonjs"
+  "type": "commonjs",
+  "main": "src/index.js",
+  "dependencies": {
+    "@curioushuman/co-common": "^0.0.1",
+    "@nestjs/common": "^8.0.0",
+    "@nestjs/cqrs": "^8.0.5"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^8.0.0"
+  }
 }

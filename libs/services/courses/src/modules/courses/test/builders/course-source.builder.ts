@@ -1,5 +1,6 @@
+import { ExternalId } from '@curioushuman/co-common';
+
 import { CourseSource } from '../../domain/entities/course-source';
-import { ExternalId } from '../../domain/value-objects/external-id';
 import { CourseBuilder } from './course.builder';
 
 /**

@@ -1,10 +1,8 @@
 import { Null, Optional, Record, Static } from 'runtypes';
 
-import { ExternalId } from '../value-objects/external-id';
-import { PersonName } from '../../../../shared/domain/value-objects/person-name';
-import { Email } from '../../../../shared/domain/value-objects/email';
+import { Email, ExternalId, PersonName, UserId } from '@curioushuman/co-common';
+
 import { ParticipantId } from '../value-objects/participant-id';
-import { UserId } from '../../../../shared/domain/value-objects/user-id';
 import { CourseId } from '../value-objects/course-id';
 
 /**

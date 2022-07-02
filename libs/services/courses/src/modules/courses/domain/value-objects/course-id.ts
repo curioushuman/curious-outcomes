@@ -1,9 +1,6 @@
 import { Static } from 'runtypes';
 
-import {
-  InternalId,
-  createInternalId,
-} from '../../../../shared/domain/value-objects/internalId';
+import { InternalId, createInternalId } from '@curioushuman/co-common';
 
 export const CourseId = InternalId.withBrand('CourseId');
 
