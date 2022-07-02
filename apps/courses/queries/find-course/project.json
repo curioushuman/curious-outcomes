@@ -1,0 +1,98 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "list": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "list"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "synth": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "build": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "synth",
+        "options": "-q"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "bootstrap": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "bootstrap"
+      }
+    },
+    "deploy": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "deploy"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "destroy": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "destroy"
+      }
+    },
+    "diff": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "diff"
+      }
+    },
+    "metadata": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "metadata"
+      }
+    },
+    "context": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "context"
+      }
+    },
+    "docs": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "docs"
+      }
+    },
+    "doctor": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/find-course",
+        "command": "doctor"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/find-course"],
+      "options": {
+        "jestConfig": "apps/find-course/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["system"]
+}

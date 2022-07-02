@@ -4,6 +4,7 @@
   "projects": {
     "co-common": "libs/co-common",
     "error-factory": "libs/error-factory",
+    "find-course": "apps/courses/queries/find-course",
     "fp-ts-utils": "libs/fp-ts-utils",
     "loggable": "libs/loggable",
     "courses": "libs/services/courses",

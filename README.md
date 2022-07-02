@@ -1,9 +1,14 @@
+## Things that need to be outlined
 
-
-# Blah
-
-This project was generated using [Nx](https://nx.dev).
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
-
-🔎 **Smart, Fast and Extensible Build System**
+- OpenAPI file
+  - In separate files
+    - Inc. link
+  - Drawn together during build
+- Talk about the multi-stage build process
+  - TODO: would be nice to use Nx a bit more for this
+    - so we can skip cached bits
+- CDK setup
+  - https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html
+    - Bootstrapping
+      - cdk bootstrap aws://793735516609/ap-southeast-2
+    - See if you can get some of this into a setup script
