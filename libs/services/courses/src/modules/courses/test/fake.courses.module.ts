@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
 import {
   ErrorFactory,
@@ -11,10 +12,13 @@ import { CourseRepository } from '../adapter/ports/course.repository';
 import { FakeCourseRepository } from '../adapter/implementations/fake/fake.course.repository';
 import { CourseSourceRepository } from '../adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from '../adapter/implementations/fake/fake.course-source.repository';
+import { FindCourseHandler } from '../application/queries/find-course/find-course.query';
 // import { ParticipantRepository } from '../adapter/ports/participant.repository';
 // import { FakeParticipantRepository } from '../adapter/implementations/fake/fake.participant.repository';
 // import { ParticipantSourceRepository } from '../adapter/ports/participant-source.repository';
 // import { FakeParticipantSourceRepository } from '../adapter/implementations/fake/fake.participant-source.repository';
+
+const queryHandlers = [FindCourseHandler];
 
 const repositories = [
   {
@@ -40,9 +44,9 @@ const services = [
 ];
 
 @Module({
-  imports: [LoggableModule],
+  imports: [CqrsModule, LoggableModule],
   controllers: [FindCourseController],
-  providers: [...repositories, ...services],
+  providers: [...queryHandlers, ...repositories, ...services],
   exports: [],
 })
 export class CoursesModule {}

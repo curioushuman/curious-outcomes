@@ -7,6 +7,7 @@ import { FindCourseRequestDto } from '../infra/dto/find-course.request.dto';
 import { Course } from '../domain/entities/course';
 import { CourseBuilder } from './builders/course.builder';
 import { FindCourseController } from '../infra/find-course.controller';
+import { CourseResponseDto } from '../infra/dto/course.response.dto';
 
 /**
  * INTEGRATION TEST
@@ -44,27 +45,28 @@ defineFeature(feature, (test) => {
   test('Success; found requested course', ({ given, and, when, then }) => {
     let requestDto: FindCourseRequestDto;
     let course: Course;
-    let courseFound: Course;
+    let courseResponse: CourseResponseDto;
     let error: Error;
 
     given('the request is valid', () => {
-      requestDto = CourseBuilder().buildFindRequestDto();
+      requestDto = CourseBuilder().exists().buildFindRequestDto();
     });
 
     and('a matching record exists', () => {
-      course = CourseBuilder().build();
+      course = CourseBuilder().exists().build();
     });
 
     when('I attempt to find a course', async () => {
       try {
-        courseFound = await controller.find(requestDto);
+        courseResponse = await controller.find(requestDto);
       } catch (err) {
         error = err;
+        expect(error).toBeUndefined();
       }
     });
 
     then('the matching course is returned', () => {
-      expect(courseFound).toEqual(course);
+      expect(courseResponse.id).toEqual(course.id);
     });
   });
 });

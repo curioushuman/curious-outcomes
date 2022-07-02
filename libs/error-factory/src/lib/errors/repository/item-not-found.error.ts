@@ -6,8 +6,8 @@ import { ErrorFactory, ErrorMessageComponents } from '../../error-factory';
  * Error message components for this error
  */
 const messageComponents: ErrorMessageComponents = {
-  base: 'A source could not be found',
-  action: 'Please check source for requested record',
+  base: 'A matching item could not be found',
+  action: 'Please check repository for requested record',
 };
 
 /**

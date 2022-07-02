@@ -6,6 +6,7 @@
  * - later, if/when necessary, add underlying interface
  */
 export class CourseResponseDto {
+  id!: string;
   name!: string;
   slug!: string;
   externalId!: string;

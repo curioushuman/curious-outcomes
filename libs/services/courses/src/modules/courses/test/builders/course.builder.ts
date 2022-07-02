@@ -2,6 +2,7 @@ import { createSlug } from '@curioushuman/co-common';
 
 import { Course } from '../../domain/entities/course';
 import { CourseSource } from '../../domain/entities/course-source';
+import { CourseResponseDto } from '../../infra/dto/course.response.dto';
 import { FindCourseRequestDto } from '../../infra/dto/find-course.request.dto';
 import { CourseSourceBuilder } from './course-source.builder';
 
@@ -120,6 +121,13 @@ export const CourseBuilder = () => {
       return {
         externalId: this.buildNoCheck().externalId,
       } as FindCourseRequestDto;
+    },
+
+    buildCourseResponseDto(): CourseResponseDto {
+      return {
+        ...defaultProperties,
+        ...overrides,
+      } as CourseResponseDto;
     },
   };
 };
