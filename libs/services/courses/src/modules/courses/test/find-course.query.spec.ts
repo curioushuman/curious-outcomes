@@ -8,7 +8,10 @@ import { Course } from '../domain/entities/course';
 import { CourseBuilder } from './builders/course.builder';
 import { FindCourseController } from '../infra/find-course.controller';
 import { CourseResponseDto } from '../infra/dto/course.response.dto';
-import { RequestInvalidError } from '@curioushuman/error-factory';
+import {
+  RepositoryItemNotFoundError,
+  RequestInvalidError,
+} from '@curioushuman/error-factory';
 
 /**
  * INTEGRATION TEST
@@ -92,5 +95,40 @@ defineFeature(feature, (test) => {
     then('I should receive a RequestInvalidError/BadRequestException', () => {
       expect(error).toBeInstanceOf(RequestInvalidError);
     });
+  });
+
+  test('Fail; Source not found for ID provided', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let requestDto: FindCourseRequestDto;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
+
+    given('the request is valid', () => {
+      // see next
+    });
+
+    and('no record exists that matches our request', () => {
+      requestDto = CourseBuilder().doesntExist().buildFindRequestDto();
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.find(requestDto);
+        expect(courseResponse).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then(
+      'I should receive a RepositoryItemNotFoundError/NotFoundException',
+      () => {
+        expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
+      }
+    );
   });
 });

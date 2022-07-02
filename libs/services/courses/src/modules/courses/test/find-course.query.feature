@@ -11,8 +11,8 @@ Scenario: Fail; Invalid request
   When I attempt to find a course
   Then I should receive a RequestInvalidError/BadRequestException
 
-# Scenario: Fail; Source not found for ID provided
-#   Given the request is valid
-#   And no record exists that matches our request
-#   When I attempt to find a course
-#   Then I should receive a ItemNotFoundError/NotFoundException
+Scenario: Fail; Source not found for ID provided
+  Given the request is valid
+  And no record exists that matches our request
+  When I attempt to find a course
+  Then I should receive a RepositoryItemNotFoundError/NotFoundException
