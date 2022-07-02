@@ -6,6 +6,7 @@
     "error-factory": "libs/error-factory",
     "fp-ts-utils": "libs/fp-ts-utils",
     "loggable": "libs/loggable",
+    "courses": "libs/services/courses",
     "system": "apps/system"
   }
 }
