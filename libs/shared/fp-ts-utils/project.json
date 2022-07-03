@@ -1,5 +1,5 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/fp-ts-utils/src",
   "projectType": "library",
   "targets": {
@@ -7,7 +7,7 @@
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/fp-ts-utils",
+        "outputPath": "dist/layers/co-shared/nodejs/node_modules/@curioushuman/fp-ts-utils",
         "main": "libs/fp-ts-utils/src/index.ts",
         "tsConfig": "libs/fp-ts-utils/tsconfig.lib.json",
         "assets": ["libs/fp-ts-utils/*.md"]

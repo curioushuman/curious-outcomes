@@ -1,7 +1,7 @@
 /* eslint-disable */
 export default {
-  displayName: 'fp-ts-utils',
-  preset: '../../jest.preset.js',
+  displayName: 'error-factory',
+  preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +11,5 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/libs/fp-ts-utils',
+  coverageDirectory: '../../../coverage/libs/error-factory',
 };

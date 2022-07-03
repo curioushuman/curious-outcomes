@@ -1,22 +1,22 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/co-common/src",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/error-factory/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/co-common",
-        "main": "libs/co-common/src/index.ts",
-        "tsConfig": "libs/co-common/tsconfig.lib.json",
-        "assets": ["libs/co-common/*.md"]
+        "outputPath": "dist/layers/co-shared/nodejs/node_modules/@curioushuman/error-factory",
+        "main": "libs/error-factory/src/index.ts",
+        "tsConfig": "libs/error-factory/tsconfig.lib.json",
+        "assets": ["libs/error-factory/*.md"]
       }
     },
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "node tools/scripts/publish.mjs co-common {args.ver} {args.tag}"
+        "command": "node tools/scripts/publish.mjs error-factory {args.ver} {args.tag}"
       },
       "dependsOn": [
         {
@@ -29,14 +29,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/co-common/**/*.ts"]
+        "lintFilePatterns": ["libs/error-factory/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/co-common"],
+      "outputs": ["coverage/libs/error-factory"],
       "options": {
-        "jestConfig": "libs/co-common/jest.config.ts",
+        "jestConfig": "libs/error-factory/jest.config.ts",
         "passWithNoTests": true
       }
     }
