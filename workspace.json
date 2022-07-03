@@ -2,11 +2,11 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "co-common": "libs/co-common",
-    "error-factory": "libs/error-factory",
+    "co-common": "libs/shared/co-common",
+    "error-factory": "libs/shared/error-factory",
     "find-course": "apps/courses/queries/find-course",
-    "fp-ts-utils": "libs/fp-ts-utils",
-    "loggable": "libs/loggable",
+    "fp-ts-utils": "libs/shared/fp-ts-utils",
+    "loggable": "libs/shared/loggable",
     "courses": "libs/services/courses",
     "system": "apps/system"
   }

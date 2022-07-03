@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/loggable/src",
+  "sourceRoot": "libs/shared/loggable/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -8,9 +8,9 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/layers/co-shared/nodejs/node_modules/@curioushuman/loggable",
-        "main": "libs/loggable/src/index.ts",
-        "tsConfig": "libs/loggable/tsconfig.lib.json",
-        "assets": ["libs/loggable/*.md"]
+        "main": "libs/shared/loggable/src/index.ts",
+        "tsConfig": "libs/shared/loggable/tsconfig.lib.json",
+        "assets": ["libs/shared/loggable/*.md"]
       }
     },
     "publish": {
@@ -29,14 +29,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/loggable/**/*.ts"]
+        "lintFilePatterns": ["libs/shared/loggable/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/loggable"],
+      "outputs": ["coverage/libs/shared/loggable"],
       "options": {
-        "jestConfig": "libs/loggable/jest.config.ts",
+        "jestConfig": "libs/shared/loggable/jest.config.ts",
         "passWithNoTests": true
       }
     }

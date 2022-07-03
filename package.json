@@ -10,8 +10,8 @@
     "lint": "nx lint",
     "start": "sam local start-api",
     "test": "nx test",
-    "prep:lambda-layers": "rimraf lambda-layers && mkdir lambda-layers",
-    "prep:lambda-layer:co-node-modules": "mkdir -p lambda-layers/co-node-modules/nodejs && cp package.json package-lock.json lambda-layers/co-node-modules/nodejs && cd lambda-layers/co-node-modules/nodejs && npm install -production",
+    "prep:lambda-layers": "rimraf dist/layers/co-node-modules",
+    "prep:lambda-layer:co-node-modules": "mkdir -p dist/layers/co-node-modules/nodejs && cp package.json package-lock.json dist/layers/co-node-modules/nodejs && cd dist/layers/co-node-modules/nodejs && npm install -production",
     "prebuild:sam": "npm run prep:lambda-layers && npm run prep:lambda-layer:co-node-modules",
     "build:sam": "sam build",
     "build:openapi": "./node_modules/.bin/swagger-cli bundle openapi.yaml --outfile ./dist/openapi.yaml --type yaml"

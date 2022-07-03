@@ -1,6 +1,5 @@
 {
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/co-common/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -8,9 +7,10 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/layers/co-shared/nodejs/node_modules/@curioushuman/co-common",
-        "main": "libs/co-common/src/index.ts",
-        "tsConfig": "libs/co-common/tsconfig.lib.json",
-        "assets": ["libs/co-common/*.md"]
+        "main": "libs/shared/co-common/src/index.ts",
+        "tsConfig": "libs/shared/co-common/tsconfig.lib.json",
+        "packageJson": "libs/shared/co-common/package.json",
+        "assets": ["libs/shared/co-common/*.md"]
       }
     },
     "publish": {
@@ -29,14 +29,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/co-common/**/*.ts"]
+        "lintFilePatterns": ["libs/shared/co-common/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/co-common"],
+      "outputs": ["coverage/libs/shared/co-common"],
       "options": {
-        "jestConfig": "libs/co-common/jest.config.ts",
+        "jestConfig": "libs/shared/co-common/jest.config.ts",
         "passWithNoTests": true
       }
     }

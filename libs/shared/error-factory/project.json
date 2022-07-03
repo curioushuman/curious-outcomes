@@ -1,6 +1,5 @@
 {
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/error-factory/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -8,9 +7,10 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/layers/co-shared/nodejs/node_modules/@curioushuman/error-factory",
-        "main": "libs/error-factory/src/index.ts",
-        "tsConfig": "libs/error-factory/tsconfig.lib.json",
-        "assets": ["libs/error-factory/*.md"]
+        "main": "libs/shared/error-factory/src/index.ts",
+        "tsConfig": "libs/shared/error-factory/tsconfig.lib.json",
+        "packageJson": "libs/shared/error-factory/package.json",
+        "assets": ["libs/shared/error-factory/*.md"]
       }
     },
     "publish": {
@@ -29,14 +29,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/error-factory/**/*.ts"]
+        "lintFilePatterns": ["libs/shared/error-factory/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/error-factory"],
+      "outputs": ["coverage/libs/shared/error-factory"],
       "options": {
-        "jestConfig": "libs/error-factory/jest.config.ts",
+        "jestConfig": "libs/shared/error-factory/jest.config.ts",
         "passWithNoTests": true
       }
     }
