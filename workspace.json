@@ -7,6 +7,7 @@
     "co-courses": "libs/services/courses",
     "error-factory": "libs/shared/error-factory",
     "fp-ts-utils": "libs/shared/fp-ts-utils",
+    "co-layers": "apps/co-layers",
     "loggable": "libs/shared/loggable",
     "system": "apps/system"
   }

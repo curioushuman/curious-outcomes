@@ -1,0 +1,98 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "list": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "list"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "synth": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "build": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "synth",
+        "options": "-q"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "bootstrap": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "bootstrap"
+      }
+    },
+    "deploy": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "deploy"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "destroy": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "destroy"
+      }
+    },
+    "diff": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "diff"
+      }
+    },
+    "metadata": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "metadata"
+      }
+    },
+    "context": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "context"
+      }
+    },
+    "docs": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "docs"
+      }
+    },
+    "doctor": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "doctor"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/co-layers"],
+      "options": {
+        "jestConfig": "apps/co-layers/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["system"]
+}
