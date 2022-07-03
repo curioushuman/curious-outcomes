@@ -5,7 +5,7 @@
     "list": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "list"
       },
       "outputs": ["{options.outputPath}"]
@@ -13,7 +13,7 @@
     "synth": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "synth"
       },
       "outputs": ["{options.outputPath}"]
@@ -21,7 +21,7 @@
     "build": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "synth",
         "options": "-q"
       },
@@ -30,14 +30,14 @@
     "bootstrap": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "bootstrap"
       }
     },
     "deploy": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "deploy"
       },
       "outputs": ["{options.outputPath}"]
@@ -45,50 +45,50 @@
     "destroy": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "destroy"
       }
     },
     "diff": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "diff"
       }
     },
     "metadata": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "metadata"
       }
     },
     "context": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "context"
       }
     },
     "docs": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "docs"
       }
     },
     "doctor": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
-        "outputPath": "dist/apps/find-course",
+        "outputPath": "dist/apps/courses",
         "command": "doctor"
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/find-course"],
+      "outputs": ["coverage/apps/courses"],
       "options": {
-        "jestConfig": "apps/find-course/jest.config.ts",
+        "jestConfig": "apps/courses/jest.config.ts",
         "passWithNoTests": true
       }
     }

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
-import { FindCourseStack } from '../lib/find-course-stack';
+import { CoursesStack } from '../lib/courses-stack';
 
 const app = new cdk.App();
-new FindCourseStack(app, 'FindCourseStack', {
+new CoursesStack(app, 'CoursesStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */

@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@curioushuman/co-common": ["libs/shared/co-common/src/index.ts"],
-      "@curioushuman/courses": ["libs/services/courses/src/index.ts"],
+      "@curioushuman/co-courses": ["libs/services/courses/src/index.ts"],
       "@curioushuman/error-factory": ["libs/shared/error-factory/src/index.ts"],
       "@curioushuman/fp-ts-utils": ["libs/shared/fp-ts-utils/src/index.ts"],
       "@curioushuman/loggable": ["libs/shared/loggable/src/index.ts"]
