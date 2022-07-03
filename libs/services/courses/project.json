@@ -1,13 +1,12 @@
 {
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/services/courses/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/services/courses",
+        "outputPath": "dist/layers/courses/nodejs/node_modules/@curioushuman/co-courses",
         "tsConfig": "libs/services/courses/tsconfig.lib.json",
         "packageJson": "libs/services/courses/package.json",
         "main": "libs/services/courses/src/index.ts",

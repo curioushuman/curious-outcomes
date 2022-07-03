@@ -16,12 +16,12 @@ import { FindCourseQuery } from '../application/queries/find-course/find-course.
  */
 
 @Controller('courses')
-export class FindCourseController {
+export class CoursesController {
   constructor(
     private logger: LoggableLogger,
     private readonly queryBus: QueryBus
   ) {
-    this.logger.setContext(FindCourseController.name);
+    this.logger.setContext(CoursesController.name);
   }
 
   public async find(

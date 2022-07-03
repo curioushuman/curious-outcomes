@@ -2,11 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 
-import { CoursesModule } from './fake.courses.module';
+import { CoursesModule } from './courses.module.fake';
 import { FindCourseRequestDto } from '../infra/dto/find-course.request.dto';
 import { Course } from '../domain/entities/course';
 import { CourseBuilder } from './builders/course.builder';
-import { FindCourseController } from '../infra/find-course.controller';
+import { CoursesController } from '../infra/courses.controller';
 import { CourseResponseDto } from '../infra/dto/course.response.dto';
 import {
   RepositoryItemNotFoundError,
@@ -29,7 +29,7 @@ const feature = loadFeature('./find-course.query.feature', {
 
 defineFeature(feature, (test) => {
   let app: INestApplication;
-  let controller: FindCourseController;
+  let controller: CoursesController;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -39,7 +39,7 @@ defineFeature(feature, (test) => {
     app = moduleRef.createNestApplication();
 
     await app.init();
-    controller = moduleRef.get<FindCourseController>(FindCourseController);
+    controller = moduleRef.get<CoursesController>(CoursesController);
   });
 
   afterAll(async () => {

@@ -11,6 +11,8 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.d.ts",
+    "**/*.fake.ts",
+    "**/fake/**/*.ts",
     "**/*.builder.ts"
   ]
 }
