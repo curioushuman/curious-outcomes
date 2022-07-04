@@ -7,10 +7,10 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/layers/co-courses/nodejs/node_modules/@curioushuman/co-courses",
-        "tsConfig": "libs/services/courses/tsconfig.lib.json",
-        "packageJson": "libs/services/courses/package.json",
-        "main": "libs/services/courses/src/index.ts",
-        "assets": ["libs/services/courses/*.md"]
+        "tsConfig": "libs/services/co-courses/tsconfig.lib.json",
+        "packageJson": "libs/services/co-courses/package.json",
+        "main": "libs/services/co-courses/src/index.ts",
+        "assets": ["libs/services/co-courses/*.md"]
       }
     },
     "publish": {
@@ -29,14 +29,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/services/courses/**/*.ts"]
+        "lintFilePatterns": ["libs/services/co-courses/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/services/courses"],
+      "outputs": ["coverage/libs/services/co-courses"],
       "options": {
-        "jestConfig": "libs/services/courses/jest.config.ts",
+        "jestConfig": "libs/services/co-courses/jest.config.ts",
         "passWithNoTests": true
       }
     }

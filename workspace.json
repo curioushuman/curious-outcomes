@@ -4,7 +4,7 @@
   "projects": {
     "co-common": "libs/shared/co-common",
     "courses": "apps/courses",
-    "co-courses": "libs/services/courses",
+    "co-courses": "libs/services/co-courses",
     "error-factory": "libs/shared/error-factory",
     "fp-ts-utils": "libs/shared/fp-ts-utils",
     "co-layers": "apps/co-layers",
