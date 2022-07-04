@@ -36,6 +36,6 @@ const services = [
 })
 export class CoursesModule {}
 
-export const bootstrap = (app: INestApplicationContext) => {
+export const applyDefaults = (app: INestApplicationContext) => {
   app.useLogger(new LoggableLogger());
 };

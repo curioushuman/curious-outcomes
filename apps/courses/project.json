@@ -18,15 +18,6 @@
       },
       "outputs": ["{options.outputPath}"]
     },
-    "build": {
-      "executor": "@otterdev/nx-cdk:run",
-      "options": {
-        "outputPath": "dist/apps/courses",
-        "command": "synth",
-        "options": "-q"
-      },
-      "outputs": ["{options.outputPath}"]
-    },
     "bootstrap": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {

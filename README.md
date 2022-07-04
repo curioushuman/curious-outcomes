@@ -22,6 +22,11 @@
 - libs/services
   - these are compiled by tsc only
   - they are not bundled with any of their dependent packages
+- Options
+  - We could webpack bundle some things into the package
+    - e.g. the shared libs
+  - OR we can keep everything separate
+  - Simplicity, complexity, update management, version tracking, etc
 
 ## Decisions
 
@@ -29,3 +34,5 @@
   - Will use a single module, and a single controller
     - As these are going to be imported by the handlers as a separate package
     - There is less need to break them into smaller files/functions for bundling
+- source map
+  - we're going for the environment variable method
