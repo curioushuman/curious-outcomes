@@ -31,7 +31,11 @@
         "outputPath": "dist/apps/courses",
         "command": "deploy"
       },
-      "outputs": ["{options.outputPath}"]
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "deploy",
+        "projects": "dependencies"
+      }]
     },
     "destroy": {
       "executor": "@otterdev/nx-cdk:run",
@@ -85,5 +89,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["system"]
+  "implicitDependencies": ["co-layers", "!system"]
 }

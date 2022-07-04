@@ -5,6 +5,7 @@
     "defaultBase": "main"
   },
   "implicitDependencies": {
+    "workspace.json": "*",
     "package.json": {
       "dependencies": "*",
       "devDependencies": "*"
@@ -15,7 +16,7 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e", "synth"],
+        "cacheableOperations": ["build", "lint", "test", "e2e", "synth", "deploy"],
         "accessToken": "MTFjZDA3OTEtMmNiNy00YzM0LTlkODQtZTJmYzMyNTE1NmZlfHJlYWQtd3JpdGU="
       }
     }

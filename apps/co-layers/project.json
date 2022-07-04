@@ -31,7 +31,11 @@
         "outputPath": "dist/apps/co-layers",
         "command": "deploy"
       },
-      "outputs": ["{options.outputPath}"]
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
     },
     "destroy": {
       "executor": "@otterdev/nx-cdk:run",
@@ -84,6 +88,6 @@
       }
     }
   },
-  "tags": [],
-  "implicitDependencies": ["system"]
+  "tags": ["scope:layers"],
+  "implicitDependencies": ["co-courses", "co-common", "error-factory", "fp-ts-utils", "loggable"]
 }

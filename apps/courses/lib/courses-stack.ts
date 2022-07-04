@@ -58,7 +58,7 @@ export class CoursesStack extends cdk.Stack {
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoCourses',
-        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses:1`
+        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses:2`
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,
@@ -68,7 +68,7 @@ export class CoursesStack extends cdk.Stack {
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoShared',
-        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoShared:1`
+        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoShared:2`
       ),
     ];
 
