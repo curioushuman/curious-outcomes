@@ -60,6 +60,7 @@ export class CoursesStack extends cdk.Stack {
      *    UnQ: arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses
      *   this means they will always request the latest version
      *   for now this is sufficient
+     *   https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html
      */
     const lambdaLayers = [
       lambda.LayerVersion.fromLayerVersionArn(
