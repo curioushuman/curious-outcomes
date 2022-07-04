@@ -53,22 +53,29 @@ export class CoursesStack extends cdk.Stack {
 
     /**
      * Lambda layers
+     *
+     * NOTES
+     * - we currently use unqualified ARNs for our layers
+     *    Q: arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses:2
+     *    UnQ: arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses
+     *   this means they will always request the latest version
+     *   for now this is sufficient
      */
     const lambdaLayers = [
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoCourses',
-        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses:2`
+        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoCourses`
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoNodeModules',
-        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoNodeModules:1`
+        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoNodeModules`
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoShared',
-        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoShared:2`
+        `arn:aws:lambda:${env.region}:${env.account}:layer:TsCdkCoShared`
       ),
     ];
 
