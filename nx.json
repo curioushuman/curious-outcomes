@@ -26,5 +26,5 @@
       "dependsOn": ["^build"]
     }
   },
-  "defaultProject": "system"
+  "defaultProject": "api-admin"
 }
