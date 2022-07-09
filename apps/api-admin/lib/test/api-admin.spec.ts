@@ -13,11 +13,16 @@ describe('ApiAdminStack', () => {
     template = Template.fromStack(stack);
   });
 
+  it('Should contain a topic', () => {
+    template.resourceCountIs('AWS::SNS::Topic', 1);
+  });
+
   it('Should contain an API', () => {
-    // Assert it creates an API Gateway
-    // template.hasResourceProperties("AWS::ApiGateway::RestApi", {
-    //   Handler: "handler",
-    // });
     template.resourceCountIs('AWS::ApiGateway::RestApi', 1);
+  });
+
+  // TODO: get rid of this one, not a very good test
+  it('Should contain a single endpoint', () => {
+    template.resourceCountIs('AWS::ApiGateway::Resource', 4);
   });
 });
