@@ -106,6 +106,11 @@ export class ApiAdminStack extends cdk.Stack {
             'integration.request.header.Content-Type':
               "'application/x-www-form-urlencoded'",
           },
+          // TODO: definitely remove this chaos from here
+          //       once we've got another few examples we can refactor
+          // TODO: once removed, add VTL unit tests
+          //       http://mapping-template-checker.toqoz.net/
+          //       https://github.com/ToQoz/api-gateway-mapping-template
           requestTemplates: {
             'application/json':
               '#set($allParams = $input.params())\n' +
@@ -175,24 +180,35 @@ export class ApiAdminStack extends cdk.Stack {
         },
       }),
       {
+        // Here we can define path, querystring, and acceptable headers
+        requestParameters: {
+          'method.request.path.eventType': true,
+          'method.request.path.courseId': true,
+          'method.request.querystring.status': false,
+        },
+        // Keeping it simple for now
+        // TODO-later: consider using requestValidator
+        //             hopefully when there are better validation options
+        //             (for path, querystring, etc)
+        requestValidatorOptions: {
+          requestValidatorName: 'basicGetRequestValidator',
+          validateRequestParameters: true,
+          validateRequestBody: false,
+        },
+        // what we allow to be returned as a response
         methodResponses: [
-          //We need to define what models are allowed on our method response
           {
-            // Successful response from the integration
             statusCode: '200',
-            // Define what parameters are allowed or not
             responseParameters: {
               'method.response.header.Content-Type': true,
               'method.response.header.Access-Control-Allow-Origin': true,
               'method.response.header.Access-Control-Allow-Credentials': true,
             },
-            // Validate the schema on the response
             responseModels: {
               'application/json': responseModel,
             },
           },
           {
-            // Same thing for the error responses
             statusCode: '400',
             responseParameters: {
               'method.response.header.Content-Type': true,

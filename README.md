@@ -28,6 +28,22 @@
   - OR we can keep everything separate
   - Simplicity, complexity, update management, version tracking, etc
 
+## Big issues
+
+- API Gateway Validation
+  - Params / querystring validation
+    - Currently it is not possible to do any kind of validation outside of required / not required
+      - https://stackoverflow.com/questions/47849438/aws-api-gateway-query-parameter-validation
+    - This moots it's value a little bit
+    - Particularly when considering it from an asynchronous point of view
+      - How do we inform the client of a bad request if it has been passed on through
+    - **Option:** we'll always have access to their personal identification
+        - Which is how we would have informed them of success/failure in other ways
+    - **FOR NOW** we'll move forward with this level of validation
+      - Coupled with type checking in the lambda
+      - And asynchronous notification of success/error
+      - While we wait for AWS to provide this function
+
 ## Decisions
 
 - libs/services
