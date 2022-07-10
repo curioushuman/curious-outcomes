@@ -81,6 +81,10 @@ export class ApiAdminStack extends cdk.Stack {
 
     /**
      * Root Resources for the API
+     *
+     * TODO:
+     * - [ ] models from types
+     *       https://matt.martz.codes/how-to-automatically-generate-request-models-from-typescript-interfaces
      */
     const courses = api.root.addResource('courses');
 
@@ -89,6 +93,12 @@ export class ApiAdminStack extends cdk.Stack {
      */
     /**
      * GET /courses/{eventType}/{courseId}?{updatedStatus?}
+     *
+     * TODO:
+     * - [ ] idempotency for the hook
+     *       do we assume each hit of the hook is an independent event?
+     *       can we do it another way? Maybe specific to the event?
+     *       https://aws.amazon.com/premiumsupport/knowledge-center/lambda-function-idempotent/
      */
     const coursesHook = courses.addResource('hook');
     const coursesHookType = coursesHook.addResource('{eventType}');
