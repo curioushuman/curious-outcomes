@@ -1,33 +1,21 @@
 #set($allParams = $input.params())
 #set($pathParams = $allParams.get('path'))
-Action=Publish&TargetArn=$util.urlEncode('topicExternalEvents.topicArn')&MessageStructure=json&Message=
-{
-"lambda":"{
-#foreach($paramName in $pathParams.keySet())
-\\"$paramName\\":\\"$util.escapeJavaScript($pathParams.get($paramName))\\"
-#if($foreach.hasNext),#end
-#end
+#set($type = $pathParams.get('eventType'))
+#set($typeEscaped = $util.escapeJavaScript("${type}"))
+#set($messageProperties = '\"object\":\"Course\",\"type\":\"' + $typeEscaped + '\"')
 #if($input.params('updatedStatus'))
-,\\"updatedStatus\\":\\"$util.escapeJavaScript($input.params('updatedStatus'))\\"
+#set($status = $input.params('updatedStatus'))
+#set($statusEscaped = $util.escapeJavaScript("${status}"))
+#set($messageProperties = $messageProperties + ',\"status\":\"' + $statusEscaped + '\"')
 #end
-}",
-"sqs":"{
-#foreach($paramName in $pathParams.keySet())
-\\"$paramName\\":\\"$util.escapeJavaScript($pathParams.get($paramName))\\"
-#if($foreach.hasNext),#end
-#end
-#if($input.params('updatedStatus'))
-,\\"updatedStatus\\":\\"$util.escapeJavaScript($input.params('updatedStatus'))\\"
-#end
-}",
-"default":"#foreach($paramName in $pathParams.keySet())
-$paramName : $util.escapeJavaScript($pathParams.get($paramName))
-#if($foreach.hasNext), #end
-#end"
-}&Version=2010-03-31&
-MessageAttributes.entry.1.Name=object&MessageAttributes.entry.1.Value.DataType=String&
+#set($message = '{"default":"{' + $messageProperties + '}"}')
+Action=Publish&TargetArn=$util.urlEncode('topicExternalEvents.topicArn')&
+MessageStructure=json&
+Message=$util.urlEncode($message)&
+Version=2010-03-31&
+MessageAttributes.entry.1.Name=object&
+MessageAttributes.entry.1.Value.DataType=String&
 MessageAttributes.entry.1.Value.StringValue=Course&
-MessageAttributes.entry.2.Name=type&MessageAttributes.entry.2.Value.DataType=String&
-MessageAttributes.entry.2.Value.StringValue=$util.urlEncode($input.params('eventType'))&
-MessageAttributes.entry.3.Name=updatedStatus&MessageAttributes.entry.3.Value.DataType=String&
-MessageAttributes.entry.3.Value.StringValue=$util.urlEncode($input.params('updatedStatus'))
+MessageAttributes.entry.2.Name=type&
+MessageAttributes.entry.2.Value.DataType=String&
+MessageAttributes.entry.2.Value.StringValue=$util.urlEncode($typeEscaped)
