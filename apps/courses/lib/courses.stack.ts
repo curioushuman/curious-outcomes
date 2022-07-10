@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
@@ -41,6 +43,10 @@ export class CoursesStack extends cdk.Stack {
 
     /**
      * Function: Create Course
+     *
+     * TODO:
+     * - [ ] idempotency
+     *       https://aws.amazon.com/premiumsupport/knowledge-center/lambda-function-idempotent/
      */
     const createCourseFunction = new NodejsFunction(
       this,
@@ -53,6 +59,27 @@ export class CoursesStack extends cdk.Stack {
     );
     // ALWAYS ADD TAGS
     cdk.Tags.of(createCourseFunction).add('identifier', 'CreateCourseFunction');
+
+    // Subscribe the function to external events
+    // Filter = object = course, type = create
+    const externalEventsTopic = sns.Topic.fromTopicArn(
+      this,
+      'CoursesStack-allExternalEventsTopic',
+      `arn:aws:sns:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:allExternalEventsTopic`
+    );
+
+    const createCourseExternalEventSubscription =
+      new subscriptions.LambdaSubscription(createCourseFunction, {
+        filterPolicy: {
+          object: sns.SubscriptionFilter.stringFilter({
+            allowlist: ['Course'],
+          }),
+          type: sns.SubscriptionFilter.stringFilter({
+            allowlist: ['Created'],
+          }),
+        },
+      });
+    externalEventsTopic.addSubscription(createCourseExternalEventSubscription);
 
     /**
      * Outputs

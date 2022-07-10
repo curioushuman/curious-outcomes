@@ -31,13 +31,30 @@ describe('CoursesStack', () => {
       });
     });
 
-    // describe('Should be subscribed to the ExternalEvents SNS topic', () => {
-    //   it('Should exist', () => {
-    //     // TODO
-    //   });
-    //   it('Should be filtered to messages of object=Course, type=Created', () => {
-    //     // TODO
-    //   });
-    // });
+    // TODO: additional tests for the lambda
+
+    describe('Should be subscribed to the ExternalEvents SNS topic', () => {
+      const filterPolicy = new Capture();
+      const subscriptionEndpointRegex = 'CreateCourseFunction[A-Z0-9]+';
+
+      it('Should exist', () => {
+        // TODO
+        template.hasResourceProperties('AWS::SNS::Subscription', {
+          Protocol: 'lambda',
+          Endpoint: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp(subscriptionEndpointRegex),
+              Match.anyValue(),
+            ],
+          },
+          FilterPolicy: filterPolicy,
+        });
+      });
+      it('Should be filtered to messages of object=Course, type=Created', () => {
+        const filterPolicyObj = filterPolicy.asObject();
+        expect(filterPolicyObj.object).toEqual(['Course']);
+        expect(filterPolicyObj.type).toEqual(['Created']);
+      });
+    });
   });
 });
