@@ -22,17 +22,11 @@ describe('ApiAdminStack', () => {
   });
 
   describe('Should support the following endpoints', () => {
-    describe('/courses/hook/{eventType}/{courseId}', () => {
-      const integrationCapture = new Capture();
-      const methodResponsesCapture = new Capture();
+    describe('/courses/hook/{eventType}/{courseId}?{status?}', () => {
       const resourceParentRegex = 'apiadmincourseshookeventType[A-Z0-9]+';
       const resourceIdRegex = 'apiadmincourseshookeventTypecourseId[A-Z0-9]+';
 
       it('Should exist', () => {
-        // TODO: I would prefer to be more specific with this test
-        // Difficult to do as a one off, but I might be able to write
-        // some supporting functions to test such things.
-        // e.g. https://thomasstep.com/blog/how-to-write-aws-cdk-tests
         template.hasResourceProperties('AWS::ApiGateway::Resource', {
           PathPart: '{courseId}',
           ParentId: {
@@ -41,7 +35,13 @@ describe('ApiAdminStack', () => {
         });
       });
 
+      // TODO: test authorization
       describe('GET', () => {
+        const integrationCapture = new Capture();
+        const methodResponsesCapture = new Capture();
+        const requestValidator = new Capture();
+        const requestParameters = new Capture();
+
         it('Should exist', () => {
           template.hasResourceProperties('AWS::ApiGateway::Method', {
             HttpMethod: 'GET',
@@ -50,20 +50,54 @@ describe('ApiAdminStack', () => {
             },
             Integration: integrationCapture,
             MethodResponses: methodResponsesCapture,
+            RequestParameters: requestParameters,
+            RequestValidatorId: requestValidator,
           });
+
+          // TODO: what else within this structure should we be testing?
+          // console.log('integrationCapture', integrationCapture.asObject());
         });
         test('With credentials', () => {
           expect(integrationCapture.asObject().Credentials).toBeDefined();
         });
-        // TODO: I'm not sure exactly how to do this
-        test.todo('With a request template that includes lambda');
-        test.todo('With a request template that includes sqs');
-        test.todo('With a request template that includes default');
+        test('With the relevant parameters', () => {
+          expect(
+            requestParameters.asObject()['method.request.path.eventType']
+          ).toBeTruthy();
+          expect(
+            requestParameters.asObject()['method.request.path.courseId']
+          ).toBeTruthy();
+          expect(
+            requestParameters.asObject()['method.request.querystring.status']
+          ).toBeDefined();
+        });
+        // TODO: can we improve this?
+        // Difficult to do, as the ref is quite anonymous
+        // RequestValidatorId { Ref: 'apiadminvalidator1165B6E4' }
+        test('With basic GET request validator', () => {
+          expect(requestValidator.asObject()).toBeDefined();
+        });
         test('With two method responses', () => {
           const methodResponses = methodResponsesCapture.asArray();
           expect(methodResponses.length).toBe(2);
           expect(methodResponses[0].StatusCode).toBe('200');
           expect(methodResponses[1].StatusCode).toBe('400');
+        });
+        // TODO: I'm not sure exactly how to do this
+        describe('Should include request templates for', () => {
+          // const requestTemplates = new Capture();
+          // beforeAll(() => {
+          //   template.hasResourceProperties('AWS::ApiGateway::Method', {
+          //     Integration: {
+          //       RequestTemplates: {
+          //         'application/json': requestTemplates,
+          //       },
+          //     },
+          //   });
+          // });
+          test.todo('Lambda');
+          test.todo('SQS');
+          test.todo('Default');
         });
       });
     });

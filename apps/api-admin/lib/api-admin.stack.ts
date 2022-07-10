@@ -4,6 +4,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Construct } from 'constructs';
 
+import { resolve as pathResolve } from 'path';
+import { readFileSync } from 'fs';
+
 export class ApiAdminStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -90,6 +93,31 @@ export class ApiAdminStack extends cdk.Stack {
     const coursesHook = courses.addResource('hook');
     const coursesHookType = coursesHook.addResource('{eventType}');
     const coursesHookTypeAndId = coursesHookType.addResource('{courseId}');
+
+    /**
+     * Mapping template for this resource/method
+     */
+    const coursesHookTypeAndIdRequestTemplate = readFileSync(
+      pathResolve(__dirname, '../src/courses/hook/hook.mapping-template.vtl'),
+      'utf8'
+    ).replace(/(\r\n|\n|\r)/gm, '');
+
+    /**
+     * Request Validator
+     */
+    const basicGetRequestValidator = new apigateway.RequestValidator(
+      this,
+      'CoursesHook-BasicGetRequestValidator',
+      {
+        restApi: api,
+
+        // the properties below are optional
+        requestValidatorName: 'CoursesHook-basicGetRequestValidator',
+        validateRequestBody: false,
+        validateRequestParameters: true,
+      }
+    );
+
     // integration with SNS topic for external events
     // source: https://github.com/cdk-patterns/serverless/blob/main/the-big-fan/typescript/lib/the-big-fan-stack.ts
     coursesHookTypeAndId.addMethod(
@@ -106,42 +134,16 @@ export class ApiAdminStack extends cdk.Stack {
             'integration.request.header.Content-Type':
               "'application/x-www-form-urlencoded'",
           },
-          // TODO: definitely remove this chaos from here
-          //       once we've got another few examples we can refactor
           // TODO: once removed, add VTL unit tests
           //       http://mapping-template-checker.toqoz.net/
           //       https://github.com/ToQoz/api-gateway-mapping-template
+          // TODO:
+          // - [ ] better string replacement below
           requestTemplates: {
-            'application/json':
-              '#set($allParams = $input.params())\n' +
-              "#set($pathParams = $allParams.get('path'))\n" +
-              'Action=Publish&' +
-              "TargetArn=$util.urlEncode('" +
-              topicExternalEvents.topicArn +
-              "')&" +
-              'MessageStructure=json&' +
-              // NOTE: when using JSON as MessageStructure (for SNS) you must define a message
-              //       per (consuming) AWS service; AND a default message is required.
-              //       https://docs.aws.amazon.com/sns/latest/api/API_Publish.html
-              // TODO:
-              // - [ ] SQS, similar to Lambda
-              // - [ ] improve the default message
-              'Message={' +
-              '"lambda":"{\n' +
-              '#foreach($paramName in $pathParams.keySet())\n' +
-              '\\"$paramName\\" : \\"$util.escapeJavaScript($pathParams.get($paramName))\\"\n' +
-              '#if($foreach.hasNext),#end\n' +
-              '#end\n' +
-              '#if($input.params(\'status\'))\\"status\\":\\"$util.escapeJavaScript($input.params(\'status\'))\\"#end\n' +
-              '"default":"$util.urlEncode($input.params(\'eventType\')):$util.urlEncode($input.params(\'courseId\'))"' +
-              +'}&' +
-              'Version=2010-03-31&' +
-              'MessageAttributes.entry.1.Name=type&' +
-              'MessageAttributes.entry.1.Value.DataType=String&' +
-              "MessageAttributes.entry.1.Value.StringValue=$util.urlEncode($input.params('eventType'))&" +
-              'MessageAttributes.entry.2.Name=status&' +
-              'MessageAttributes.entry.2.Value.DataType=String&' +
-              "MessageAttributes.entry.2.Value.StringValue=$util.urlEncode($input.params('status'))",
+            'application/json': coursesHookTypeAndIdRequestTemplate.replace(
+              'topicExternalEvents.topicArn',
+              topicExternalEvents.topicArn
+            ),
           },
           passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
           integrationResponses: [
@@ -186,15 +188,7 @@ export class ApiAdminStack extends cdk.Stack {
           'method.request.path.courseId': true,
           'method.request.querystring.status': false,
         },
-        // Keeping it simple for now
-        // TODO-later: consider using requestValidator
-        //             hopefully when there are better validation options
-        //             (for path, querystring, etc)
-        requestValidatorOptions: {
-          requestValidatorName: 'basicGetRequestValidator',
-          validateRequestParameters: true,
-          validateRequestBody: false,
-        },
+        requestValidator: basicGetRequestValidator,
         // what we allow to be returned as a response
         methodResponses: [
           {
