@@ -7,8 +7,8 @@ Action=Publish&TargetArn=$util.urlEncode('topicExternalEvents.topicArn')&Message
 \\"$paramName\\":\\"$util.escapeJavaScript($pathParams.get($paramName))\\"
 #if($foreach.hasNext),#end
 #end
-#if($input.params('status'))
-,\\"status\\":\\"$util.escapeJavaScript($input.params('status'))\\"
+#if($input.params('updatedStatus'))
+,\\"updatedStatus\\":\\"$util.escapeJavaScript($input.params('updatedStatus'))\\"
 #end
 }",
 "sqs":"{
@@ -16,8 +16,8 @@ Action=Publish&TargetArn=$util.urlEncode('topicExternalEvents.topicArn')&Message
 \\"$paramName\\":\\"$util.escapeJavaScript($pathParams.get($paramName))\\"
 #if($foreach.hasNext),#end
 #end
-#if($input.params('status'))
-,\\"status\\":\\"$util.escapeJavaScript($input.params('status'))\\"
+#if($input.params('updatedStatus'))
+,\\"updatedStatus\\":\\"$util.escapeJavaScript($input.params('updatedStatus'))\\"
 #end
 }",
 "default":"#foreach($paramName in $pathParams.keySet())
@@ -27,5 +27,5 @@ $paramName : $util.escapeJavaScript($pathParams.get($paramName))
 }&Version=2010-03-31&
 MessageAttributes.entry.1.Name=type&MessageAttributes.entry.1.Value.DataType=String&
 MessageAttributes.entry.1.Value.StringValue=$util.urlEncode($input.params('eventType'))&
-MessageAttributes.entry.2.Name=status&MessageAttributes.entry.2.Value.DataType=String&
-MessageAttributes.entry.2.Value.StringValue=$util.urlEncode($input.params('status'))
+MessageAttributes.entry.2.Name=updatedStatus&MessageAttributes.entry.2.Value.DataType=String&
+MessageAttributes.entry.2.Value.StringValue=$util.urlEncode($input.params('updatedStatus'))

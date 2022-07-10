@@ -88,7 +88,7 @@ export class ApiAdminStack extends cdk.Stack {
      * Resources/methods for the /courses endpoint
      */
     /**
-     * GET /courses/{eventType}/{courseId}?status={status}
+     * GET /courses/{eventType}/{courseId}?{updatedStatus?}
      */
     const coursesHook = courses.addResource('hook');
     const coursesHookType = coursesHook.addResource('{eventType}');
@@ -186,7 +186,7 @@ export class ApiAdminStack extends cdk.Stack {
         requestParameters: {
           'method.request.path.eventType': true,
           'method.request.path.courseId': true,
-          'method.request.querystring.status': false,
+          'method.request.querystring.updatedStatus': false,
         },
         requestValidator: basicGetRequestValidator,
         // what we allow to be returned as a response

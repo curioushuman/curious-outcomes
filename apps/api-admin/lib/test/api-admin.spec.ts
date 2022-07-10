@@ -2,6 +2,11 @@ import { Capture, Match, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import { ApiAdminStack } from '../api-admin.stack';
 
+/**
+ * TODO
+ * - [ ] Use the openapi file as the inspiration for the tests
+ */
+
 describe('ApiAdminStack', () => {
   let app: cdk.App;
   let stack: ApiAdminStack;
@@ -22,7 +27,7 @@ describe('ApiAdminStack', () => {
   });
 
   describe('Should support the following endpoints', () => {
-    describe('/courses/hook/{eventType}/{courseId}?{status?}', () => {
+    describe('/courses/hook/{eventType}/{courseId}?{updatedStatus?}', () => {
       const resourceParentRegex = 'apiadmincourseshookeventType[A-Z0-9]+';
       const resourceIdRegex = 'apiadmincourseshookeventTypecourseId[A-Z0-9]+';
 
@@ -68,7 +73,9 @@ describe('ApiAdminStack', () => {
             requestParameters.asObject()['method.request.path.courseId']
           ).toBeTruthy();
           expect(
-            requestParameters.asObject()['method.request.querystring.status']
+            requestParameters.asObject()[
+              'method.request.querystring.updatedStatus'
+            ]
           ).toBeDefined();
         });
         // TODO: can we improve this?

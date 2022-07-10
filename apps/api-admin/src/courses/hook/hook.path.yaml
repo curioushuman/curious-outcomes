@@ -1,0 +1,40 @@
+get:
+  summary: Accept incoming events from external systems
+  parameters:
+    - name: eventType
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [Created, Updated, StatusUpdated]
+      description: >
+        The event that has occurred to this item
+          * `Created` - When a course has been created
+          * `Updated` - When a course has been updated
+          * `StatusUpdated` - A course has changed status; similar to updated, but more specific
+    - name: courseId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The identifier for the specific course this event has occurred to
+    - name: updatedStatus
+      in: query
+      required: false
+      schema:
+        type: string
+      description: The updated status; only relevant for `StatusUpdated` events
+
+  responses:
+    '200':
+      description: Event processed successfully
+
+    '400':
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
