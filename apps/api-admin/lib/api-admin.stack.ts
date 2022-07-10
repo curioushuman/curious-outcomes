@@ -17,10 +17,13 @@ export class ApiAdminStack extends cdk.Stack {
      */
     const topicExternalEvents = new sns.Topic(this, 'allExternalEventsTopic', {
       displayName: 'SNS topic for throughput of ALL external events',
+      topicName: 'allExternalEventsTopic',
     });
 
     /**
      * API Gateway
+     * https://{restapi_id}.execute-api.{region}.amazonaws.com/{stage_name}/
+     * https://ap-southeast-2.console.aws.amazon.com/apigateway/home?region=ap-southeast-2#/apis/txi21niwmd/stages/dev
      */
     const api = new apigateway.RestApi(this, 'api-admin', {
       description: 'Curious Outcomes Admin API',
@@ -168,17 +171,20 @@ export class ApiAdminStack extends cdk.Stack {
               },
             },
             {
-              // If the response includes the word Error, use the error response
-              // source: https://github.com/cdk-patterns/serverless/blob/main/the-big-fan/typescript/lib/the-big-fan-stack.ts
+              // NOTE: _If the back end is an AWS Lambda function, the AWS Lambda
+              // function error header is matched. For all other HTTP and AWS back
+              // ends, the HTTP status code is matched._
+              // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.IntegrationResponse.html
+              // selectionPattern: '^.*(Error|40|50).*$',
               // prettier-ignore
               // eslint-disable-next-line no-useless-escape
-              selectionPattern: "^\[Error\].*",
+              selectionPattern: "400",
               statusCode: '400',
               responseTemplates: {
                 'application/json': JSON.stringify({
                   state: 'error',
                   message:
-                    "$util.escapeJavaScript($input.path('$.errorMessage'))",
+                    "$util.escapeJavaScript($input.path('$.Error.Message'))",
                 }),
               },
               responseParameters: {
