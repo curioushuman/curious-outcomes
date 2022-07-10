@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { CoursesStack } from '../lib/courses-stack';
+import { CoursesStack } from '../lib/courses.stack';
 
 const devEnv = {
   account: '793735516609',

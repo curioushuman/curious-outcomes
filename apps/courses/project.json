@@ -2,6 +2,13 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/courses/**/*.ts"]
+      }
+    },
     "list": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
@@ -89,5 +96,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["co-layers", "!system"]
+  "implicitDependencies": ["co-layers"]
 }
