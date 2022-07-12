@@ -28,13 +28,14 @@ describe('ApiAdminStack', () => {
   });
 
   describe('Should support the following endpoints', () => {
-    describe('/courses/hook/{eventType}/{courseId}?{updatedStatus?}', () => {
+    describe('/courses/hook/{eventType}/{courseSourceId}?{updatedStatus?}', () => {
       const resourceParentRegex = 'apiadmincourseshookeventType[A-Z0-9]+';
-      const resourceIdRegex = 'apiadmincourseshookeventTypecourseId[A-Z0-9]+';
+      const resourceIdRegex =
+        'apiadmincourseshookeventTypecourseSourceId[A-Z0-9]+';
 
       it('Should exist', () => {
         template.hasResourceProperties('AWS::ApiGateway::Resource', {
-          PathPart: '{courseId}',
+          PathPart: '{courseSourceId}',
           ParentId: {
             Ref: Match.stringLikeRegexp(resourceParentRegex),
           },
@@ -71,7 +72,7 @@ describe('ApiAdminStack', () => {
             requestParameters.asObject()['method.request.path.eventType']
           ).toBeTruthy();
           expect(
-            requestParameters.asObject()['method.request.path.courseId']
+            requestParameters.asObject()['method.request.path.courseSourceId']
           ).toBeTruthy();
           expect(
             requestParameters.asObject()[

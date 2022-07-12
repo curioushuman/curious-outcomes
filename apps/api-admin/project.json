@@ -23,7 +23,11 @@
         "outputPath": "dist/apps/api-admin",
         "command": "synth"
       },
-      "outputs": ["{options.outputPath}"]
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "openapi",
+        "projects": "self"
+      }]
     },
     "bootstrap": {
       "executor": "@otterdev/nx-cdk:run",
@@ -42,6 +46,10 @@
       "dependsOn": [{
         "target": "deploy",
         "projects": "dependencies"
+      },
+      {
+        "target": "openapi",
+        "projects": "self"
       }]
     },
     "destroy": {
@@ -77,7 +85,11 @@
       "options": {
         "outputPath": "dist/apps/api-admin",
         "command": "docs"
-      }
+      },
+      "dependsOn": [{
+        "target": "openapi",
+        "projects": "self"
+      }]
     },
     "doctor": {
       "executor": "@otterdev/nx-cdk:run",
@@ -92,6 +104,17 @@
       "options": {
         "jestConfig": "apps/api-admin/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+    "openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "../../node_modules/.bin/swagger-cli bundle openapi.yaml --outfile ../../dist/apps/api-admin/openapi.yaml --type yaml"
+          }
+        ],
+        "cwd": "apps/api-admin"
       }
     }
   },

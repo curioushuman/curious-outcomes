@@ -12,7 +12,7 @@ get:
           * `Created` - When a course has been created
           * `Updated` - When a course has been updated
           * `StatusUpdated` - A course has changed status; similar to updated, but more specific
-    - name: courseId
+    - name: courseSourceId
       in: path
       required: true
       schema:

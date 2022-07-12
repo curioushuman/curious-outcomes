@@ -9,5 +9,8 @@ servers:
 paths:
 
   # Courses
-  /courses/hook/{eventType}/{courseId}/{updatedStatus}:
-    $ref: "./src/paths/hook/hook.path.yaml"
+  /courses/hook/{eventType}/{courseSourceId}:
+    $ref: "./src/courses/paths/hook/hook.path.yaml"
+
+  /courses/{courseId}:
+    $ref: "./src/courses/paths/find-one/find-one.path.yaml"
