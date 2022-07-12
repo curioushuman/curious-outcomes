@@ -1,4 +1,3 @@
-import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
@@ -14,25 +13,29 @@ import { FindCourseSourceRequestDto } from './dto/find-course-source.request.dto
 import { CourseSourceResponseDto } from './dto/course-source.response.dto';
 import { FindCourseSourceMapper } from '../application/queries/find-course-source/find-course-source.mapper';
 import { FindCourseSourceQuery } from '../application/queries/find-course-source/find-course-source.query';
-// import { CreateCourseRequestDto } from './dto/create-course.request.dto';
 
 /**
- * Controller for courses; transforming input/output and routing to commands
+ * Controller for find(One) course operations
  *
  * TODO
- * - [ ] experiment with breaking this file into individual controllers
- *       e.g. find-course.controller.ts
- *       To make the most of it, you'd also need find-course.module.ts
- *       Only worth doing if you're measuring at the same time
+ * - [ ] should this actually be a service?
+ * - [ ] should we be doing auth. here as well?
+ *       OR is it ok that we're assuming it is done at higher levels?
+ *       AKA it seems like a waste of resources to repeat the same task
+ *       ONLY if auth. at this level differs from higher ups should we implement
+ *
+ * NOTES
+ * - should we have findBySlug and findById
+ *   OR find, with a single DTO?
+ * - where should the check for slug vs id be done?
  */
 
-@Controller('courses')
-export class CoursesController {
+export class FindCourseController {
   constructor(
     private logger: LoggableLogger,
     private readonly queryBus: QueryBus
   ) {
-    this.logger.setContext(CoursesController.name);
+    this.logger.setContext(FindCourseController.name);
   }
 
   public async find(
