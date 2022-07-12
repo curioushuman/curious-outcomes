@@ -11,8 +11,20 @@ import { CoursesController } from './infra/courses.controller';
 import { CourseRepository } from './adapter/ports/course.repository';
 import { FakeCourseRepository } from './adapter/implementations/fake/fake.course.repository';
 import { FindCourseHandler } from './application/queries/find-course/find-course.query';
+import { FindCourseSourceHandler } from './application/queries/find-course-source/find-course-source.query';
 
-const queryHandlers = [FindCourseHandler];
+/**
+ * TODO
+ * - [ ] experiment with breaking this file into multiple modules
+ *       e.g. find-course.module.ts
+ *       This way you can include less files within each lambda
+ *       Only worth doing if you're measuring at the same time
+ *       And potentially experimenting with various bundling methods
+ */
+
+const controllers = [FindCourseHandler, FindCourseSourceHandler];
+
+const queryHandlers = [FindCourseHandler, FindCourseSourceHandler];
 
 const repositories = [
   {
