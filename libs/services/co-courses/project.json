@@ -16,7 +16,7 @@
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "node tools/scripts/publish.mjs courses {args.ver} {args.tag}"
+        "command": "node tools/scripts/publish.mjs co-courses {args.ver} {args.tag}"
       },
       "dependsOn": [
         {
