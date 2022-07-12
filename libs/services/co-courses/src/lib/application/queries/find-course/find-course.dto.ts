@@ -1,9 +1,12 @@
-import { Record, Static } from 'runtypes';
+import { Optional, Record, Static } from 'runtypes';
 
-import { ExternalId } from '@curioushuman/co-common';
+import { ExternalId, Slug } from '@curioushuman/co-common';
+import { CourseId } from '../../../domain/value-objects/course-id';
 
 export const FindCourseDto = Record({
-  externalId: ExternalId,
+  id: Optional(CourseId),
+  externalId: Optional(ExternalId),
+  slug: Optional(Slug),
 });
 
 export type FindCourseDto = Static<typeof FindCourseDto>;
