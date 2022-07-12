@@ -96,5 +96,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["co-layers"]
+  "implicitDependencies": ["co-layers", "api-admin"]
 }

@@ -17,12 +17,13 @@ const lambdaProps = {
   bundling: {
     minify: true,
     sourceMap: true,
-    // externalModules: [
-    //   'aws-sdk',
-    //   '@curioushuman/co-courses',
-    //   '@nestjs/common',
-    //   '@nestjs/core',
-    // ],
+    externalModules: [
+      'aws-sdk',
+      '@curioushuman/co-courses',
+      '@curioushuman/loggable',
+      '@nestjs/common',
+      '@nestjs/core',
+    ],
   },
   environment: {
     NODE_OPTIONS: '--enable-source-maps',
@@ -42,18 +43,40 @@ export class CoursesStack extends cdk.Stack {
     super(scope, id, props);
 
     /**
+     * Required layers
+     */
+    const lambdaLayers = [
+      lambda.LayerVersion.fromLayerVersionArn(
+        this,
+        'CdkLayerCoCourses',
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoCourses:5`
+      ),
+      lambda.LayerVersion.fromLayerVersionArn(
+        this,
+        'CdkLayerCoNodeModules',
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoNodeModules:1`
+      ),
+      lambda.LayerVersion.fromLayerVersionArn(
+        this,
+        'CdkLayerCoShared',
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoShared:4`
+      ),
+    ];
+
+    /**
      * Function: Create Course
      *
      * TODO:
      * - [ ] idempotency
      *       https://aws.amazon.com/premiumsupport/knowledge-center/lambda-function-idempotent/
+     * - [ ] configure retry attempts (upon failure)
      */
     const createCourseFunction = new NodejsFunction(
       this,
       'CreateCourseFunction',
       {
         entry: pathResolve(__dirname, '../src/functions/create-course/main.ts'),
-        // layers: lambdaLayers,
+        layers: lambdaLayers,
         ...lambdaProps,
       }
     );
@@ -67,7 +90,6 @@ export class CoursesStack extends cdk.Stack {
       'CoursesStack-allExternalEventsTopic',
       `arn:aws:sns:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:allExternalEventsTopic`
     );
-
     const createCourseExternalEventSubscription =
       new subscriptions.LambdaSubscription(createCourseFunction, {
         filterPolicy: {
@@ -80,6 +102,20 @@ export class CoursesStack extends cdk.Stack {
         },
       });
     externalEventsTopic.addSubscription(createCourseExternalEventSubscription);
+
+    /**
+     * Function: Find Course
+     *
+     * TODO:
+     * - [ ] configure retry attempts (upon failure)
+     */
+    const findCourseFunction = new NodejsFunction(this, 'FindCourseFunction', {
+      entry: pathResolve(__dirname, '../src/functions/find-course/main.ts'),
+      layers: lambdaLayers,
+      ...lambdaProps,
+    });
+    // ALWAYS ADD TAGS
+    cdk.Tags.of(findCourseFunction).add('identifier', 'FindCourseFunction');
 
     /**
      * Outputs
