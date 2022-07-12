@@ -1,0 +1,32 @@
+get:
+  summary: Find a course by the source ID
+  parameters:
+    - name: courseSourceId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The identifier for the specific course in the external system.
+
+  responses:
+    '200':
+      description: Course found
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/course-response.yaml"
+
+    '400':
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/error.yaml"
+
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/error.yaml"
+

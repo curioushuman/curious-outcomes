@@ -1,0 +1,123 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api-public/**/*.ts"]
+      }
+    },
+    "list": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "list"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "synth": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "openapi",
+        "projects": "self"
+      }]
+    },
+    "bootstrap": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "bootstrap"
+      }
+    },
+    "deploy": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "deploy"
+      },
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "deploy",
+        "projects": "dependencies"
+      },
+      {
+        "target": "openapi",
+        "projects": "self"
+      }]
+    },
+    "destroy": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "destroy"
+      }
+    },
+    "diff": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "diff"
+      }
+    },
+    "metadata": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "metadata"
+      }
+    },
+    "context": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "context"
+      }
+    },
+    "docs": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "docs"
+      },
+      "dependsOn": [{
+        "target": "openapi",
+        "projects": "self"
+      }]
+    },
+    "doctor": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "doctor"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api-public"],
+      "options": {
+        "jestConfig": "apps/api-public/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "../../node_modules/.bin/swagger-cli bundle openapi.yaml --outfile ../../dist/apps/api-public/openapi.yaml --type yaml"
+          }
+        ],
+        "cwd": "apps/api-public"
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": []
+}

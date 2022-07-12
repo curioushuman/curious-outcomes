@@ -1,0 +1,21 @@
+#set($allParams = $input.params())
+#set($pathParams = $allParams.get('path'))
+#set($type = $pathParams.get('eventType'))
+#set($typeEscaped = $util.escapeJavaScript("${type}"))
+#set($messageProperties = '\"object\":\"Course\",\"type\":\"' + $typeEscaped + '\"')
+#if($input.params('updatedStatus'))
+#set($status = $input.params('updatedStatus'))
+#set($statusEscaped = $util.escapeJavaScript("${status}"))
+#set($messageProperties = $messageProperties + ',\"status\":\"' + $statusEscaped + '\"')
+#end
+#set($message = '{"default":"{' + $messageProperties + '}"}')
+Action=Publish&TargetArn=$util.urlEncode('topicExternalEvents.topicArn')&
+MessageStructure=json&
+Message=$util.urlEncode($message)&
+Version=2010-03-31&
+MessageAttributes.entry.1.Name=object&
+MessageAttributes.entry.1.Value.DataType=String&
+MessageAttributes.entry.1.Value.StringValue=Course&
+MessageAttributes.entry.2.Name=type&
+MessageAttributes.entry.2.Value.DataType=String&
+MessageAttributes.entry.2.Value.StringValue=$util.urlEncode($typeEscaped)

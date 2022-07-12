@@ -3,6 +3,7 @@
   "version": 2,
   "projects": {
     "api-admin": "apps/api-admin",
+    "api-public": "apps/api-public",
     "co-common": "libs/shared/co-common",
     "courses": "apps/courses",
     "co-courses": "libs/services/co-courses",
