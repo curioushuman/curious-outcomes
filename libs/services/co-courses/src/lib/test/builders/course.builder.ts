@@ -1,9 +1,10 @@
 import { createSlug } from '@curioushuman/co-common';
+import { FindCourseDto } from '../../application/queries/find-course/find-course.dto';
 
 import { Course } from '../../domain/entities/course';
 import { CourseSource } from '../../domain/entities/course-source';
 import { CourseResponseDto } from '../../infra/dto/course.response.dto';
-import { FindCourseRequestDto } from '../../infra/dto/find-course.request.dto';
+import { FindCourseRequestDto } from '../../infra/find-course/dto/find-course.request.dto';
 import { CourseSourceBuilder } from './course-source.builder';
 
 /**
@@ -75,6 +76,7 @@ export const CourseBuilder = () => {
     },
 
     invalid() {
+      overrides.id = 'NotAUUID';
       delete defaultProperties.externalId;
       delete overrides.externalId;
       return this;
@@ -86,7 +88,9 @@ export const CourseBuilder = () => {
     },
 
     doesntExist() {
+      overrides.id = '1e72ef98-f21e-4e0a-aff1-a45ed7328123';
       overrides.externalId = 'CourseDoesntExist';
+      overrides.slug = 'CourseDoesntExist';
       return this;
     },
 
@@ -122,6 +126,11 @@ export const CourseBuilder = () => {
         ? { externalId: this.buildNoCheck().externalId }
         : {};
       return dto as FindCourseRequestDto;
+    },
+
+    buildFindDto(): FindCourseDto {
+      const dto = this.buildNoCheck().id ? { id: this.buildNoCheck().id } : {};
+      return dto as FindCourseDto;
     },
 
     buildCourseResponseDto(): CourseResponseDto {

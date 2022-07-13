@@ -1,13 +1,16 @@
-import { Record, Static } from 'runtypes';
+import { Optional, Record, Static } from 'runtypes';
 
-import { ExternalId } from '@curioushuman/co-common';
+import { ExternalId, Slug } from '@curioushuman/co-common';
+import { CourseId } from '../../../domain/value-objects/course-id';
 
 /**
  * This is the form of data we expect as input into our API/Request
  */
 
 export const FindCourseRequestDto = Record({
-  externalId: ExternalId,
+  id: Optional(CourseId),
+  externalId: Optional(ExternalId),
+  slug: Optional(Slug),
 });
 
 export type FindCourseRequestDto = Static<typeof FindCourseRequestDto>;

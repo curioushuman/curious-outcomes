@@ -12,6 +12,7 @@ import { CourseRepository } from './adapter/ports/course.repository';
 import { FakeCourseRepository } from './adapter/implementations/fake/fake.course.repository';
 import { FindCourseHandler } from './application/queries/find-course/find-course.query';
 import { FindCourseSourceHandler } from './application/queries/find-course-source/find-course-source.query';
+import { FindCourseController } from './infra/find-course/find-course.controller';
 
 /**
  * TODO
@@ -22,7 +23,7 @@ import { FindCourseSourceHandler } from './application/queries/find-course-sourc
  *       And potentially experimenting with various bundling methods
  */
 
-const controllers = [FindCourseHandler, FindCourseSourceHandler];
+const controllers = [CoursesController, FindCourseController];
 
 const queryHandlers = [FindCourseHandler, FindCourseSourceHandler];
 
@@ -42,7 +43,7 @@ const services = [
 
 @Module({
   imports: [CqrsModule, LoggableModule],
-  controllers: [CoursesController],
+  controllers: [...controllers],
   providers: [...queryHandlers, ...repositories, ...services],
   exports: [],
 })

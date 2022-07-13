@@ -13,10 +13,13 @@ import { FakeCourseRepository } from '../adapter/implementations/fake/fake.cours
 // import { CourseSourceRepository } from '../adapter/ports/course-source.repository';
 // import { FakeCourseSourceRepository } from '../adapter/implementations/fake/fake.course-source.repository';
 import { FindCourseHandler } from '../application/queries/find-course/find-course.query';
+import { FindCourseController } from '../infra/find-course/find-course.controller';
 // import { ParticipantRepository } from '../adapter/ports/participant.repository';
 // import { FakeParticipantRepository } from '../adapter/implementations/fake/fake.participant.repository';
 // import { ParticipantSourceRepository } from '../adapter/ports/participant-source.repository';
 // import { FakeParticipantSourceRepository } from '../adapter/implementations/fake/fake.participant-source.repository';
+
+const controllers = [CoursesController, FindCourseController];
 
 const queryHandlers = [FindCourseHandler];
 
@@ -45,7 +48,7 @@ const services = [
 
 @Module({
   imports: [CqrsModule, LoggableModule],
-  controllers: [CoursesController],
+  controllers: [...controllers],
   providers: [...queryHandlers, ...repositories, ...services],
   exports: [],
 })
