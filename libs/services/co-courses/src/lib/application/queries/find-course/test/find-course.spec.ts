@@ -108,7 +108,7 @@ defineFeature(feature, (test) => {
     let error: Error;
 
     given('the request is valid', () => {
-      dto = CourseBuilder().doesntExist().buildFindDto();
+      dto = CourseBuilder().doesntExistId().buildFindDto();
     });
 
     and('no record exists that matches our request', () => {

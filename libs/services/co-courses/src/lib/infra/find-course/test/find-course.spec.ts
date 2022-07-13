@@ -15,7 +15,6 @@ import { Course } from '../../../domain/entities/course';
 import { CourseBuilder } from '../../../test/builders/course.builder';
 import { FindCourseController } from '../../../infra/find-course/find-course.controller';
 import { CourseResponseDto } from '../../../infra/dto/course.response.dto';
-import { CourseId } from '../../../domain/value-objects/course-id';
 
 /**
  * E2E TEST
@@ -147,61 +146,53 @@ defineFeature(feature, (test) => {
   //   });
   // });
 
-  // test('Fail; Invalid request', ({ given, when, then }) => {
-  //   let requestDto: FindCourseRequestDto;
-  //   let courseResponse: CourseResponseDto;
-  //   let error: Error;
+  test('Fail; Invalid request', ({ given, when, then }) => {
+    let requestDto: FindCourseRequestDto;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
 
-  //   given('the request is invalid', () => {
-  //     requestDto = CourseBuilder().invalid().buildFindRequestDto();
-  //   });
+    given('the request is invalid', () => {
+      requestDto = CourseBuilder().invalid().buildFindRequestDto();
+    });
 
-  //   when('I attempt to find a course', async () => {
-  //     try {
-  //       courseResponse = await controller.find(requestDto);
-  //       expect(courseResponse).toBeUndefined();
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.find(requestDto);
+        expect(courseResponse).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
 
-  //   then('I should receive a RequestInvalidError/BadRequestException', () => {
-  //     expect(error).toBeInstanceOf(RequestInvalidError);
-  //   });
-  // });
+    then('I should receive a RequestInvalidError', () => {
+      expect(error).toBeInstanceOf(RequestInvalidError);
+    });
+  });
 
-  // test('Fail; course not found', ({
-  //   given,
-  //   and,
-  //   when,
-  //   then,
-  // }) => {
-  //   let requestDto: FindCourseRequestDto;
-  //   let courseResponse: CourseResponseDto;
-  //   let error: Error;
+  test('Fail; course not found by Id', ({ given, and, when, then }) => {
+    let requestDto: FindCourseRequestDto;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
 
-  //   given('the request is valid', () => {
-  //     // see next
-  //   });
+    given('the request is valid', () => {
+      // see next
+    });
 
-  //   and('no record exists that matches our request', () => {
-  //     requestDto = CourseBuilder().doesntExist().buildFindRequestDto();
-  //   });
+    and('no record exists that matches our request', () => {
+      requestDto = CourseBuilder().doesntExistId().buildFindRequestDto();
+    });
 
-  //   when('I attempt to find a course', async () => {
-  //     try {
-  //       courseResponse = await controller.find(requestDto);
-  //       expect(courseResponse).toBeUndefined();
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.find(requestDto);
+        expect(courseResponse).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
 
-  //   then(
-  //     'I should receive a RepositoryItemNotFoundError/NotFoundException',
-  //     () => {
-  //       expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
-  //     }
-  //   );
-  // });
+    then('I should receive a RepositoryItemNotFoundError', () => {
+      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
+    });
+  });
 });

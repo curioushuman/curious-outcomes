@@ -79,6 +79,8 @@ export const CourseBuilder = () => {
       overrides.id = 'NotAUUID';
       delete defaultProperties.externalId;
       delete overrides.externalId;
+      delete defaultProperties.slug;
+      delete overrides.slug;
       return this;
     },
 
@@ -88,9 +90,13 @@ export const CourseBuilder = () => {
     },
 
     doesntExist() {
-      overrides.id = '1e72ef98-f21e-4e0a-aff1-a45ed7328123';
       overrides.externalId = 'CourseDoesntExist';
       overrides.slug = 'CourseDoesntExist';
+      return this;
+    },
+
+    doesntExistId() {
+      overrides.id = '1e72ef98-f21e-4e0a-aff1-a45ed7328123';
       return this;
     },
 
@@ -122,10 +128,14 @@ export const CourseBuilder = () => {
     },
 
     buildFindRequestDto(): FindCourseRequestDto {
-      const dto = this.buildNoCheck().externalId
-        ? { externalId: this.buildNoCheck().externalId }
-        : {};
-      return dto as FindCourseRequestDto;
+      const dto: FindCourseRequestDto = { id: this.buildNoCheck().id };
+      if (this.buildNoCheck().externalId) {
+        dto.externalId = this.buildNoCheck().externalId;
+      }
+      if (this.buildNoCheck().slug) {
+        dto.slug = this.buildNoCheck().slug;
+      }
+      return dto;
     },
 
     buildFindDto(): FindCourseDto {
