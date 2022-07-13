@@ -1,5 +1,5 @@
 import { FindCourseDto } from './find-course.dto';
-import { FindCourseRequestDto } from '../../../infra/dto/find-course.request.dto';
+import { FindCourseRequestDto } from '../../../infra/find-course/dto/find-course.request.dto';
 import { CourseResponseDto } from '../../../infra/dto/course.response.dto';
 import { Course } from '../../../domain/entities/course';
 
@@ -10,7 +10,7 @@ import { Course } from '../../../domain/entities/course';
 export class FindCourseMapper {
   public static fromRequestDto(dto: FindCourseRequestDto): FindCourseDto {
     return FindCourseDto.check({
-      externalId: dto.externalId,
+      id: dto.id,
     });
   }
 

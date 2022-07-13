@@ -13,6 +13,7 @@ import { LoggableLogger } from '@curioushuman/loggable';
 import { CourseRepository } from '../../../adapter/ports/course.repository';
 import { FindCourseDto } from './find-course.dto';
 import { Course } from '../../../domain/entities/course';
+import { CourseId } from '../../../domain/value-objects/course-id';
 
 export class FindCourseQuery implements IQuery {
   constructor(public readonly findCourseDto: FindCourseDto) {}
@@ -32,19 +33,21 @@ export class FindCourseHandler implements IQueryHandler<FindCourseQuery> {
   }
 
   async execute(query: FindCourseQuery): Promise<Course> {
-    const { findCourseDto } = query;
+    const {
+      findCourseDto: { id },
+    } = query;
 
     const task = pipe(
-      findCourseDto,
+      id,
 
-      // #1. parse the dto
-      parseActionData(FindCourseDto.check, this.logger, 'RequestInvalidError'),
+      // #1. parse the id
+      parseActionData(CourseId.check, this.logger, 'RequestInvalidError'),
 
       // #2. find the course
-      TE.chain((dto) =>
+      TE.chain((courseId) =>
         performAction(
-          dto,
-          this.courseRepository.findOne,
+          courseId,
+          this.courseRepository.findById,
           this.errorFactory,
           this.logger,
           'find course'
