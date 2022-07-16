@@ -1,5 +1,4 @@
 import { createSlug } from '@curioushuman/co-common';
-import { FindCourseDto } from '../../application/queries/find-course/find-course.dto';
 
 import { Course } from '../../domain/entities/course';
 import { CourseSource } from '../../domain/entities/course-source';
@@ -136,11 +135,6 @@ export const CourseBuilder = () => {
         dto.slug = this.buildNoCheck().slug;
       }
       return dto;
-    },
-
-    buildFindDto(): FindCourseDto {
-      const dto = this.buildNoCheck().id ? { id: this.buildNoCheck().id } : {};
-      return dto as FindCourseDto;
     },
 
     buildCourseResponseDto(): CourseResponseDto {

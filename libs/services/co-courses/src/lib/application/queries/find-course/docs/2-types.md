@@ -6,7 +6,14 @@ Assume everything is AND unless specified by OR and ()
 
 ## Types
 
-- CourseId
+- FindCourseDto
+  - Union of
+    - FindCourseByIdDto
+      - id: CourseId
+    - FindCourseByExternalIdDto
+      - externalId: ExternalId
+    - FindCourseBySlugDto
+      - slug: Slug
 
 ### Course
 - id: UUID

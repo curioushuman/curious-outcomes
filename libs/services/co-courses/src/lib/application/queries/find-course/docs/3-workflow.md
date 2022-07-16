@@ -4,7 +4,7 @@
 
 ### Input
 
-- CourseId
+- FindCourseDto
 
 ### Output
 

@@ -10,10 +10,15 @@ import {
 } from '@curioushuman/fp-ts-utils';
 import { LoggableLogger } from '@curioushuman/loggable';
 
-import { CourseRepository } from '../../../adapter/ports/course.repository';
-import { FindCourseDto } from './find-course.dto';
-import { Course } from '../../../domain/entities/course';
-import { CourseId } from '../../../domain/value-objects/course-id';
+import {
+  CourseRepository,
+  identifierFinder,
+} from '../../../adapter/ports/course.repository';
+import { FindCourseDto, parseDto } from './find-course.dto';
+import {
+  Course,
+  courseIdentifierParsers,
+} from '../../../domain/entities/course';
 
 export class FindCourseQuery implements IQuery {
   constructor(public readonly findCourseDto: FindCourseDto) {}
@@ -33,21 +38,21 @@ export class FindCourseHandler implements IQueryHandler<FindCourseQuery> {
   }
 
   async execute(query: FindCourseQuery): Promise<Course> {
-    const {
-      findCourseDto: { id },
-    } = query;
+    const { findCourseDto } = query;
+
+    const finder = identifierFinder(findCourseDto.identifier);
 
     const task = pipe(
-      id,
+      findCourseDto,
 
       // #1. parse the id
-      parseActionData(CourseId.check, this.logger, 'RequestInvalidError'),
+      parseActionData(parseDto, this.logger, 'RequestInvalidError'),
 
       // #2. find the course
-      TE.chain((courseId) =>
+      TE.chain((value) =>
         performAction(
-          courseId,
-          this.courseRepository.findById,
+          value,
+          this.courseRepository[finder],
           this.errorFactory,
           this.logger,
           'find course'

@@ -10,6 +10,7 @@ import { FindCourseRequestDto } from './dto/find-course.request.dto';
 import { CourseResponseDto } from '../dto/course.response.dto';
 import { FindCourseMapper } from '../../application/queries/find-course/find-course.mapper';
 import { FindCourseQuery } from '../../application/queries/find-course/find-course.query';
+import { CoursesMapper } from '../courses.mapper';
 
 /**
  * Controller for find(One) course operations
@@ -31,7 +32,7 @@ export class FindCourseController {
     this.logger.setContext(FindCourseController.name);
   }
 
-  public async find(
+  public async findOne(
     requestDto: FindCourseRequestDto
   ): Promise<CourseResponseDto> {
     const task = pipe(
@@ -41,6 +42,8 @@ export class FindCourseController {
       parseActionData(FindCourseRequestDto.check, this.logger),
 
       // #2. transform the dto
+      // NOTE: during this transformation the most relevant identifier is surfaced
+      // or an error is thrown
       TE.chain((dto) =>
         parseActionData(FindCourseMapper.fromRequestDto, this.logger)(dto)
       ),
@@ -59,7 +62,7 @@ export class FindCourseController {
 
       // #4. transform the query result
       TE.chain((course) =>
-        parseActionData(FindCourseMapper.toResponseDto, this.logger)(course)
+        parseActionData(CoursesMapper.toResponseDto, this.logger)(course)
       )
     );
 

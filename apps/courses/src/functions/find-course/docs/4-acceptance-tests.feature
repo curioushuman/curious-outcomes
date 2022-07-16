@@ -23,7 +23,7 @@ Scenario: Fail; Invalid request
   When I attempt to find a course
   Then I should receive a BadRequestException
 
-Scenario: Fail; course not found for ID provided
+Scenario: Fail; course not found
   Given the request is valid
   And no record exists that matches our request
   When I attempt to find a course

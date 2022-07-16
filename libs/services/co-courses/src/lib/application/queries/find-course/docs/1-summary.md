@@ -9,7 +9,7 @@
 
 ### Input data:
 
-- CourseId
+- FindCourseDto
 
 ### Dependencies (from other services/sources)
 
