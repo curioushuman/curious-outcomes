@@ -12,7 +12,6 @@ One of:
 
 #### Success
 
-- Success 200
 - Course response DTO
 
 #### Fail

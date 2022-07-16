@@ -90,12 +90,18 @@ export const CourseBuilder = () => {
 
     doesntExist() {
       overrides.externalId = 'CourseDoesntExist';
-      overrides.slug = 'CourseDoesntExist';
+      overrides.slug = 'course-doesnt-exist';
+      delete defaultProperties.id;
+      delete overrides.id;
       return this;
     },
 
     doesntExistId() {
       overrides.id = '1e72ef98-f21e-4e0a-aff1-a45ed7328123';
+      delete defaultProperties.externalId;
+      delete overrides.externalId;
+      delete defaultProperties.slug;
+      delete overrides.slug;
       return this;
     },
 
@@ -127,7 +133,10 @@ export const CourseBuilder = () => {
     },
 
     buildFindRequestDto(): FindCourseRequestDto {
-      const dto: FindCourseRequestDto = { id: this.buildNoCheck().id };
+      const dto: FindCourseRequestDto = {};
+      if (this.buildNoCheck().id) {
+        dto.id = this.buildNoCheck().id;
+      }
       if (this.buildNoCheck().externalId) {
         dto.externalId = this.buildNoCheck().externalId;
       }

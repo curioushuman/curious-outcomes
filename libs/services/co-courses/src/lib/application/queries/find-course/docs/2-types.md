@@ -7,13 +7,8 @@ Assume everything is AND unless specified by OR and ()
 ## Types
 
 - FindCourseDto
-  - Union of
-    - FindCourseByIdDto
-      - id: CourseId
-    - FindCourseByExternalIdDto
-      - externalId: ExternalId
-    - FindCourseBySlugDto
-      - slug: Slug
+  - identifier: id | externalId | Slug
+  - value: CourseId | ExternalId | Slug
 
 ### Course
 - id: UUID

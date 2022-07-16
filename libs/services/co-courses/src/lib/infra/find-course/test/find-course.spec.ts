@@ -6,7 +6,6 @@ import {
   RepositoryItemNotFoundError,
   RequestInvalidError,
 } from '@curioushuman/error-factory';
-import { ExternalId, Slug } from '@curioushuman/co-common';
 
 import { CoursesModule } from '../../../test/courses.module.fake';
 import { applyDefaults } from '../../../courses.module';
@@ -72,7 +71,7 @@ defineFeature(feature, (test) => {
 
     when('I attempt to find a course', async () => {
       try {
-        courseResponse = await controller.find(requestDto);
+        courseResponse = await controller.findOne(requestDto);
       } catch (err) {
         error = err;
         expect(error).toBeUndefined();
@@ -84,67 +83,65 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // test('Success; found course by External Id', ({ given, and, when, then }) => {
-  //   let requestDto: FindCourseRequestDto;
-  //   let course: Course;
-  //   let courseResponse: CourseResponseDto;
-  //   let error: Error;
+  test('Success; found course by External Id', ({ given, and, when, then }) => {
+    let requestDto: FindCourseRequestDto;
+    let course: Course;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
 
-  //   given('the request is valid', () => {
-  //     requestDto = {
-  //       externalId: '' as ExternalId,
-  //     };
-  //   });
+    given('the request is valid', () => {
+      requestDto = {
+        externalId: CourseBuilder().exists().build().externalId,
+      };
+    });
 
-  //   and('a matching record exists', () => {
-  //     course = CourseBuilder().exists().build();
-  //     requestDto.externalId = course.externalId;
-  //   });
+    and('a matching record exists', () => {
+      course = CourseBuilder().exists().build();
+    });
 
-  //   when('I attempt to find a course', async () => {
-  //     try {
-  //       courseResponse = await controller.find(requestDto);
-  //     } catch (err) {
-  //       error = err;
-  //       expect(error).toBeUndefined();
-  //     }
-  //   });
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.findOne(requestDto);
+      } catch (err) {
+        error = err;
+        expect(error).toBeUndefined();
+      }
+    });
 
-  //   then('the matching course is returned', () => {
-  //     expect(courseResponse.id).toEqual(course.id);
-  //   });
-  // });
+    then('the matching course is returned', () => {
+      expect(courseResponse.id).toEqual(course.id);
+    });
+  });
 
-  // test('Success; found course by Slug', ({ given, and, when, then }) => {
-  //   let requestDto: FindCourseRequestDto;
-  //   let course: Course;
-  //   let courseResponse: CourseResponseDto;
-  //   let error: Error;
+  test('Success; found course by Slug', ({ given, and, when, then }) => {
+    let requestDto: FindCourseRequestDto;
+    let course: Course;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
 
-  //   given('the request is valid', () => {
-  //     requestDto = {
-  //       slug: '' as Slug,
-  //     };
-  //   });
+    given('the request is valid', () => {
+      requestDto = {
+        slug: CourseBuilder().exists().build().slug,
+      };
+    });
 
-  //   and('a matching record exists', () => {
-  //     course = CourseBuilder().exists().build();
-  //     requestDto.slug = course.slug;
-  //   });
+    and('a matching record exists', () => {
+      course = CourseBuilder().exists().build();
+    });
 
-  //   when('I attempt to find a course', async () => {
-  //     try {
-  //       courseResponse = await controller.find(requestDto);
-  //     } catch (err) {
-  //       error = err;
-  //       expect(error).toBeUndefined();
-  //     }
-  //   });
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.findOne(requestDto);
+      } catch (err) {
+        error = err;
+        expect(error).toBeUndefined();
+      }
+    });
 
-  //   then('the matching course is returned', () => {
-  //     expect(courseResponse.id).toEqual(course.id);
-  //   });
-  // });
+    then('the matching course is returned', () => {
+      expect(courseResponse.id).toEqual(course.id);
+    });
+  });
 
   test('Fail; Invalid request', ({ given, when, then }) => {
     let requestDto: FindCourseRequestDto;
@@ -157,7 +154,33 @@ defineFeature(feature, (test) => {
 
     when('I attempt to find a course', async () => {
       try {
-        courseResponse = await controller.find(requestDto);
+        courseResponse = await controller.findOne(requestDto);
+        expect(courseResponse).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RequestInvalidError', () => {
+      expect(error).toBeInstanceOf(RequestInvalidError);
+    });
+  });
+
+  test('Fail; Invalid identifier', ({ given, when, then }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let requestDto: any;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
+
+    given('the identifier is invalid', () => {
+      requestDto = {
+        someIdentifier: 'some-value',
+      };
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.findOne(requestDto);
         expect(courseResponse).toBeUndefined();
       } catch (err) {
         error = err;
@@ -184,7 +207,40 @@ defineFeature(feature, (test) => {
 
     when('I attempt to find a course', async () => {
       try {
-        courseResponse = await controller.find(requestDto);
+        courseResponse = await controller.findOne(requestDto);
+        expect(courseResponse).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RepositoryItemNotFoundError', () => {
+      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
+    });
+  });
+
+  test('Fail; course not found by other than Id', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let requestDto: FindCourseRequestDto;
+    let courseResponse: CourseResponseDto;
+    let error: Error;
+
+    given('the request is valid', () => {
+      // see next
+    });
+
+    and('no record exists that matches our request', () => {
+      requestDto = CourseBuilder().doesntExist().buildFindRequestDto();
+      console.log(requestDto);
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        courseResponse = await controller.findOne(requestDto);
         expect(courseResponse).toBeUndefined();
       } catch (err) {
         error = err;

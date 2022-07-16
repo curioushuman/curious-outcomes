@@ -23,7 +23,18 @@ Scenario: Fail; Invalid request
   When I attempt to find a course
   Then I should receive a RequestInvalidError
 
-Scenario: Fail; course not found
+Scenario: Fail; Invalid identifier
+  Given the identifier is invalid
+  When I attempt to find a course
+  Then I should receive a RequestInvalidError
+
+Scenario: Fail; course not found by Id
+  Given the request is valid
+  And no record exists that matches our request
+  When I attempt to find a course
+  Then I should receive a RepositoryItemNotFoundError
+
+Scenario: Fail; course not found by other than Id
   Given the request is valid
   And no record exists that matches our request
   When I attempt to find a course
