@@ -142,56 +142,86 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // test('Fail; Invalid request', ({ given, when, then }) => {
-  //   let dto: FindCourseDto;
-  //   let result: Course;
-  //   let error: Error;
+  test('Fail; Invalid request', ({ given, when, then }) => {
+    let dto: FindCourseDto;
+    let result: Course;
+    let error: Error;
 
-  //   given('the request is invalid', () => {
-  //     dto = {
-  //       identifier: 'id',
-  //       value: CourseBuilder().invalid().build().id,
-  //     };
-  //   });
+    given('the request is invalid', () => {
+      dto = {
+        identifier: 'id',
+        value: CourseBuilder().invalid().buildNoCheck().id,
+      };
+    });
 
-  //   when('I attempt to find a course', async () => {
-  //     try {
-  //       result = await handler.execute(new FindCourseQuery(dto));
-  //       expect(result).toBeUndefined();
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    when('I attempt to find a course', async () => {
+      try {
+        result = await handler.execute(new FindCourseQuery(dto));
+        expect(result).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
 
-  //   then('I should receive a RequestInvalidError', () => {
-  //     expect(error).toBeInstanceOf(RequestInvalidError);
-  //   });
-  // });
+    then('I should receive a RequestInvalidError', () => {
+      expect(error).toBeInstanceOf(RequestInvalidError);
+    });
+  });
 
-  // test('Fail; course not found', ({ given, and, when, then }) => {
-  //   let dto: FindCourseDto;
-  //   let result: Course;
-  //   let error: Error;
+  test('Fail; Invalid identifier', ({ given, when, then }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let dto: any;
+    let result: Course;
+    let error: Error;
 
-  //   given('the request is valid', () => {
-  //     dto = CourseBuilder().doesntExistId().buildFindDto();
-  //   });
+    given('the identifier is invalid', () => {
+      dto = {
+        identifier: 'invalid-identifier',
+        value: CourseBuilder().invalid().buildNoCheck().id,
+      };
+    });
 
-  //   and('no record exists that matches our request', () => {
-  //     // see previous
-  //   });
+    when('I attempt to find a course', async () => {
+      try {
+        result = await handler.execute(new FindCourseQuery(dto));
+        expect(result).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
 
-  //   when('I attempt to find a course', async () => {
-  //     try {
-  //       result = await handler.execute(new FindCourseQuery(dto));
-  //       expect(result).toBeUndefined();
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    then('I should receive a RequestInvalidError', () => {
+      expect(error).toBeInstanceOf(RequestInvalidError);
+    });
+  });
 
-  //   then('I should receive a RepositoryItemNotFoundError', () => {
-  //     expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
-  //   });
-  // });
+  test('Fail; course not found', ({ given, and, when, then }) => {
+    let dto: FindCourseDto;
+    let result: Course;
+    let error: Error;
+
+    given('the request is valid', () => {
+      dto = {
+        identifier: 'id',
+        value: CourseBuilder().doesntExistId().buildNoCheck().id,
+      };
+    });
+
+    and('no record exists that matches our request', () => {
+      // see previous
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        result = await handler.execute(new FindCourseQuery(dto));
+        expect(result).toBeUndefined();
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RepositoryItemNotFoundError', () => {
+      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
+    });
+  });
 });
