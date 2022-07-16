@@ -8,7 +8,7 @@ import { CourseId } from '../../domain/value-objects/course-id';
 /**
  * Literal list of finders for a course
  */
-export type CourseFinder = 'findById';
+export type CourseFinder = 'findById' | 'findByExternalId' | 'findBySlug';
 
 /**
  * Returns the correct finder for the given identifier

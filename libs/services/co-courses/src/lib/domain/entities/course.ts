@@ -1,4 +1,4 @@
-import { Literal, Record, Static, Union } from 'runtypes';
+import { Record, Static } from 'runtypes';
 
 import { ExternalId, Slug } from '@curioushuman/co-common';
 
@@ -29,11 +29,13 @@ export const Course = Record({
 export type Course = Static<typeof Course>;
 
 /**
- *
+ * Type that defines all the possible identifiers for a course
+ * NOTE: this is utilized in find-course.dto.ts and course.repository.ts
+ * to define parsers and finders.
  */
 export type CourseIdentifiers = {
   id: CourseId;
-  // externalId: ExternalId;
-  // slug: Slug;
+  externalId: ExternalId;
+  slug: Slug;
 };
 export type CourseIdentifier = keyof CourseIdentifiers;

@@ -80,6 +80,68 @@ defineFeature(feature, (test) => {
     });
   });
 
+  test('Success; found course by External Id', ({ given, and, when, then }) => {
+    let dto: FindCourseDto;
+    let course: Course;
+    let result: Course;
+    let error: Error;
+
+    given('the request is valid', () => {
+      dto = {
+        identifier: 'externalId',
+        value: CourseBuilder().exists().build().externalId,
+      };
+    });
+
+    and('a matching record exists', () => {
+      course = CourseBuilder().exists().build();
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        result = await handler.execute(new FindCourseQuery(dto));
+      } catch (err) {
+        error = err;
+        expect(error).toBeUndefined();
+      }
+    });
+
+    then('the matching course is returned', () => {
+      expect(result.id).toEqual(course.id);
+    });
+  });
+
+  test('Success; found course by Slug', ({ given, and, when, then }) => {
+    let dto: FindCourseDto;
+    let course: Course;
+    let result: Course;
+    let error: Error;
+
+    given('the request is valid', () => {
+      dto = {
+        identifier: 'slug',
+        value: CourseBuilder().exists().build().slug,
+      };
+    });
+
+    and('a matching record exists', () => {
+      course = CourseBuilder().exists().build();
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        result = await handler.execute(new FindCourseQuery(dto));
+      } catch (err) {
+        error = err;
+        expect(error).toBeUndefined();
+      }
+    });
+
+    then('the matching course is returned', () => {
+      expect(result.id).toEqual(course.id);
+    });
+  });
+
   // test('Fail; Invalid request', ({ given, when, then }) => {
   //   let dto: FindCourseDto;
   //   let result: Course;

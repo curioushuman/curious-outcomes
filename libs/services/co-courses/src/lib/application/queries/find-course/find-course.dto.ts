@@ -1,3 +1,5 @@
+import { ExternalId, Slug } from '@curioushuman/co-common';
+
 import { CourseId } from '../../../domain/value-objects/course-id';
 import {
   CourseIdentifier,
@@ -6,6 +8,11 @@ import {
 
 /**
  * This type sets up our identifiers as discriminated unions.
+ * The structure would be:
+ * {
+ *   identifier: 'id',
+ *   value: '123-456-abc-def'
+ * }
  */
 type FindCourseDtoTypes = {
   [I in CourseIdentifier]: {
@@ -34,9 +41,16 @@ type FindCourseDtoParsers = {
  */
 const parsers: FindCourseDtoParsers = {
   id: (dto) => CourseId.check(dto.value),
-  // externalId: dto => console.log(dto),
-  // slug: dto => console.log(dto),
+  externalId: (dto) => ExternalId.check(dto.value),
+  slug: (dto) => Slug.check(dto.value),
 };
+
+/**
+ * This is an array of identifier literals for use in the mapper
+ * We know they match courseIdentifiers as the parsers object is derived
+ * from the original courseIdentifiers type.
+ */
+export const courseIdentifiers = Object.keys(parsers) as CourseIdentifier[];
 
 /**
  * A type for our DTO, which is basically a union of the various
