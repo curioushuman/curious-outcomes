@@ -6,15 +6,9 @@
   "author": "Mike Kelly",
   "license": "MIT",
   "scripts": {
-    "build": "nx build && npm run build:openapi && npm run build:sam",
+    "build": "nx build",
     "lint": "nx lint",
-    "start": "sam local start-api",
-    "test": "nx test",
-    "prep:lambda-layers": "rimraf dist/layers/co-node-modules",
-    "prep:lambda-layer:co-node-modules": "mkdir -p dist/layers/co-node-modules/nodejs && cp package.json package-lock.json dist/layers/co-node-modules/nodejs && cd dist/layers/co-node-modules/nodejs && npm install -production",
-    "prebuild:sam": "npm run prep:lambda-layers && npm run prep:lambda-layer:co-node-modules",
-    "build:sam": "sam build",
-    "build:openapi": "./node_modules/.bin/swagger-cli bundle openapi.yaml --outfile ./dist/openapi.yaml --type yaml"
+    "test": "nx test"
   },
   "private": true,
   "dependencies": {
@@ -57,6 +51,7 @@
     "@typescript-eslint/parser": "~5.24.0",
     "aws-cdk": "^2.30.0",
     "babel-jest": "27.5.1",
+    "cdkp": "^0.7.0",
     "esbuild": "^0.14.48",
     "eslint": "~8.15.0",
     "eslint-config-prettier": "8.1.0",
