@@ -12,6 +12,10 @@ import { CourseId } from '../value-objects/course-id';
  * - [ ] description
  */
 
+/**
+ * Runtypes constant for the (internal) Course entity
+ * Used for type checking and validation
+ */
 export const Course = Record({
   id: CourseId,
   name: CourseName,
@@ -19,35 +23,17 @@ export const Course = Record({
   externalId: ExternalId,
 });
 
+/**
+ * Type for the (internal) course entity
+ */
 export type Course = Static<typeof Course>;
 
 /**
- * The list of accepted identifiers for a course
+ *
  */
-export const CourseIdentifier = Union(
-  Literal('id'),
-  Literal('externalId'),
-  Literal('slug')
-);
-
-/**
- * The type definition of accepted course identifiers.
- */
-export type CourseIdentifier = Static<typeof CourseIdentifier>; // = 'id' | 'externalId' | 'slug'
-
-/**
- * The course identifiers enum as string[]
- * Used to identify the course identifier in the request
- * and therefore the correct queryDto to use
- */
-export const courseIdentifiers: CourseIdentifier[] =
-  CourseIdentifier.alternatives.map((lit) => lit.value);
-
-export const courseIdentifierParsers = {
-  id: CourseId,
-  externalId: ExternalId,
-  slug: Slug,
+export type CourseIdentifiers = {
+  id: CourseId;
+  // externalId: ExternalId;
+  // slug: Slug;
 };
-
-export const CourseIdentifierParser = Union(CourseId, ExternalId, Slug);
-export type CourseIdentifierParser = Static<typeof CourseIdentifierParser>;
+export type CourseIdentifier = keyof CourseIdentifiers;

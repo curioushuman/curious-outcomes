@@ -15,10 +15,7 @@ import {
   identifierFinder,
 } from '../../../adapter/ports/course.repository';
 import { FindCourseDto, parseDto } from './find-course.dto';
-import {
-  Course,
-  courseIdentifierParsers,
-} from '../../../domain/entities/course';
+import { Course } from '../../../domain/entities/course';
 
 export class FindCourseQuery implements IQuery {
   constructor(public readonly findCourseDto: FindCourseDto) {}

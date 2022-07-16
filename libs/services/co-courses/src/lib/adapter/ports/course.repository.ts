@@ -1,14 +1,9 @@
 import { TaskEither } from 'fp-ts/lib/TaskEither';
-import { Literal, Static, Union } from 'runtypes';
 
 import { ExternalId, Slug } from '@curioushuman/co-common';
 
-import { Course } from '../../domain/entities/course';
+import { Course, CourseIdentifier } from '../../domain/entities/course';
 import { CourseId } from '../../domain/value-objects/course-id';
-import {
-  FindCourseDtoIdentifier,
-  FindCourseDtoTypesDef,
-} from '../../application/queries/find-course/find-course.dto';
 
 /**
  * Literal list of finders for a course
@@ -23,7 +18,7 @@ export type CourseFinder = 'findById';
  * and finder name we can at any point (by using object literal or similar).
  */
 export const identifierFinder = (
-  identifier: FindCourseDtoIdentifier
+  identifier: CourseIdentifier
 ): CourseFinder => {
   let identifierString: string = identifier as string;
   identifierString =
