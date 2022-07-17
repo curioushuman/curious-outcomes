@@ -20,21 +20,29 @@ import { CourseSourceBuilder } from './course-source.builder';
 
 export const defaultCourseId = '1e72ef98-f21e-4e0a-aff1-a45ed7328ae6';
 
+/**
+ * This is basically a looser mimic of Course
+ * For the purpose of being able to create invalid Courses & DTOs and such
+ */
+type CourseBuildBase = {
+  [K in keyof Course]?: Course[K] | string;
+};
+
 export const CourseBuilder = () => {
   /**
    * Default properties don't exist in source repository
    */
-  const defaultProperties = {
+  const defaultProperties: CourseBuildBase = {
     id: defaultCourseId,
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
     externalId: '5008s1234519CjIAAU',
   };
-  const overrides = {
-    id: defaultCourseId,
-    name: 'Learn to be a dancer',
-    slug: 'learn-to-be-a-dancer',
-    externalId: '5008s1234519CjIAAU',
+  const overrides: CourseBuildBase = {
+    id: defaultProperties.id,
+    name: defaultProperties.name,
+    slug: defaultProperties.slug,
+    externalId: defaultProperties.externalId,
   };
 
   return {
@@ -106,7 +114,9 @@ export const CourseBuilder = () => {
     },
 
     forTidy(context: string) {
-      overrides.name = overrides.name.concat(' ', context);
+      overrides.name = overrides.name
+        ? overrides.name.concat(' ', context)
+        : context;
       overrides.slug = createSlug(overrides.name);
       return this;
     },

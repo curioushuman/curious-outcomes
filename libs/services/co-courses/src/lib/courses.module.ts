@@ -7,11 +7,9 @@ import {
 } from '@curioushuman/error-factory';
 import { LoggableLogger, LoggableModule } from '@curioushuman/loggable';
 
-import { CoursesController } from './infra/courses.controller';
 import { CourseRepository } from './adapter/ports/course.repository';
 import { FakeCourseRepository } from './adapter/implementations/fake/fake.course.repository';
 import { FindCourseHandler } from './application/queries/find-course/find-course.query';
-import { FindCourseSourceHandler } from './application/queries/find-course-source/find-course-source.query';
 import { FindCourseController } from './infra/find-course/find-course.controller';
 
 /**
@@ -23,9 +21,9 @@ import { FindCourseController } from './infra/find-course/find-course.controller
  *       And potentially experimenting with various bundling methods
  */
 
-const controllers = [CoursesController, FindCourseController];
+const controllers = [FindCourseController];
 
-const queryHandlers = [FindCourseHandler, FindCourseSourceHandler];
+const queryHandlers = [FindCourseHandler];
 
 const repositories = [
   {

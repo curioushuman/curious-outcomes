@@ -1,2 +1,2 @@
-export * from './lib/infra/courses.controller';
+export * from './lib/infra/find-course/find-course.controller';
 export * from './lib/courses.module';

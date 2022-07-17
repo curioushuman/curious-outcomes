@@ -70,7 +70,7 @@ defineFeature(feature, (test) => {
       try {
         result = await handler.execute(new FindCourseQuery(dto));
       } catch (err) {
-        error = err;
+        error = err as Error;
         expect(error).toBeUndefined();
       }
     });
@@ -101,7 +101,7 @@ defineFeature(feature, (test) => {
       try {
         result = await handler.execute(new FindCourseQuery(dto));
       } catch (err) {
-        error = err;
+        error = err as Error;
         expect(error).toBeUndefined();
       }
     });
@@ -132,7 +132,7 @@ defineFeature(feature, (test) => {
       try {
         result = await handler.execute(new FindCourseQuery(dto));
       } catch (err) {
-        error = err;
+        error = err as Error;
         expect(error).toBeUndefined();
       }
     });
@@ -159,7 +159,7 @@ defineFeature(feature, (test) => {
         result = await handler.execute(new FindCourseQuery(dto));
         expect(result).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 
@@ -186,7 +186,7 @@ defineFeature(feature, (test) => {
         result = await handler.execute(new FindCourseQuery(dto));
         expect(result).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 
@@ -216,7 +216,7 @@ defineFeature(feature, (test) => {
         result = await handler.execute(new FindCourseQuery(dto));
         expect(result).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 

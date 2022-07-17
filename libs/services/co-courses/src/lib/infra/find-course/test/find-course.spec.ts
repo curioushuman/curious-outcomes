@@ -73,7 +73,7 @@ defineFeature(feature, (test) => {
       try {
         courseResponse = await controller.findOne(requestDto);
       } catch (err) {
-        error = err;
+        error = err as Error;
         expect(error).toBeUndefined();
       }
     });
@@ -103,7 +103,7 @@ defineFeature(feature, (test) => {
       try {
         courseResponse = await controller.findOne(requestDto);
       } catch (err) {
-        error = err;
+        error = err as Error;
         expect(error).toBeUndefined();
       }
     });
@@ -133,7 +133,7 @@ defineFeature(feature, (test) => {
       try {
         courseResponse = await controller.findOne(requestDto);
       } catch (err) {
-        error = err;
+        error = err as Error;
         expect(error).toBeUndefined();
       }
     });
@@ -157,7 +157,7 @@ defineFeature(feature, (test) => {
         courseResponse = await controller.findOne(requestDto);
         expect(courseResponse).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 
@@ -183,7 +183,7 @@ defineFeature(feature, (test) => {
         courseResponse = await controller.findOne(requestDto);
         expect(courseResponse).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 
@@ -210,7 +210,7 @@ defineFeature(feature, (test) => {
         courseResponse = await controller.findOne(requestDto);
         expect(courseResponse).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 
@@ -243,7 +243,7 @@ defineFeature(feature, (test) => {
         courseResponse = await controller.findOne(requestDto);
         expect(courseResponse).toBeUndefined();
       } catch (err) {
-        error = err;
+        error = err as Error;
       }
     });
 

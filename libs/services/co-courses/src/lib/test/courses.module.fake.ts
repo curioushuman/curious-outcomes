@@ -19,7 +19,7 @@ import { FindCourseController } from '../infra/find-course/find-course.controlle
 // import { ParticipantSourceRepository } from '../adapter/ports/participant-source.repository';
 // import { FakeParticipantSourceRepository } from '../adapter/implementations/fake/fake.participant-source.repository';
 
-const controllers = [CoursesController, FindCourseController];
+const controllers = [FindCourseController];
 
 const queryHandlers = [FindCourseHandler];
 

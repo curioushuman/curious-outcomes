@@ -46,6 +46,7 @@ export class FindCourseHandler implements IQueryHandler<FindCourseQuery> {
       parseActionData(parseDto, this.logger, 'RequestInvalidError'),
 
       // #2. find the course
+      // * NOTE: only possible with "strictFunctionTypes": false in tsconfig.json
       TE.chain((value) =>
         performAction(
           value,

@@ -7,11 +7,12 @@ import { CourseIdentifier } from '../../../domain/entities/course';
 export class FindCourseMapper {
   public static fromRequestDto(dto: FindCourseRequestDto): FindCourseDto {
     const identifier = FindCourseMapper.identifyIdentifier(dto);
-    if (!identifier) {
+    if (identifier === false) {
       // caught in the controller
       throw new RequestInvalidError('Missing valid identifier');
     }
     // We know the below is the FTO structure so it's OK to assert
+    // we know that a false
     return {
       identifier,
       value: dto[identifier],
@@ -25,8 +26,8 @@ export class FindCourseMapper {
    */
   public static identifyIdentifier(
     dto: FindCourseRequestDto
-  ): CourseIdentifier {
-    let identifier: CourseIdentifier;
+  ): CourseIdentifier | false {
+    let identifier: CourseIdentifier | false = false;
     for (const id of courseIdentifiers) {
       if (dto[id]) {
         identifier = id;

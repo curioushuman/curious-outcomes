@@ -19,19 +19,27 @@ import { CourseBuilder } from './course.builder';
 
 export const defaultCourseSourceId = '5008s1234519CjIAAU';
 
+/**
+ * This is basically a looser mimic of Course
+ * For the purpose of being able to create invalid Courses & DTOs and such
+ */
+type CourseSourceBuildBase = {
+  [K in keyof CourseSource]?: CourseSource[K] | string;
+};
+
 export const CourseSourceBuilder = () => {
   /**
    * Default properties don't exist in source repository
    */
-  const defaultProperties = {
+  const defaultProperties: CourseSourceBuildBase = {
     id: defaultCourseSourceId,
     name: 'Learn to be a dancer',
     courseId: null,
   };
-  const overrides = {
-    id: defaultCourseSourceId,
-    name: 'Learn to be a dancer',
-    courseId: null,
+  const overrides: CourseSourceBuildBase = {
+    id: defaultProperties.id,
+    name: defaultProperties.name,
+    courseId: defaultProperties.courseId,
   };
 
   return {
