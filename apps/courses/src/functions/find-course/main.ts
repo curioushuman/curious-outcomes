@@ -9,7 +9,9 @@ import {
   FindCourseController,
 } from '@curioushuman/co-courses';
 import { LoggableLogger } from '@curioushuman/loggable';
+
 import { FindCourseApiGatewayRequestEvent } from './dto/api-gateway.request.event';
+import { FindCourseRequestDto } from './dto/find-course.request.dto';
 
 /**
  * Hold a reference to your Nest app outside of the bootstrap function
@@ -53,25 +55,39 @@ async function waitForApp() {
 export const handler = async (
   event: FindCourseApiGatewayRequestEvent
 ): Promise<APIGatewayProxyResult> => {
-  const app = await waitForApp();
-  const findCourseController = app.get(FindCourseController);
-
   const logger = new LoggableLogger('handler');
   logger.debug(`Event: ${JSON.stringify(event, null, 2)}`);
 
+  // init a response
   const response: APIGatewayProxyResult = {
-    statusCode: 500,
+    statusCode: 400,
     headers: {
       'Content-Type': 'application/json',
     },
-    body: '',
+    body: 'Request from API was invalid format. Please review the request body.',
   };
+
+  // rapid validation
+  const dto = JSON.parse(event.body || '{}');
+  if (!FindCourseRequestDto.guard(dto)) {
+    return response;
+  }
+
+  // passed validation
+
+  // default error status to internal server
+  // i.e. assume we need to pay attention to it (if we haven't yet found it)
+  response.statusCode = 500;
+
+  // init the app
+  const app = await waitForApp();
+  const findCourseController = app.get(FindCourseController);
+
+  // perform the action
   try {
-    const courseResponseDto = await findCourseController.findOne(
-      JSON.parse(event.body || '{}')
-    );
-    response.statusCode = 200;
+    const courseResponseDto = await findCourseController.findOne(dto);
     response.body = JSON.stringify(courseResponseDto);
+    response.statusCode = 200;
     return response;
   } catch (error: unknown) {
     if (error instanceof HttpException) {

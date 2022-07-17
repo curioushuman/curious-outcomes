@@ -47,7 +47,6 @@ defineFeature(feature, (test) => {
 
     then('I should receive a RequestInvalidError', () => {
       expect(response.statusCode).toBe(400);
-      console.log(response.body);
     });
   });
 });

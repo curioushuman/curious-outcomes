@@ -235,7 +235,6 @@ defineFeature(feature, (test) => {
 
     and('no record exists that matches our request', () => {
       requestDto = CourseBuilder().doesntExist().buildFindRequestDto();
-      console.log(requestDto);
     });
 
     when('I attempt to find a course', async () => {

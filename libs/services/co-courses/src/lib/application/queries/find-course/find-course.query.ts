@@ -43,6 +43,7 @@ export class FindCourseHandler implements IQueryHandler<FindCourseQuery> {
       findCourseDto,
 
       // #1. parse the id
+      // NOTE: this is where do more specific parsing of the identifier
       parseActionData(parseDto, this.logger, 'RequestInvalidError'),
 
       // #2. find the course
