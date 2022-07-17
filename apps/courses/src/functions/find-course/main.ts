@@ -12,6 +12,7 @@ import { LoggableLogger } from '@curioushuman/loggable';
 
 import { FindCourseApiGatewayRequestEvent } from './dto/api-gateway.request.event';
 import { FindCourseRequestDto } from './dto/find-course.request.dto';
+import { RequestInvalidError } from '@curioushuman/error-factory';
 
 /**
  * Hold a reference to your Nest app outside of the bootstrap function
@@ -55,50 +56,36 @@ async function waitForApp() {
 export const handler = async (
   event: FindCourseApiGatewayRequestEvent
 ): Promise<APIGatewayProxyResult> => {
-  const logger = new LoggableLogger('handler');
+  const logger = new LoggableLogger('FindCourseFunction.handler');
   logger.debug(`Event: ${JSON.stringify(event, null, 2)}`);
-
-  // init a response
-  const response: APIGatewayProxyResult = {
-    statusCode: 400,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: 'Request from API was invalid format. Please review the request body.',
-  };
 
   // rapid validation
   const dto = JSON.parse(event.body || '{}');
   if (!FindCourseRequestDto.guard(dto)) {
-    return response;
+    // ! THIS SHOULD BE A SERVER ERROR
+    // ! ALSO NEED TO CHECK FOR EMPTY OBJECT
+    throw new RequestInvalidError('Invalid request sent to Lambda');
   }
-
-  // passed validation
-
-  // default error status to internal server
-  // i.e. assume we need to pay attention to it (if we haven't yet found it)
-  response.statusCode = 500;
 
   // init the app
   const app = await waitForApp();
   const findCourseController = app.get(FindCourseController);
 
   // perform the action
-  try {
-    const courseResponseDto = await findCourseController.findOne(dto);
-    response.body = JSON.stringify(courseResponseDto);
-    response.statusCode = 200;
-    return response;
-  } catch (error: unknown) {
-    if (error instanceof HttpException) {
-      response.statusCode = error.getStatus();
-      response.body = JSON.stringify(error);
-    }
-    /**
-     * We'll only log it as an error if it's a server error
-     * i.e. something we should pay attention to
-     */
-    response.statusCode === 500 ? logger.error(error) : logger.log(error);
-    return response;
-  }
+  // NOTE: no try/catch here. According to the docs:
+  //  _"For async handlers, you can use `return` and `throw` to send a `response`
+  //    or `error`, respectively. Functions must use the async keyword to use
+  //    these methods to return a `response` or `error`."_
+  //    https://docs.aws.amazon.com/lambda/latest/dg/typescript-handler.html
+  // Hence no try/catch block here. Error will be thrown during `executeTask`
+  // within the controller at the next layer down.
+  // SEE **Error handling and logging** in README for more info.
+  const courseResponseDto = await findCourseController.findOne(dto);
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(courseResponseDto),
+  };
 };

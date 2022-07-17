@@ -33,6 +33,8 @@ export const parseActionData =
     // Our current validation methods throw exceptions, so we need to handle them
     const tryParse = E.tryCatch<ErrorLike, OutputLike>(
       () => {
+        // NOTE: logging context and data here
+        // so we see it in both error/success cases
         const context = `parseActionData: ${parser.name}`;
         logger.debug ? logger.debug(context) : logger.log(context);
         logger.verbose ? logger.verbose(data) : logger.log(data);

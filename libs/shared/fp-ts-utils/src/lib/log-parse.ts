@@ -34,14 +34,11 @@ export const logParse =
           error,
           asErrorType
         ) as ErrorLike;
-        logger.warn(error.constructor.name);
-        logger.debug ? logger.debug(error) : logger.error(error);
+        logger.debug ? logger.debug(error) : logger.log(error);
         return mappedError;
       }),
       TE.map((data: DataLike) => {
-        // I've moved this log into the tryCatch itself
-        // this way we get to see the data, whether it's successful or not
-        // logger.verbose ? logger.verbose(data) : logger.log(data);
+        // NOTE: logging of data occurs in parseActionData (above)
         return data;
       })
     );

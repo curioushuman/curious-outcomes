@@ -25,6 +25,7 @@ export const logAction =
       task,
       TE.mapLeft((error: ErrorLike) => {
         logger.warn(warningMessage);
+        // ! DO NOT WARN for 404 errors
         const mappedError = errorFactory.error(error) as ErrorLike;
         logger.debug ? logger.debug(error) : logger.error(error);
         return mappedError;

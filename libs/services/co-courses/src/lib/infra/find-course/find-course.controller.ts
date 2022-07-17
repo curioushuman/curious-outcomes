@@ -44,9 +44,7 @@ export class FindCourseController {
       // #2. transform the dto
       // NOTE: during this transformation the most relevant identifier is surfaced
       // or an error is thrown
-      TE.chain((dto) =>
-        parseActionData(FindCourseMapper.fromRequestDto, this.logger)(dto)
-      ),
+      TE.chain(parseActionData(FindCourseMapper.fromRequestDto, this.logger)),
 
       // #3. call the query
       // NOTE: proper error handling within the query itself
@@ -61,9 +59,7 @@ export class FindCourseController {
       ),
 
       // #4. transform the query result
-      TE.chain((course) =>
-        parseActionData(CoursesMapper.toResponseDto, this.logger)(course)
-      )
+      TE.chain(parseActionData(CoursesMapper.toResponseDto, this.logger))
     );
 
     return executeTask(task);
