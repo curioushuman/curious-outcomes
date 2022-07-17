@@ -1,11 +1,7 @@
+import { HttpException } from '@nestjs/common';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import { FindCourseApiGatewayRequestEvent } from '../dto/api-gateway.request.event';
-
-// import {
-//   RepositoryItemNotFoundError,
-//   RequestInvalidError,
-// } from '@curioushuman/error-factory';
 
 import { handler } from '../main';
 
@@ -29,6 +25,7 @@ const feature = loadFeature('./find-course.int.feature', {
 
 defineFeature(feature, (test) => {
   test('Fail; Invalid request', ({ given, when, then }) => {
+    let error: HttpException;
     let event: FindCourseApiGatewayRequestEvent;
     let response: APIGatewayProxyResult;
 
@@ -42,11 +39,16 @@ defineFeature(feature, (test) => {
     });
 
     when('I attempt to find a course', async () => {
-      response = await handler(event);
+      try {
+        response = await handler(event);
+        expect(response).toBeUndefined();
+      } catch (err: unknown) {
+        error = err as HttpException;
+      }
     });
 
     then('I should receive a RequestInvalidError', () => {
-      expect(response.statusCode).toBe(400);
+      expect(error.getStatus()).toBe(400);
     });
   });
 });

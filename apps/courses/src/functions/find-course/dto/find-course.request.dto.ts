@@ -13,6 +13,11 @@ export const FindCourseRequestDto = Record({
   id: Optional(String),
   externalId: Optional(String),
   slug: Optional(String),
+}).withConstraint((dto) => {
+  if (!dto.id && !dto.externalId && !dto.slug) {
+    return 'Request must include one of: id, externalId, slug';
+  }
+  return true;
 });
 
 export type FindCourseRequestDto = Static<typeof FindCourseRequestDto>;

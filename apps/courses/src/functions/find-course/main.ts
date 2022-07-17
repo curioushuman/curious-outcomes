@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 
-import { HttpException, INestApplicationContext } from '@nestjs/common';
+import { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import {
@@ -12,7 +12,7 @@ import { LoggableLogger } from '@curioushuman/loggable';
 
 import { FindCourseApiGatewayRequestEvent } from './dto/api-gateway.request.event';
 import { FindCourseRequestDto } from './dto/find-course.request.dto';
-import { RequestInvalidError } from '@curioushuman/error-factory';
+import { InternalRequestInvalidError } from '@curioushuman/error-factory';
 
 /**
  * Hold a reference to your Nest app outside of the bootstrap function
@@ -59,12 +59,15 @@ export const handler = async (
   const logger = new LoggableLogger('FindCourseFunction.handler');
   logger.debug(`Event: ${JSON.stringify(event, null, 2)}`);
 
-  // rapid validation
+  // lambda level validation
   const dto = JSON.parse(event.body || '{}');
   if (!FindCourseRequestDto.guard(dto)) {
-    // ! THIS SHOULD BE A SERVER ERROR
-    // ! ALSO NEED TO CHECK FOR EMPTY OBJECT
-    throw new RequestInvalidError('Invalid request sent to Lambda');
+    const error = new InternalRequestInvalidError(
+      'Invalid request sent to FindCourseFunction.Lambda'
+    );
+    logger.error(error);
+    // NOTE: this is a 500 error, not a 400
+    throw error;
   }
 
   // init the app
@@ -77,8 +80,7 @@ export const handler = async (
   //    or `error`, respectively. Functions must use the async keyword to use
   //    these methods to return a `response` or `error`."_
   //    https://docs.aws.amazon.com/lambda/latest/dg/typescript-handler.html
-  // Hence no try/catch block here. Error will be thrown during `executeTask`
-  // within the controller at the next layer down.
+  // Error will be thrown during `executeTask` within the controller.
   // SEE **Error handling and logging** in README for more info.
   const courseResponseDto = await findCourseController.findOne(dto);
   return {

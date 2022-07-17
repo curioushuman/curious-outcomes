@@ -4,6 +4,7 @@ export * from './lib/validation.error-factory';
 
 export * from './lib/adapter/fake.repository.error-factory';
 
+export * from './lib/errors/internal-request-invalid.error';
 export * from './lib/errors/not-yet-implemented.error';
 export * from './lib/errors/request-invalid.error';
 export * from './lib/errors/unknown.error';
