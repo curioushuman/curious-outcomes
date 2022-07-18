@@ -1,4 +1,4 @@
-import { LoggerService } from '@nestjs/common';
+import { HttpException, LoggerService } from '@nestjs/common';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
@@ -24,10 +24,15 @@ export const logAction =
     return pipe(
       task,
       TE.mapLeft((error: ErrorLike) => {
-        logger.warn(warningMessage);
-        // ! DO NOT WARN for 404 errors
         const mappedError = errorFactory.error(error) as ErrorLike;
-        logger.debug ? logger.debug(error) : logger.error(error);
+        const statusCode = errorLikeStatusCode(mappedError);
+        if (statusCode !== 404) {
+          // throw a warning if it's anything but a NOT FOUND error
+          logger.warn(warningMessage);
+          logger.error(error);
+        } else {
+          logger.debug ? logger.debug(error) : logger.log(error);
+        }
         return mappedError;
       }),
       TE.map((data: DataLike) => {
@@ -39,3 +44,11 @@ export const logAction =
       })
     );
   };
+
+const errorLikeStatusCode = <ErrorLike extends Error>(error: ErrorLike) => {
+  let statusCode = 500;
+  if (error instanceof HttpException) {
+    statusCode = error.getStatus();
+  }
+  return statusCode;
+};

@@ -3,6 +3,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 
 import { UnknownException } from './errors/unknown.error';
+import { InternalRequestInvalidError } from './errors/internal-request-invalid.error';
 import { RequestInvalidError } from './errors/request-invalid.error';
 import { RepositoryItemConflictError } from './errors/repository/item-conflict.error';
 import { SourceInvalidError } from './errors/repository/source-invalid.error';
@@ -39,6 +40,7 @@ export interface ErrorMessageComponents {
 // I attempted to include them in the individual subclasses
 // but couldn't get the generic type for this class to work
 const errorDefinitions = {
+  InternalRequestInvalidError,
   NotYetImplementedError,
   RepositoryAuthenticationError,
   RepositoryItemConflictError,

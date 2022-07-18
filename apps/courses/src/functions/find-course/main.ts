@@ -62,11 +62,11 @@ export const handler = async (
   // lambda level validation
   const dto = JSON.parse(event.body || '{}');
   if (!FindCourseRequestDto.guard(dto)) {
+    // NOTE: this is a 500 error, not a 400
     const error = new InternalRequestInvalidError(
       'Invalid request sent to FindCourseFunction.Lambda'
     );
     logger.error(error);
-    // NOTE: this is a 500 error, not a 400
     throw error;
   }
 

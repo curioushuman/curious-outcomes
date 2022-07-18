@@ -183,6 +183,11 @@ The answers
 ### Error
 
 - For server (inc. unknown) errors
+  - *Lambda*
+  - Nest.logger.Error (lambda level) validation error
+  - *API Gateway*
+  - AWS.logger.?? 500 HTTP Exception
+  - **OR**
   - *Nest*
   - Nest.logger.Warn {adapter.action} failed
   - Nest.logger.Error {error}
@@ -238,7 +243,9 @@ The answers
 **Summary (of error)**
 
 - For server (inc. unknown) errors
-  - logger.Warn {function.action} failed
+  - Nest.logger.Error (lambda level) validation error
+  - OR
+  - AWS.logger.Warn {function.action} failed
     - e.g. courses.findOne failed
 - For client errors
   - logger.Log {function.action} incomplete due to client error
