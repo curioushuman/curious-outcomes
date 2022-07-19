@@ -1,5 +1,3 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
-
 import { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
@@ -8,11 +6,17 @@ import {
   CoursesModule,
   FindCourseController,
 } from '@curioushuman/co-courses';
+import { InternalRequestInvalidError } from '@curioushuman/error-factory';
 import { LoggableLogger } from '@curioushuman/loggable';
 
-import { FindCourseApiGatewayRequestEvent } from './dto/api-gateway.request.event';
-import { FindCourseRequestDto } from './dto/find-course.request.dto';
-import { InternalRequestInvalidError } from '@curioushuman/error-factory';
+import { FindCourseRequestDto } from './dto/request.dto';
+import { CourseResponseDto } from '../../dto/course.response.dto';
+
+/**
+ * TODO
+ * - [ ] turn off debug based on ENV
+ * - [ ] more unit tests; inc. testing lambda level errors
+ */
 
 /**
  * Hold a reference to your Nest app outside of the bootstrap function
@@ -47,25 +51,33 @@ async function waitForApp() {
  * and return the response.
  *
  * NOTES:
- * - we use our own (trimmed down) version of the incoming request event
- * - if we ever need to expand to accept events from other AWS services
- *   use a union of custom events (like this one)
+ * * ALWAYS THROW THE ERROR, don't catch it and return an error-based response
+ *   API Gateway integration response regex only pays attention to errors handled
+ *   by AWS.
+ * * We receive our own requestDto format, and not the usual API gateway event.
+ *   This is because we are not a API-proxy lambda.
+ *   We do the data transformation (via VTL) at the API gateway.
+ *   This will allow us most flexibility in invoking this function from multiple
+ *   triggers. It reverses the dependency from invoked > invoker, to invoker > invoked.
+ * * We return our own responseDto format, and not the usual API gateway response.
+ *   Similar to previous, we're not an API-proxy lambda. We can be more flexible.
  * - we're going to exclude context for now as we don't yet need it
  *   i.e. the second argument for handler
  */
 export const handler = async (
-  event: FindCourseApiGatewayRequestEvent
-): Promise<APIGatewayProxyResult> => {
+  requestDto: FindCourseRequestDto
+): Promise<CourseResponseDto> => {
   const logger = new LoggableLogger('FindCourseFunction.handler');
-  logger.debug(`Event: ${JSON.stringify(event, null, 2)}`);
+  logger.debug ? logger.debug(requestDto) : logger.log(requestDto);
 
   // lambda level validation
-  const dto = JSON.parse(event.body || '{}');
-  if (!FindCourseRequestDto.guard(dto)) {
+  if (!FindCourseRequestDto.guard(requestDto)) {
     // NOTE: this is a 500 error, not a 400
     const error = new InternalRequestInvalidError(
       'Invalid request sent to FindCourseFunction.Lambda'
     );
+    // we straight out log this, as it's a problem our systems
+    // aren't communicating properly.
     logger.error(error);
     throw error;
   }
@@ -82,12 +94,5 @@ export const handler = async (
   //    https://docs.aws.amazon.com/lambda/latest/dg/typescript-handler.html
   // Error will be thrown during `executeTask` within the controller.
   // SEE **Error handling and logging** in README for more info.
-  const courseResponseDto = await findCourseController.findOne(dto);
-  return {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(courseResponseDto),
-  };
+  return findCourseController.findOne(requestDto);
 };

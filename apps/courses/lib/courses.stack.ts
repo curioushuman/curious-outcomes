@@ -30,7 +30,7 @@ const lambdaProps = {
   },
   logRetention: logs.RetentionDays.ONE_DAY,
   runtime: lambda.Runtime.NODEJS_16_X,
-  memorySize: 512,
+  memorySize: 128,
   handler: 'handler',
   // timeout: cdk.Duration.minutes(1),
 };

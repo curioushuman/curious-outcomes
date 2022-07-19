@@ -1,9 +1,9 @@
 import { HttpException } from '@nestjs/common';
-import { APIGatewayProxyResult } from 'aws-lambda';
 import { loadFeature, defineFeature } from 'jest-cucumber';
-import { FindCourseApiGatewayRequestEvent } from '../dto/api-gateway.request.event';
 
 import { handler } from '../main';
+import { CourseResponseDto } from '../../../dto/course.response.dto';
+import { FindCourseRequestDto } from '../dto/request.dto';
 
 /**
  * INTEGRATION TEST
@@ -26,21 +26,18 @@ const feature = loadFeature('./find-course.int.feature', {
 defineFeature(feature, (test) => {
   test('Fail; Invalid request', ({ given, when, then }) => {
     let error: HttpException;
-    let event: FindCourseApiGatewayRequestEvent;
-    let response: APIGatewayProxyResult;
+    let dto: FindCourseRequestDto;
+    let response: CourseResponseDto;
 
     given('the request is invalid', () => {
-      const incomingRequest = {
+      dto = {
         id: 'AnInvalidId',
-      };
-      event = {
-        body: JSON.stringify(incomingRequest),
       };
     });
 
     when('I attempt to find a course', async () => {
       try {
-        response = await handler(event);
+        response = await handler(dto);
         expect(response).toBeUndefined();
       } catch (err: unknown) {
         error = err as HttpException;
@@ -49,6 +46,7 @@ defineFeature(feature, (test) => {
 
     then('I should receive a RequestInvalidError', () => {
       expect(error.getStatus()).toBe(400);
+      expect(error.message).toEqual(expect.stringMatching(/^Invalid request/i));
     });
   });
 });

@@ -28,6 +28,11 @@ Scenario: Fail; Empty request
   When I attempt to find a course
   Then I should receive an InternalRequestInvalidError
 
+Scenario: Fail; Empty values request
+  Given the request contains empty values
+  When I attempt to find a course
+  Then I should receive an InternalRequestInvalidError
+
 # Scenario: Fail; course not found by Id
 #   Given the request is valid
 #   And no record exists that matches our request

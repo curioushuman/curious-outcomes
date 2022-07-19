@@ -1,6 +1,6 @@
 import { HttpException } from '@nestjs/common';
-import { APIGatewayProxyResult } from 'aws-lambda';
 import { loadFeature, defineFeature } from 'jest-cucumber';
+import { CourseResponseDto } from '../../../dto/course.response.dto';
 
 import { handler } from '../main';
 
@@ -30,22 +30,19 @@ defineFeature(feature, (test) => {
   test('Fail; Invalid request', ({ given, when, then }) => {
     // disabled so we can pass an invalid request
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let event: any;
+    let dto: any;
     let error: HttpException;
-    let response: APIGatewayProxyResult;
+    let response: CourseResponseDto;
 
     given('the request is invalid', () => {
-      const incomingRequest = {
+      dto = {
         whatsThisParameter: 'ThisWontPassMuster',
-      };
-      event = {
-        body: JSON.stringify(incomingRequest),
       };
     });
 
     when('I attempt to find a course', async () => {
       try {
-        response = await handler(event);
+        response = await handler(dto);
         expect(response).toBeUndefined();
       } catch (err: unknown) {
         error = err as HttpException;
@@ -54,26 +51,27 @@ defineFeature(feature, (test) => {
 
     then('I should receive an InternalRequestInvalidError', () => {
       expect(error.getStatus()).toBe(500);
+      // this should match the regex you use in your API method integration response
+      expect(error.message).toEqual(
+        expect.stringMatching(/^Invalid internal communication/i)
+      );
     });
   });
 
   test('Fail; Empty request', ({ given, when, then }) => {
     // disabled so we can pass an invalid request
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let event: any;
+    let dto: any;
     let error: HttpException;
-    let response: APIGatewayProxyResult;
+    let response: CourseResponseDto;
 
     given('the request is empty', () => {
-      const incomingRequest = {};
-      event = {
-        body: JSON.stringify(incomingRequest),
-      };
+      dto = {};
     });
 
     when('I attempt to find a course', async () => {
       try {
-        response = await handler(event);
+        response = await handler(dto);
         expect(response).toBeUndefined();
       } catch (err: unknown) {
         error = err as HttpException;
@@ -81,7 +79,40 @@ defineFeature(feature, (test) => {
     });
 
     then('I should receive an InternalRequestInvalidError', () => {
-      expect(error.getStatus()).toBe(500);
+      // this should match the regex you use in your API method integration response
+      expect(error.message).toEqual(
+        expect.stringMatching(/^Invalid internal communication/i)
+      );
+    });
+  });
+
+  test('Fail; Empty values request', ({ given, when, then }) => {
+    // disabled so we can pass an invalid request
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let dto: any;
+    let error: HttpException;
+    let response: CourseResponseDto;
+
+    given('the request contains empty values', () => {
+      dto = {
+        id: '',
+      };
+    });
+
+    when('I attempt to find a course', async () => {
+      try {
+        response = await handler(dto);
+        expect(response).toBeUndefined();
+      } catch (err: unknown) {
+        error = err as HttpException;
+      }
+    });
+
+    then('I should receive an InternalRequestInvalidError', () => {
+      // this should match the regex you use in your API method integration response
+      expect(error.message).toEqual(
+        expect.stringMatching(/^Invalid internal communication/i)
+      );
     });
   });
 });

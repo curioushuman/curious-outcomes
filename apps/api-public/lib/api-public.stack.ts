@@ -57,6 +57,7 @@ export class ApiPublicStack extends cdk.Stack {
      * Allow our gateway to invoke the lambda function
      *
      * TODO:
+     * - [ ] is this a policy tautology?
      * - [ ] use ArnPrincipal(apiPublic) for assumedBy below
      */
     const apiLambdaRole = new iam.Role(this, 'ApiLambdaRole', {
@@ -78,6 +79,10 @@ export class ApiPublicStack extends cdk.Stack {
      * Common response models
      * i.e. these are the structures for data that will be returned from THIS API
      */
+
+    /**
+     * Error
+     */
     const errorResponseModel = api.addModel('ErrorResponseModel', {
       contentType: 'application/json',
       modelName: 'CoApiPublicErrorResponseModel',
@@ -91,10 +96,14 @@ export class ApiPublicStack extends cdk.Stack {
         },
       },
     });
-    // NOTE: the below does not include the externalId
-    // as this is not necessary info for the public
-    // TODO: can we move this to a schema dir or similar
-    // TODO: we also need to align with the openapi schema yaml
+    /**
+     * Course
+     * NOTE: the below does not include the externalId
+     *       as this is not necessary info for the public
+     * TODO
+     * - [ ] can we move this to a schema dir or similar
+     * - [ ] we also need to align with the openapi schema yaml
+     */
     const courseResponseDtoModel = api.addModel('CourseResponseDtoModel', {
       contentType: 'application/json',
       modelName: 'CoApiPublicCourseResponseDtoModel',
@@ -205,8 +214,31 @@ export class ApiPublicStack extends cdk.Stack {
           'application/json': coursesFindResponseTemplate,
         },
       };
+    const coursesFindOneFunctionServerErrorResponse: apigateway.IntegrationResponse =
+      {
+        // Anything that the client has no control over, or that is not a known error
+        selectionPattern: '^Invalid internal communication',
+        statusCode: '500',
+        responseTemplates: {
+          'application/json': JSON.stringify({
+            message: "$util.escapeJavaScript($input.path('$.errorMessage'))",
+          }),
+        },
+        // TODO: is this necessary? Why?
+        // is it covered by our CORS defaults above (in API definition)?
+        // essentially, this is about passing params from the lambda to the API
+        // this sample code doesn't even include anything from the lambda
+        // it's just assuming CORS is needed by the API...
+        // this doesn't feel like the right place for this
+        // responseParameters: {
+        //   'method.response.header.Content-Type': "'application/json'",
+        //   'method.response.header.Access-Control-Allow-Origin': "'*'",
+        //   'method.response.header.Access-Control-Allow-Credentials':
+        //     "'true'",
+        // },
+      };
     // ERROR
-    const coursesFindOneFunctionErrorResponse: apigateway.IntegrationResponse =
+    const coursesFindOneFunctionClientErrorResponse: apigateway.IntegrationResponse =
       {
         // we're going to catch all errors with this one for now
         // TODO: review the error patterns that are returned, then separate into multiple responses
@@ -214,7 +246,7 @@ export class ApiPublicStack extends cdk.Stack {
         statusCode: '400',
         responseTemplates: {
           'application/json': JSON.stringify({
-            message: "$util.escapeJavaScript($input.path('$.Error.Message'))",
+            message: "$util.escapeJavaScript($input.path('$.errorMessage'))",
           }),
         },
         // TODO: is this necessary? Why?
@@ -269,8 +301,9 @@ export class ApiPublicStack extends cdk.Stack {
         // integration response handling
         // ---
         integrationResponses: [
+          coursesFindOneFunctionServerErrorResponse,
+          coursesFindOneFunctionClientErrorResponse,
           coursesFindOneFunctionSuccessResponse,
-          coursesFindOneFunctionErrorResponse,
         ],
       }
     );

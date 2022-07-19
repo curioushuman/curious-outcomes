@@ -14,10 +14,14 @@ export const FindCourseRequestDto = Record({
   externalId: Optional(String),
   slug: Optional(String),
 }).withConstraint((dto) => {
-  if (!dto.id && !dto.externalId && !dto.slug) {
+  if ((!dto.id && !dto.externalId && !dto.slug) || isReallyEmptyObj(dto)) {
     return 'Request must include one of: id, externalId, slug';
   }
   return true;
 });
 
 export type FindCourseRequestDto = Static<typeof FindCourseRequestDto>;
+
+// TODO: move these to utils
+const isReallyEmptyObj = (obj: object) =>
+  Object.keys(obj).map((val) => val !== '').length === 0;
