@@ -64,7 +64,15 @@
       "options": {
         "outputPath": "dist/apps/api-admin",
         "command": "diff"
-      }
+      },
+      "dependsOn": [{
+        "target": "diff",
+        "projects": "dependencies"
+      },
+      {
+        "target": "openapi",
+        "projects": "self"
+      }]
     },
     "metadata": {
       "executor": "@otterdev/nx-cdk:run",
@@ -119,5 +127,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": []
+  "implicitDependencies": ["courses"]
 }
