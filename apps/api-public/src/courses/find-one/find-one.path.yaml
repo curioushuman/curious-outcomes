@@ -1,0 +1,45 @@
+get:
+  summary: Find a course by ID or Slug
+  parameters:
+    - name: id
+      in: path
+      required: false
+      schema:
+        type: string
+      description: The identifier for the specific course.
+    - name: slug
+      in: query
+      required: false
+      schema:
+        type: string
+      description: A friendlier slug based identifier for the specific course.
+
+  responses:
+    '200':
+      description: Course found
+      content:
+        application/json:
+          schema:
+            $ref: "../schema/course-response.dto.yaml"
+
+    '400':
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/error.yaml"
+
+    '404':
+      description: Course not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/error.yaml"
+
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/error.yaml"
+

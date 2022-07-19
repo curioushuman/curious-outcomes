@@ -1,0 +1,18 @@
+#set($allParams = $input.params())
+#set($pathParams = $allParams.get('path'))
+#set($bodyProperties = '')
+#set($id = $pathParams.get('id'))
+#set($slug = $input.params('slug'))
+#if($id)
+#set($idEscaped = $util.escapeJavaScript("${id}"))
+#set($bodyProperties = $bodyProperties + '"id":"' + $idEscaped + '"')
+#end
+#if($id && $slug)
+#set($bodyProperties = $bodyProperties + ',')
+#end
+#if($slug)
+#set($slugEscaped = $util.escapeJavaScript("${slug}"))
+#set($bodyProperties = $bodyProperties + '"slug":"' + $slugEscaped + '"')
+#end
+#set($body = '{' + $bodyProperties + '}')
+$body

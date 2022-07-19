@@ -9,11 +9,12 @@
 
 ### Input data:
 
-- FindCourseRequestDto
+- Id, extends String
+- Slug, extends String
 
 ### Dependencies (from other services/sources)
 
-- CoCourses/Layer
+- FindCourseFunction/Lambda
 
 ### Output (results, events, errors)
 
@@ -32,7 +33,7 @@
 
 ### Triggered by
 
-- API Gateway
+- API: Hitting API endpoint
 
 ### Side-effects
 

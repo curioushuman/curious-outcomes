@@ -49,7 +49,7 @@ export class CoursesStack extends cdk.Stack {
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoCourses',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoCourses:5`
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoCourses:6`
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,
@@ -59,12 +59,15 @@ export class CoursesStack extends cdk.Stack {
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoShared',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoShared:4`
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoShared:5`
       ),
     ];
 
     /**
      * Function: Create Course
+     *
+     * NOTES:
+     * - functionName required for importing into other stacks
      *
      * TODO:
      * - [ ] idempotency
@@ -75,6 +78,7 @@ export class CoursesStack extends cdk.Stack {
       this,
       'CreateCourseFunction',
       {
+        functionName: 'CoCreateCourseFunction',
         entry: pathResolve(__dirname, '../src/functions/create-course/main.ts'),
         layers: lambdaLayers,
         ...lambdaProps,
@@ -106,10 +110,14 @@ export class CoursesStack extends cdk.Stack {
     /**
      * Function: Find Course
      *
+     * NOTES:
+     * - functionName required for importing into other stacks
+     *
      * TODO:
      * - [ ] configure retry attempts (upon failure)
      */
     const findCourseFunction = new NodejsFunction(this, 'FindCourseFunction', {
+      functionName: 'CoFindCourseFunction',
       entry: pathResolve(__dirname, '../src/functions/find-course/main.ts'),
       layers: lambdaLayers,
       ...lambdaProps,

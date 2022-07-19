@@ -3,8 +3,6 @@ type: object
 properties:
   id:
     type: string
-  externalId:
-    type: string
   name:
     type: string
   slug:

@@ -9,5 +9,5 @@ servers:
 paths:
 
   # Courses
-  /courses/{courseId}:
-    $ref: "./src/courses/paths/find-one/find-one.path.yaml"
+  /courses/{id}:
+    $ref: "./src/courses/find-one/find-one.path.yaml"
