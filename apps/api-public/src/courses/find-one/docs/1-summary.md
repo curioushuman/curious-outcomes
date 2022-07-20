@@ -21,7 +21,7 @@
 #### Success (singular result + event)
 
 - Course found successfully (200)
-- Course response DTO
+- Public Course response DTO
 
 ### Failure (1+):
 

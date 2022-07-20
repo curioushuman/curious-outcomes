@@ -14,11 +14,11 @@ Assume everything is AND unless specified by OR and ()
 - Id?
 - Slug?
 
-### Course response DTO (received)
+### Public Course response DTO (received)
 
 - id: String
-- externalId: string
 - name: string
+- slug: string
 - description: string
 - startDate: date
 - endDate: date

@@ -20,40 +20,17 @@
 
 ### Steps
 
-1. Validate input
-2. Transform to FindCourseRequestDto
-3. Find course
-4. Return
-   1. Success and course
+NOTE: validation step removed as API gateway isn't able to handle anything other then required params.
+
+1. Transform to FindCourseRequestDto
+2. Find Course
+3. Return
+   1. Success and PublicCourseResponseDto
    2. OR Transform/filter errors to acceptable list
 
 ## Steps, detail
 
-### Step 1. Validate input
-
-#### Input
-- Id?
-- Slug?
-
-#### Output: Success
-
-- Id?
-- Slug?
-
-#### Output: Fail
-
-- BadRequestException
-
-#### Steps (pseudocode)
-
-```
-If Id && Slug not present
-  return BadRequestException
-Else
-  return (same) Id, Slug
-```
-
-### Step 2. Transform to FindCourseRequestDto
+### Step 1. Transform to FindCourseRequestDto
 
 #### Input
 - Id?
@@ -76,14 +53,14 @@ return FindCourseRequestDto{
 }
 ```
 
-### Step 3. Find course
+### Step 2. Find course
 
 #### Input
 - FindCourseRequestDto
 
 #### Output: Success
 
-- Course
+- CourseResponseDto
 
 #### Output: Fail
 
@@ -95,13 +72,11 @@ return FindCourseRequestDto{
 ```
 Find Course
 If Error
-  return InternalServerException
-If not found
-  return NotFoundException
+  return Transform Error
 Else
-  return Course
+  return Transform Course Response
 ```
 
-### Step 4A. Return success
+### Step 3A. Return success
 
-### Step 4B. OR Transform/filter errors to acceptable list
+### Step 3B. OR Transform/filter errors to acceptable list
