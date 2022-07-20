@@ -54,26 +54,21 @@ export class ApiPublicStack extends cdk.Stack {
     });
 
     /**
+     * Permissions/policies for the API Gateway
+     */
+
+    /**
      * Allow our gateway to invoke the lambda function
      *
      * TODO:
-     * - [ ] is this a policy tautology?
+     * - [*] is this a policy tautology?
+     *       YES, it was. Removing the inline policies as they are a duplicate
      * - [ ] use ArnPrincipal(apiPublic) for assumedBy below
      */
-    const apiLambdaRole = new iam.Role(this, 'ApiLambdaRole', {
+    const apiPublicRole = new iam.Role(this, 'ApiPublicRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      inlinePolicies: {
-        InvokeFindCourseFunctionPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: ['lambda:InvokeFunction'],
-              resources: [coursesFindOneFunction.functionArn],
-            }),
-          ],
-        }),
-      },
     });
-    coursesFindOneFunction.grantInvoke(apiLambdaRole);
+    coursesFindOneFunction.grantInvoke(apiPublicRole);
 
     /**
      * Common response models
