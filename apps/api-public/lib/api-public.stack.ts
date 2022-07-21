@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -22,17 +21,8 @@ export class ApiPublicStack extends cdk.Stack {
      */
     const apiPublic = new CoApiConstruct(this, 'api-public', {
       description: 'Curious Outcomes Public API',
+      applicationNamePrefix: 'Co',
       stageName: 'dev',
-    });
-
-    /**
-     * IAM Role for our API gateway
-     *
-     * TODO:
-     * - [ ] use ArnPrincipal(apiPublic) for assumedBy below
-     */
-    const apiPublicRole = new iam.Role(this, 'ApiPublicRole', {
-      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
     });
 
     /**
@@ -51,7 +41,7 @@ export class ApiPublicStack extends cdk.Stack {
       }
     );
     // Allow access for API
-    coursesFindOneFunction.grantInvoke(apiPublicRole);
+    coursesFindOneFunction.grantInvoke(apiPublic.role);
 
     /**
      * Common response models
@@ -61,19 +51,7 @@ export class ApiPublicStack extends cdk.Stack {
     /**
      * Error
      */
-    const errorResponseModel = apiPublic.api.addModel('ErrorResponseModel', {
-      contentType: 'application/json',
-      modelName: 'CoApiPublicErrorResponseModel',
-      schema: {
-        schema: apigateway.JsonSchemaVersion.DRAFT4,
-        title: 'ApiErrorResponse',
-        type: apigateway.JsonSchemaType.OBJECT,
-        // this is the actual structure
-        properties: {
-          message: { type: apigateway.JsonSchemaType.STRING },
-        },
-      },
-    });
+    const errorModel = apiPublic.addErrorResponseModel();
 
     /**
      * Course
@@ -83,21 +61,13 @@ export class ApiPublicStack extends cdk.Stack {
      * - [ ] can we move this to a schema dir or similar
      * - [ ] we also need to align with the openapi schema yaml
      */
-    const courseResponseDtoModel = apiPublic.api.addModel(
-      'CourseResponseDtoModel',
+    const courseResponseDtoModel = apiPublic.addResponseModel(
+      'course-response-dto',
       {
-        contentType: 'application/json',
-        modelName: 'CoApiPublicCourseResponseDtoModel',
-        schema: {
-          schema: apigateway.JsonSchemaVersion.DRAFT4,
-          title: 'CourseResponseDto',
-          type: apigateway.JsonSchemaType.OBJECT,
-          // this is the actual structure
-          properties: {
-            id: { type: apigateway.JsonSchemaType.STRING },
-            name: { type: apigateway.JsonSchemaType.STRING },
-            slug: { type: apigateway.JsonSchemaType.STRING },
-          },
+        properties: {
+          id: { type: apigateway.JsonSchemaType.STRING },
+          name: { type: apigateway.JsonSchemaType.STRING },
+          slug: { type: apigateway.JsonSchemaType.STRING },
         },
       }
     );
@@ -322,7 +292,7 @@ export class ApiPublicStack extends cdk.Stack {
           statusCode: '400',
           responseParameters: { ...defaultMethodResponseParametersCors },
           responseModels: {
-            'application/json': errorResponseModel,
+            'application/json': errorModel,
           },
         },
       ],

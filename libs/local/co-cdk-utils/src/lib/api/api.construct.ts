@@ -1,4 +1,5 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 /**
@@ -6,18 +7,41 @@ import { Construct } from 'constructs';
  */
 export interface CoApiProps {
   description: string;
+  /**
+   * This will be added to the front of resource names
+   * to make sure they are unique, but accessible.
+   */
+  applicationNamePrefix: string;
   stageName?: string;
+}
+
+/**
+ * Props required to initialize a CO API Response Model
+ */
+export interface CoApiResponseModelProps {
+  properties: {
+    [name: string]: apigateway.JsonSchema;
+  };
 }
 
 /**
  * CO API Construct
  * i.e. a standard API implementation, and some helpers
+ *
+ * TODO
+ * - [ ] validation or camelCasing of prefix
  */
 export class CoApiConstruct extends Construct {
+  public id: string;
+  private namePrefix: string;
   public api: apigateway.RestApi;
+  public role: iam.Role;
 
   constructor(scope: Construct, id: string, props: CoApiProps) {
     super(scope, id);
+
+    this.id = id;
+    this.namePrefix = props.applicationNamePrefix;
 
     /**
      * API Gateway
@@ -32,7 +56,7 @@ export class CoApiConstruct extends Construct {
      * TODO
      * - [ ] tighten up the CORS defaults below
      */
-    this.api = new apigateway.RestApi(this, 'api-public', {
+    this.api = new apigateway.RestApi(this, id, {
       description: props.description,
       deployOptions: {
         metricsEnabled: true,
@@ -44,13 +68,75 @@ export class CoApiConstruct extends Construct {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
       },
     });
+
+    /**
+     * IAM Role for our API gateway
+     *
+     * TODO:
+     * - [ ] use ArnPrincipal(apiPublic) for assumedBy below
+     */
+    this.role = new iam.Role(this, `${id}-role`, {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+    });
+  }
+
+  /**
+   * Response models
+   * i.e. these are the structures for data that will be returned from THIS API
+   */
+
+  /**
+   * Error response model FROM this API
+   */
+  public addErrorResponseModel(
+    props?: CoApiResponseModelProps
+  ): apigateway.Model {
+    // destructure, or assign default
+    const { properties } = props || {
+      properties: {
+        message: { type: apigateway.JsonSchemaType.STRING },
+      },
+    };
+    return this.addResponseModel('error', {
+      properties,
+    });
+  }
+
+  /**
+   * Non-error response model
+   */
+  public addResponseModel(
+    id: string,
+    props: CoApiResponseModelProps
+  ): apigateway.Model {
+    const { properties } = props;
+    const modelId = `${this.id}-response-model-${id}`;
+    const modelName = this.transformIdToName(modelId);
+    const title = this.transformIdToResponseModelTitle(id);
+    return this.api.addModel(modelId, {
+      contentType: 'application/json',
+      modelName: modelName,
+      schema: {
+        schema: apigateway.JsonSchemaVersion.DRAFT4,
+        type: apigateway.JsonSchemaType.OBJECT,
+        title,
+        properties,
+      },
+    });
+  }
+
+  /**
+   * Using camelCase for our response naming convention
+   */
+  private transformIdToResponseModelTitle(id: string): string {
+    return `${this.camelCase(id)}Response`;
   }
 
   /**
    * Integration responses
    * Non-proxy lambda integrations don't just pass-through all response from the lambda.
    * They need to be funneled through one or more response structures
-   * These define what THIS API will accept as a response (from the lambda),
+   * These define what THIS API will accept as a response (FROM the lambda),
    * and how it will interpret it.
    *
    * RE selectionPattern
@@ -120,5 +206,29 @@ export class CoApiConstruct extends Construct {
 
   private static clientErrorRegex(): string {
     return '^^(Invalid request).+';
+  }
+
+  /**
+   * Utility functions
+   *
+   * TODO
+   * - [ ] these should probably be somewhere else
+   */
+
+  /**
+   * Using camelCase for our resource naming convention
+   */
+  private transformIdToName(id: string): string {
+    return this.namePrefix + this.camelCase(id);
+  }
+
+  /**
+   * Converting a dashed string to camelCase
+   */
+  private camelCase(str: string): string {
+    return str
+      .split('-')
+      .map((word) => word[0].toUpperCase() + word.slice(1))
+      .join('');
   }
 }
