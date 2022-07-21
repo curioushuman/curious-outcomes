@@ -4,12 +4,13 @@
   "projects": {
     "api-admin": "apps/api-admin",
     "api-public": "apps/api-public",
-    "co-common": "libs/shared/co-common",
+    "co-layers": "apps/co-layers",
     "courses": "apps/courses",
+    "co-cdk-utils": "libs/local/co-cdk-utils",
+    "co-common": "libs/shared/co-common",
     "co-courses": "libs/services/co-courses",
     "error-factory": "libs/shared/error-factory",
     "fp-ts-utils": "libs/shared/fp-ts-utils",
-    "co-layers": "apps/co-layers",
     "loggable": "libs/shared/loggable"
   }
 }

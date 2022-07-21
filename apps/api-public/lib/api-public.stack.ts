@@ -7,9 +7,33 @@ import { Construct } from 'constructs';
 import { resolve as pathResolve } from 'path';
 import { readFileSync } from 'fs';
 
+// Importing utilities for use in infrastructure processes
+// Initially we're going to import from local sources
+import { CoApiConstruct } from '../../../dist/local/@curioushuman/co-cdk-utils/src';
+// Long term we'll put them into packages
+// import { CoApiConstruct } from '@curioushuman/co-cdk-utils';
+
 export class ApiPublicStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    /**
+     * API Gateway
+     */
+    const apiPublic = new CoApiConstruct(this, 'api-public', {
+      description: 'Curious Outcomes Public API',
+      stageName: 'dev',
+    });
+
+    /**
+     * IAM Role for our API gateway
+     *
+     * TODO:
+     * - [ ] use ArnPrincipal(apiPublic) for assumedBy below
+     */
+    const apiPublicRole = new iam.Role(this, 'ApiPublicRole', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+    });
 
     /**
      * Resources this API will use
@@ -26,48 +50,7 @@ export class ApiPublicStack extends cdk.Stack {
         sameEnvironment: true,
       }
     );
-
-    /**
-     * API Gateway
-     * https://{restapi_id}.execute-api.{region}.amazonaws.com/{stage_name}/
-     * https://ap-southeast-2.console.aws.amazon.com/apigateway/home?region=ap-southeast-2#/apis/txi21niwmd/stages/dev
-     *
-     * NOTES
-     * - no proxy for all routes, integration defined per route
-     * - if you make policy changes (even deletion) you'll need to redeploy the API (manually within the console)
-     *   https://stackoverflow.com/questions/53016110/aws-api-gateway-user-anonymous-is-not-authorized-to-execute-api
-     *
-     * TODO
-     * - [ ] tighten up the CORS defaults below
-     */
-    const api = new apigateway.RestApi(this, 'api-public', {
-      description: 'Curious Outcomes Public API',
-      deployOptions: {
-        metricsEnabled: true,
-        loggingLevel: apigateway.MethodLoggingLevel.INFO,
-        dataTraceEnabled: true,
-        stageName: 'dev',
-      },
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
-      },
-    });
-
-    /**
-     * Permissions/policies for the API Gateway
-     */
-
-    /**
-     * Allow our gateway to invoke the lambda function
-     *
-     * TODO:
-     * - [*] is this a policy tautology?
-     *       YES, it was. Removing the inline policies as they are a duplicate
-     * - [ ] use ArnPrincipal(apiPublic) for assumedBy below
-     */
-    const apiPublicRole = new iam.Role(this, 'ApiPublicRole', {
-      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-    });
+    // Allow access for API
     coursesFindOneFunction.grantInvoke(apiPublicRole);
 
     /**
@@ -78,7 +61,7 @@ export class ApiPublicStack extends cdk.Stack {
     /**
      * Error
      */
-    const errorResponseModel = api.addModel('ErrorResponseModel', {
+    const errorResponseModel = apiPublic.api.addModel('ErrorResponseModel', {
       contentType: 'application/json',
       modelName: 'CoApiPublicErrorResponseModel',
       schema: {
@@ -91,6 +74,7 @@ export class ApiPublicStack extends cdk.Stack {
         },
       },
     });
+
     /**
      * Course
      * NOTE: the below does not include the externalId
@@ -99,21 +83,24 @@ export class ApiPublicStack extends cdk.Stack {
      * - [ ] can we move this to a schema dir or similar
      * - [ ] we also need to align with the openapi schema yaml
      */
-    const courseResponseDtoModel = api.addModel('CourseResponseDtoModel', {
-      contentType: 'application/json',
-      modelName: 'CoApiPublicCourseResponseDtoModel',
-      schema: {
-        schema: apigateway.JsonSchemaVersion.DRAFT4,
-        title: 'CourseResponseDto',
-        type: apigateway.JsonSchemaType.OBJECT,
-        // this is the actual structure
-        properties: {
-          id: { type: apigateway.JsonSchemaType.STRING },
-          name: { type: apigateway.JsonSchemaType.STRING },
-          slug: { type: apigateway.JsonSchemaType.STRING },
+    const courseResponseDtoModel = apiPublic.api.addModel(
+      'CourseResponseDtoModel',
+      {
+        contentType: 'application/json',
+        modelName: 'CoApiPublicCourseResponseDtoModel',
+        schema: {
+          schema: apigateway.JsonSchemaVersion.DRAFT4,
+          title: 'CourseResponseDto',
+          type: apigateway.JsonSchemaType.OBJECT,
+          // this is the actual structure
+          properties: {
+            id: { type: apigateway.JsonSchemaType.STRING },
+            name: { type: apigateway.JsonSchemaType.STRING },
+            slug: { type: apigateway.JsonSchemaType.STRING },
+          },
         },
-      },
-    });
+      }
+    );
 
     /**
      * Default method response parameters
@@ -144,7 +131,7 @@ export class ApiPublicStack extends cdk.Stack {
     /**
      * Root Resources for the API
      */
-    const courses = api.root.addResource('courses');
+    const courses = apiPublic.api.root.addResource('courses');
 
     /**
      * findOne
@@ -212,6 +199,7 @@ export class ApiPublicStack extends cdk.Stack {
     const coursesFindOneFunctionServerErrorResponse: apigateway.IntegrationResponse =
       {
         // Anything that the client has no control over, or that is not a known error
+        // TODO: would be nice to be able to dynamically create this regex from ErrorFactory
         selectionPattern: '^Invalid internal communication',
         statusCode: '500',
         responseTemplates: {
@@ -237,7 +225,7 @@ export class ApiPublicStack extends cdk.Stack {
       {
         // we're going to catch all errors with this one for now
         // TODO: review the error patterns that are returned, then separate into multiple responses
-        selectionPattern: '.+',
+        selectionPattern: '^(Invalid request).+',
         statusCode: '400',
         responseTemplates: {
           'application/json': JSON.stringify({
@@ -343,6 +331,6 @@ export class ApiPublicStack extends cdk.Stack {
     /**
      * Outputs
      */
-    new cdk.CfnOutput(this, 'apiUrl', { value: api.urlForPath() });
+    new cdk.CfnOutput(this, 'apiUrl', { value: apiPublic.api.urlForPath() });
   }
 }

@@ -17,6 +17,14 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/courses",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"]
+    },
     "synth": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {

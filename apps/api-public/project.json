@@ -17,6 +17,22 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-public",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      },
+      {
+        "target": "openapi",
+        "projects": "self"
+      }]
+    },
     "synth": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
@@ -25,6 +41,10 @@
       },
       "outputs": ["{options.outputPath}"],
       "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      },
+      {
         "target": "openapi",
         "projects": "self"
       }]
@@ -67,6 +87,10 @@
       },
       "dependsOn": [{
         "target": "diff",
+        "projects": "dependencies"
+      },
+      {
+        "target": "build",
         "projects": "dependencies"
       },
       {
@@ -127,5 +151,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["courses"]
+  "implicitDependencies": ["co-cdk-utils", "courses"]
 }

@@ -30,6 +30,7 @@
     "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true,
     "paths": {
+      "@curioushuman/co-cdk-utils": ["libs/local/co-cdk-utils/src/index.ts"],
       "@curioushuman/co-common": ["libs/shared/co-common/src/index.ts"],
       "@curioushuman/co-courses": ["libs/services/co-courses/src/index.ts"],
       "@curioushuman/error-factory": ["libs/shared/error-factory/src/index.ts"],

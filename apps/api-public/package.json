@@ -1,0 +1,15 @@
+{
+  "name": "@curioushuman/api-public",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "dependencies": {
+    "@curioushuman/co-cdk-utils": "file:../../dist/local/co-cdk-utils/src/index.js"
+  },
+  "peerDependencies": {
+    "@curioushuman/error-factory": "file:../../dist/layers/co-shared/nodejs/node_modules/@curioushuman/error-factory/src/index.js",
+    "aws-cdk-lib": "^2.30.0",
+    "constructs": "^10.1.43",
+    "tslib": "^2.3.0"
+  }
+}
