@@ -85,10 +85,7 @@
         "outputPath": "dist/apps/api-public",
         "command": "diff"
       },
-      "dependsOn": [{
-        "target": "diff",
-        "projects": "dependencies"
-      },
+      "dependsOn": [
       {
         "target": "build",
         "projects": "dependencies"

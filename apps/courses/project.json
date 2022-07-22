@@ -23,7 +23,11 @@
         "outputPath": "dist/apps/courses",
         "command": "synth"
       },
-      "outputs": ["{options.outputPath}"]
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
     },
     "synth": {
       "executor": "@otterdev/nx-cdk:run",
@@ -31,7 +35,11 @@
         "outputPath": "dist/apps/courses",
         "command": "synth"
       },
-      "outputs": ["{options.outputPath}"]
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
     },
     "bootstrap": {
       "executor": "@otterdev/nx-cdk:run",
@@ -64,7 +72,11 @@
       "options": {
         "outputPath": "dist/apps/courses",
         "command": "diff"
-      }
+      },
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
     },
     "metadata": {
       "executor": "@otterdev/nx-cdk:run",

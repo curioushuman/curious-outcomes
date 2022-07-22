@@ -17,13 +17,29 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/co-layers",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
+    },
     "synth": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
         "outputPath": "dist/apps/co-layers",
         "command": "synth"
       },
-      "outputs": ["{options.outputPath}"]
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
     },
     "bootstrap": {
       "executor": "@otterdev/nx-cdk:run",

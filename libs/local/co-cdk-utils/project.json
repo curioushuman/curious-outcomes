@@ -12,7 +12,13 @@
         "main": "libs/local/co-cdk-utils/src/index.ts",
         "tsConfig": "libs/local/co-cdk-utils/tsconfig.lib.json",
         "packageJson": "libs/local/co-cdk-utils/package.json"
-      }
+      },
+      "dependsOn": [
+        {
+          "projects": "dependencies",
+          "target": "build"
+        }
+      ]
     },
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
@@ -43,5 +49,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": []
+  "implicitDependencies": ["error-factory"]
 }
