@@ -20,6 +20,22 @@
         }
       ]
     },
+    "deploy-local": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/local/@curioushuman/co-cdk-utils",
+        "main": "libs/local/co-cdk-utils/src/index.ts",
+        "tsConfig": "libs/local/co-cdk-utils/tsconfig.lib.json",
+        "packageJson": "libs/local/co-cdk-utils/package.json"
+      },
+      "dependsOn": [
+        {
+          "projects": "dependencies",
+          "target": "build"
+        }
+      ]
+    },
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

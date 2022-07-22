@@ -118,37 +118,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          {
-            "command": "NODE_ENV=local"
-          },
-          {
-            "command": "../../node_modules/.bin/rimraf ../../dist/apps/co-layers"
-          },
-          {
-            "command": "../../node_modules/.bin/cdklocal deploy --output ../../dist/apps/co-layers"
-          },
-          {
-            "command": "NODE_ENV=dev"
-          }
+          "../../node_modules/.bin/rimraf ../../dist/apps/co-layers",
+          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/co-layers"
         ],
         "cwd": "apps/co-layers",
         "parallel": false
-      }
+      },
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      }]
     },
     "destroy-local": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "NODE_ENV=local"
-          },
-          {
-            "command": "../../node_modules/.bin/cdklocal destroy --output ../../dist/apps/co-layers"
-          },
-          {
-            "command": "NODE_ENV=dev"
-          }
-        ],
+        "command": "NODE_ENV=local ../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/co-layers",
         "cwd": "apps/co-layers",
         "parallel": false
       }

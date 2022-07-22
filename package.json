@@ -8,7 +8,14 @@
   "scripts": {
     "build": "nx build",
     "lint": "nx lint",
-    "test": "nx test"
+    "test": "nx test",
+    "start-localstack": "docker-compose up &",
+    "stop-localstack": "pkill docker-compose up",
+    "bootstrap-localstack": "sleep 10 && node_modules/.bin/cdklocal bootstrap aws://000000000000/ap-southeast-2",
+    "predeploy-local": "npm run start-localstack && npm run bootstrap-localstack",
+    "deploy-local": "nx run api-public:deploy-local --verbose",
+    "destroy-local": "nx run-many --parallel=1 --target=destroy-local --projects=api-public,courses,co-layers",
+    "postdestroy-local": "npm run stop-localstack"
   },
   "private": true,
   "dependencies": {
