@@ -2,6 +2,9 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
+import { resolve as pathResolve } from 'path';
+import { readFileSync } from 'fs';
+
 /**
  * Props required to initialize a CO API Construct
  */
@@ -78,6 +81,38 @@ export class CoApiConstruct extends Construct {
     this.role = new iam.Role(this, `${id}-role`, {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
     });
+  }
+
+  /**
+   * Request Validator
+   * TODO
+   * - [ ] this has simply been copied from original, needs to be revamped
+   */
+  // const basicGetRequestValidator = new apigateway.RequestValidator(
+  //   this,
+  //   'ApiAdmin-BasicGetRequestValidator',
+  //   {
+  //     restApi: api,
+
+  //     // the properties below are optional
+  //     requestValidatorName: 'ApiAdmin-basicGetRequestValidator',
+  //     validateRequestBody: false,
+  //     validateRequestParameters: true,
+  //   }
+  // );
+
+  /**
+   * Allows us to keep our VTL templates in a file. This will pull in VTL as a string
+   * and remove any new lines (as this is what is required by SNS).
+   *
+   * @param appRootRelativeFilepath a filepath relative to root of application
+   * @returns VTL template as a single string
+   */
+  public static vtlTemplateFromFile(appRootRelativeFilepath: string): string {
+    return readFileSync(
+      pathResolve(process.cwd(), appRootRelativeFilepath),
+      'utf8'
+    ).replace(/(\r\n|\n|\r)/gm, '');
   }
 
   /**
@@ -205,7 +240,7 @@ export class CoApiConstruct extends Construct {
   }
 
   private static clientErrorRegex(): string {
-    return '^^(Invalid request).+';
+    return '^(Invalid request).+';
   }
 
   /**

@@ -3,9 +3,6 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
-import { resolve as pathResolve } from 'path';
-import { readFileSync } from 'fs';
-
 // Importing utilities for use in infrastructure processes
 // Initially we're going to import from local sources
 import { CoApiConstruct } from '../../../dist/local/@curioushuman/co-cdk-utils/src';
@@ -73,32 +70,6 @@ export class ApiPublicStack extends cdk.Stack {
     );
 
     /**
-     * Default method response parameters
-     */
-    // CORS
-    const defaultMethodResponseParametersCors: Record<string, boolean> = {
-      'method.response.header.Content-Type': true,
-      'method.response.header.Access-Control-Allow-Origin': true,
-      'method.response.header.Access-Control-Allow-Credentials': true,
-    };
-
-    /**
-     * Request Validator
-     */
-    // const basicGetRequestValidator = new apigateway.RequestValidator(
-    //   this,
-    //   'ApiAdmin-BasicGetRequestValidator',
-    //   {
-    //     restApi: api,
-
-    //     // the properties below are optional
-    //     requestValidatorName: 'ApiAdmin-basicGetRequestValidator',
-    //     validateRequestBody: false,
-    //     validateRequestParameters: true,
-    //   }
-    // );
-
-    /**
      * Root Resources for the API
      */
     const courses = apiPublic.api.root.addResource('courses');
@@ -115,48 +86,22 @@ export class ApiPublicStack extends cdk.Stack {
      * findOne: request mapping template
      * to convert API input/params/body, into acceptable lambda input
      */
-    const coursesFindRequestTemplate = readFileSync(
-      pathResolve(
-        __dirname,
-        '../src/courses/find-one/find-one.map-request.vtl'
-      ),
-      'utf8'
-    ).replace(/(\r\n|\n|\r)/gm, '');
+    const coursesFindRequestTemplate = CoApiConstruct.vtlTemplateFromFile(
+      'src/courses/find-one/find-one.map-request.vtl'
+    );
 
     /**
      * findOne: response mapping template
      * to convert results from lambda into API response
      */
-    const coursesFindResponseTemplate = readFileSync(
-      pathResolve(
-        __dirname,
-        '../src/courses/find-one/find-one.map-response.vtl'
-      ),
-      'utf8'
-    ).replace(/(\r\n|\n|\r)/gm, '');
+    const coursesFindResponseTemplate = CoApiConstruct.vtlTemplateFromFile(
+      'src/courses/find-one/find-one.map-response.vtl'
+    );
 
     /**
      * findOne: Accepted Lambda Function Responses
-     * i.e. this is what THIS API will accept as a response (from the lambda), and how it will interpret it
-     *
-     * Non-proxy lambda integrations don't just pass-through all response from the lambda.
-     * They need to be funneled through one or more response structures
+     * For more info on integrationResponses check CoApiConstruct
      */
-
-    // RE selectionPattern
-    // this is a regex that allows us to match an actual response from the lambda
-    // to one of these defined/allowable responses (that we are saying our API will accept).
-    // It is here we can whittle from a number of different custom errors, to a shortlist of
-    // HTTP Exceptions we're comfortable communicating to the public client.
-
-    // NOTES
-    // _"If the back end is an AWS Lambda function, the AWS Lambda
-    // function error header is matched. For all other HTTP and AWS back
-    // ends, the HTTP status code is matched."_
-    // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.IntegrationResponse.html
-    // ---
-    // defining no selectionPattern defines denotes the default response
-    // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-integration-settings-integration-response.html
 
     // SUCCESS
     const coursesFindOneFunctionSuccessResponse: apigateway.IntegrationResponse =
@@ -166,55 +111,11 @@ export class ApiPublicStack extends cdk.Stack {
           'application/json': coursesFindResponseTemplate,
         },
       };
-    const coursesFindOneFunctionServerErrorResponse: apigateway.IntegrationResponse =
-      {
-        // Anything that the client has no control over, or that is not a known error
-        // TODO: would be nice to be able to dynamically create this regex from ErrorFactory
-        selectionPattern: '^Invalid internal communication',
-        statusCode: '500',
-        responseTemplates: {
-          'application/json': JSON.stringify({
-            message: "$util.escapeJavaScript($input.path('$.errorMessage'))",
-          }),
-        },
-        // TODO: is this necessary? Why?
-        // is it covered by our CORS defaults above (in API definition)?
-        // essentially, this is about passing params from the lambda to the API
-        // this sample code doesn't even include anything from the lambda
-        // it's just assuming CORS is needed by the API...
-        // this doesn't feel like the right place for this
-        // responseParameters: {
-        //   'method.response.header.Content-Type': "'application/json'",
-        //   'method.response.header.Access-Control-Allow-Origin': "'*'",
-        //   'method.response.header.Access-Control-Allow-Credentials':
-        //     "'true'",
-        // },
-      };
     // ERROR
-    const coursesFindOneFunctionClientErrorResponse: apigateway.IntegrationResponse =
-      {
-        // we're going to catch all errors with this one for now
-        // TODO: review the error patterns that are returned, then separate into multiple responses
-        selectionPattern: '^(Invalid request).+',
-        statusCode: '400',
-        responseTemplates: {
-          'application/json': JSON.stringify({
-            message: "$util.escapeJavaScript($input.path('$.errorMessage'))",
-          }),
-        },
-        // TODO: is this necessary? Why?
-        // is it covered by our CORS defaults above (in API definition)?
-        // essentially, this is about passing params from the lambda to the API
-        // this sample code doesn't even include anything from the lambda
-        // it's just assuming CORS is needed by the API...
-        // this doesn't feel like the right place for this
-        // responseParameters: {
-        //   'method.response.header.Content-Type': "'application/json'",
-        //   'method.response.header.Access-Control-Allow-Origin': "'*'",
-        //   'method.response.header.Access-Control-Allow-Credentials':
-        //     "'true'",
-        // },
-      };
+    const coursesFindOneFunctionServerErrorResponse =
+      CoApiConstruct.serverErrorResponse();
+    const coursesFindOneFunctionClientErrorResponse =
+      CoApiConstruct.clientErrorResponse();
 
     /**
      * findOne: Lambda Function Integration
@@ -260,6 +161,16 @@ export class ApiPublicStack extends cdk.Stack {
         ],
       }
     );
+
+    /**
+     * Default method response parameters
+     */
+    // CORS
+    const defaultMethodResponseParametersCors: Record<string, boolean> = {
+      'method.response.header.Content-Type': true,
+      'method.response.header.Access-Control-Allow-Origin': true,
+      'method.response.header.Access-Control-Allow-Credentials': true,
+    };
 
     /**
      * findOne: method definition
