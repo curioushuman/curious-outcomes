@@ -12,7 +12,7 @@ Assume everything is AND unless specified by OR and ()
 
 - ExternalId
 
-### Course response DTO (received)
+### Admin Course response DTO (received)
 
 - id: String
 - externalId: string

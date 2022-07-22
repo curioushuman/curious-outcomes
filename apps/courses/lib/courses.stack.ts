@@ -1,8 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
@@ -64,6 +62,24 @@ export class CoursesStack extends cdk.Stack {
     ];
 
     /**
+     * Function: Find Course
+     *
+     * NOTES:
+     * - functionName required for importing into other stacks
+     *
+     * TODO:
+     * - [ ] configure retry attempts (upon failure)
+     */
+    const findCourseFunction = new NodejsFunction(this, 'FindCourseFunction', {
+      functionName: 'CoFindCourseFunction',
+      entry: pathResolve(__dirname, '../src/functions/find-course/main.ts'),
+      layers: lambdaLayers,
+      ...lambdaProps,
+    });
+    // ALWAYS ADD TAGS
+    cdk.Tags.of(findCourseFunction).add('identifier', 'FindCourseFunction');
+
+    /**
      * Function: Create Course
      *
      * NOTES:
@@ -86,44 +102,6 @@ export class CoursesStack extends cdk.Stack {
     );
     // ALWAYS ADD TAGS
     cdk.Tags.of(createCourseFunction).add('identifier', 'CreateCourseFunction');
-
-    // Subscribe the function to external events
-    // Filter = object = course, type = create
-    const externalEventsTopic = sns.Topic.fromTopicArn(
-      this,
-      'CoursesStack-allExternalEventsTopic',
-      `arn:aws:sns:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:allExternalEventsTopic`
-    );
-    const createCourseExternalEventSubscription =
-      new subscriptions.LambdaSubscription(createCourseFunction, {
-        filterPolicy: {
-          object: sns.SubscriptionFilter.stringFilter({
-            allowlist: ['Course'],
-          }),
-          type: sns.SubscriptionFilter.stringFilter({
-            allowlist: ['Created'],
-          }),
-        },
-      });
-    externalEventsTopic.addSubscription(createCourseExternalEventSubscription);
-
-    /**
-     * Function: Find Course
-     *
-     * NOTES:
-     * - functionName required for importing into other stacks
-     *
-     * TODO:
-     * - [ ] configure retry attempts (upon failure)
-     */
-    const findCourseFunction = new NodejsFunction(this, 'FindCourseFunction', {
-      functionName: 'CoFindCourseFunction',
-      entry: pathResolve(__dirname, '../src/functions/find-course/main.ts'),
-      layers: lambdaLayers,
-      ...lambdaProps,
-    });
-    // ALWAYS ADD TAGS
-    cdk.Tags.of(findCourseFunction).add('identifier', 'FindCourseFunction');
 
     /**
      * Outputs

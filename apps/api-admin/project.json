@@ -17,6 +17,22 @@
       },
       "outputs": ["{options.outputPath}"]
     },
+    "build": {
+      "executor": "@otterdev/nx-cdk:run",
+      "options": {
+        "outputPath": "dist/apps/api-admin",
+        "command": "synth"
+      },
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      },
+      {
+        "target": "openapi",
+        "projects": "self"
+      }]
+    },
     "synth": {
       "executor": "@otterdev/nx-cdk:run",
       "options": {
@@ -25,6 +41,10 @@
       },
       "outputs": ["{options.outputPath}"],
       "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      },
+      {
         "target": "openapi",
         "projects": "self"
       }]
@@ -66,7 +86,7 @@
         "command": "diff"
       },
       "dependsOn": [{
-        "target": "diff",
+        "target": "build",
         "projects": "dependencies"
       },
       {
@@ -124,8 +144,27 @@
         ],
         "cwd": "apps/api-admin"
       }
+    },
+    "deploy-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "../../node_modules/.bin/rimraf ../../dist/apps/api-admin",
+          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/api-admin"
+        ],
+        "cwd": "apps/api-admin",
+        "parallel": false
+      }
+    },
+    "destroy-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_ENV=local ../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/api-admin",
+        "cwd": "apps/api-admin",
+        "parallel": false
+      }
     }
   },
   "tags": [],
-  "implicitDependencies": ["courses"]
+  "implicitDependencies": ["co-cdk-utils", "courses"]
 }

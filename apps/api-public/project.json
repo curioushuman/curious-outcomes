@@ -155,11 +155,7 @@
         ],
         "cwd": "apps/api-public",
         "parallel": false
-      },
-      "dependsOn": [{
-        "target": "deploy-local",
-        "projects": "dependencies"
-      }]
+      }
     },
     "destroy-local": {
       "executor": "nx:run-commands",

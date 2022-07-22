@@ -12,9 +12,10 @@
     "start-localstack": "docker-compose up &",
     "stop-localstack": "pkill docker-compose up",
     "bootstrap-localstack": "sleep 10 && node_modules/.bin/cdklocal bootstrap aws://000000000000/ap-southeast-2",
-    "predeploy-local": "npm run start-localstack && npm run bootstrap-localstack",
-    "deploy-local": "nx run api-public:deploy-local --verbose",
-    "destroy-local": "nx run-many --parallel=1 --target=destroy-local --projects=api-public,courses,co-layers",
+    "predeploy-local": "npm run start-localstack && npm run bootstrap-localstack && npm run build-local",
+    "build-local": "nx run-many --parallel=3 --target=build --projects=loggable,fp-ts-utils,co-common,co-courses,co-cdk-utils",
+    "deploy-local": "nx run-many --parallel=1 --target=deploy-local --projects=co-layers,courses,api-public,api-admin",
+    "destroy-local": "nx run-many --parallel=1 --target=destroy-local --projects=api-public,api-admin,courses,co-layers",
     "postdestroy-local": "npm run stop-localstack"
   },
   "private": true,

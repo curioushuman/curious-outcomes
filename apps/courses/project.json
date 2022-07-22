@@ -123,11 +123,7 @@
         ],
         "cwd": "apps/courses",
         "parallel": false
-      },
-      "dependsOn": [{
-        "target": "deploy-local",
-        "projects": "dependencies"
-      }]
+      }
     },
     "destroy-local": {
       "executor": "nx:run-commands",

@@ -13,17 +13,6 @@
         "assets": ["libs/shared/error-factory/*.md"]
       }
     },
-    "deploy-local": {
-      "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/layers/co-shared/nodejs/node_modules/@curioushuman/error-factory",
-        "main": "libs/shared/error-factory/src/index.ts",
-        "tsConfig": "libs/shared/error-factory/tsconfig.lib.json",
-        "packageJson": "libs/shared/error-factory/package.json",
-        "assets": ["libs/shared/error-factory/*.md"]
-      }
-    },
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {

@@ -123,11 +123,7 @@
         ],
         "cwd": "apps/co-layers",
         "parallel": false
-      },
-      "dependsOn": [{
-        "target": "build",
-        "projects": "dependencies"
-      }]
+      }
     },
     "destroy-local": {
       "executor": "nx:run-commands",

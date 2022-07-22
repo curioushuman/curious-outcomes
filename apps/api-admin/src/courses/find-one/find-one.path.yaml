@@ -1,7 +1,7 @@
 get:
   summary: Find a course by the source ID
   parameters:
-    - name: courseSourceId
+    - name: externalId
       in: path
       required: true
       schema:
@@ -14,10 +14,17 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../../schema/course-response.yaml"
+            $ref: "../schema/course-response.dto.yaml"
 
     '400':
       description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "../../schema/error.yaml"
+
+    '404':
+      description: Course not found
       content:
         application/json:
           schema:
@@ -29,4 +36,3 @@ get:
         application/json:
           schema:
             $ref: "../../schema/error.yaml"
-

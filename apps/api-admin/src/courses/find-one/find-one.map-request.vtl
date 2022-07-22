@@ -1,0 +1,7 @@
+#set($allParams = $input.params())
+#set($pathParams = $allParams.get('path'))
+#set($externalId = $pathParams.get('externalId'))
+#set($externalIdEscaped = $util.escapeJavaScript("${externalId}"))
+#set($bodyProperties = '"externalId":"' + $externalIdEscaped + '"')
+#set($body = '{' + $bodyProperties + '}')
+$body

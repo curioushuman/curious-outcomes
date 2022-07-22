@@ -9,7 +9,7 @@
 
 ### Input data:
 
-- External Id
+- External Id, extends string
 
 ### Dependencies (from other services/sources)
 

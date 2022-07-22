@@ -1,16 +1,59 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Construct } from 'constructs';
 
-import { resolve as pathResolve } from 'path';
-import { readFileSync } from 'fs';
+// Importing utilities for use in infrastructure processes
+// Initially we're going to import from local sources
+import { CoApiConstruct } from '../../../dist/local/@curioushuman/co-cdk-utils/src';
+// Long term we'll put them into packages
+// import { CoApiConstruct } from '@curioushuman/co-cdk-utils';
 
 export class ApiAdminStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    /**
+     * API Gateway
+     */
+    const apiAdmin = new CoApiConstruct(this, 'api-admin', {
+      description: 'Curious Outcomes Admin API',
+      applicationNamePrefix: 'Co',
+      stageName: 'dev',
+    });
+
+    /**
+     * Resources this API will use
+     */
+
+    /**
+     * courses-findOne: Lambda Function
+     */
+    const coursesFindOneFunction = lambda.Function.fromFunctionAttributes(
+      this,
+      'CoApiAdminCourses-FindCourseFunction',
+      {
+        functionArn: `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:CoFindCourseFunction`,
+        sameEnvironment: true,
+      }
+    );
+    // Allow access for API
+    coursesFindOneFunction.grantInvoke(apiAdmin.role);
+
+    /**
+     * courses-create: Lambda Function
+     */
+    const coursesCreateFunction = lambda.Function.fromFunctionAttributes(
+      this,
+      'CoApiAdminCourses-CreateCourseFunction',
+      {
+        functionArn: `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:CoCreateCourseFunction`,
+        sameEnvironment: true,
+      }
+    );
+    // Allow access for API
+    coursesCreateFunction.grantInvoke(apiAdmin.role);
 
     /**
      * SNS Topic for External events
@@ -21,332 +64,189 @@ export class ApiAdminStack extends cdk.Stack {
      *       maybe off lambda?
      *       https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda-readme.html#lambda-with-dlq
      */
-    const topicExternalEvents = new sns.Topic(this, 'allExternalEventsTopic', {
-      displayName: 'SNS topic for throughput of ALL external events',
-      topicName: 'allExternalEventsTopic',
-    });
+    const topicExternalEvents = new sns.Topic(
+      this,
+      'CoAllExternalEventsTopic',
+      {
+        displayName: 'SNS topic for throughput of ALL external events',
+        topicName: 'allExternalEventsTopic',
+      }
+    );
+    topicExternalEvents.grantPublish(apiAdmin.role);
 
     /**
-     * API Gateway
-     * https://{restapi_id}.execute-api.{region}.amazonaws.com/{stage_name}/
-     * https://ap-southeast-2.console.aws.amazon.com/apigateway/home?region=ap-southeast-2#/apis/txi21niwmd/stages/dev
+     * Common response models
+     * i.e. these are the structures for data that will be returned from THIS API
      */
-    const api = new apigateway.RestApi(this, 'api-admin', {
-      description: 'Curious Outcomes Admin API',
-      deployOptions: {
-        metricsEnabled: true,
-        loggingLevel: apigateway.MethodLoggingLevel.INFO,
-        dataTraceEnabled: true,
-        stageName: 'dev',
-      },
-    });
 
     /**
-     * Allow our gateway to publish to the topic
+     * Error
      */
-    const apiSnsRole = new iam.Role(this, 'ApiSnsRole', {
-      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      inlinePolicies: {
-        // I assume this locks it down to only publish to the topic
-        // TODO: investigate (IAM) further
-        PublishExternalEventPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: ['sns:Publish'],
-              resources: [topicExternalEvents.topicArn],
-            }),
-          ],
-        }),
-      },
-    });
-    topicExternalEvents.grantPublish(apiSnsRole);
+    const errorModel = apiAdmin.addErrorResponseModel();
 
     /**
-     * Response models for the API; valid and error
+     * Course
+     * NOTE: the below does not include the externalId
+     *       as this is not necessary info for the admin
+     * TODO
+     * - [ ] can we move this to a schema dir or similar
+     * - [ ] we also need to align with the openapi schema yaml
      */
-    const responseModel = api.addModel('ResponseModel', {
-      contentType: 'application/json',
-      modelName: 'ResponseModel',
-      schema: {
-        schema: apigateway.JsonSchemaVersion.DRAFT4,
-        title: 'pollResponse',
-        type: apigateway.JsonSchemaType.OBJECT,
-        properties: { message: { type: apigateway.JsonSchemaType.STRING } },
-      },
-    });
-    const errorResponseModel = api.addModel('ErrorResponseModel', {
-      contentType: 'application/json',
-      modelName: 'ErrorResponseModel',
-      schema: {
-        schema: apigateway.JsonSchemaVersion.DRAFT4,
-        title: 'errorResponse',
-        type: apigateway.JsonSchemaType.OBJECT,
+    const courseResponseDtoModel = apiAdmin.addResponseModel(
+      'course-response-dto',
+      {
         properties: {
-          state: { type: apigateway.JsonSchemaType.STRING },
-          message: { type: apigateway.JsonSchemaType.STRING },
+          id: { type: apigateway.JsonSchemaType.STRING },
+          externalId: { type: apigateway.JsonSchemaType.STRING },
+          name: { type: apigateway.JsonSchemaType.STRING },
+          slug: { type: apigateway.JsonSchemaType.STRING },
         },
-      },
-    });
+      }
+    );
 
     /**
      * Root Resources for the API
-     *
-     * TODO:
-     * - [ ] models from types
-     *       https://matt.martz.codes/how-to-automatically-generate-request-models-from-typescript-interfaces
      */
-    const courses = api.root.addResource('courses');
+    const courses = apiAdmin.api.root.addResource('courses');
 
     /**
-     * Resources/methods for the /courses endpoint
-     */
-    /**
-     * GET /courses/{eventType}/{courseSourceId}?{updatedStatus?}
-     *
-     * TODO:
-     * - [ ] idempotency for the hook
-     *       do we assume each hit of the hook is an independent event?
-     *       can we do it another way? Maybe specific to the event?
-     *       https://aws.amazon.com/premiumsupport/knowledge-center/lambda-function-idempotent/
-     */
-    const coursesHook = courses.addResource('hook');
-    const coursesHookType = coursesHook.addResource('{eventType}');
-    const coursesHookTypeAndId =
-      coursesHookType.addResource('{courseSourceId}');
-
-    /**
-     * Mapping template for this resource/method
-     */
-    const coursesHookTypeAndIdRequestTemplate = readFileSync(
-      pathResolve(__dirname, '../src/courses/hook/hook.mapping-template.vtl'),
-      'utf8'
-    ).replace(/(\r\n|\n|\r)/gm, '');
-
-    /**
-     * Request Validator
-     */
-    const basicGetRequestValidator = new apigateway.RequestValidator(
-      this,
-      'ApiAdmin-BasicGetRequestValidator',
-      {
-        restApi: api,
-
-        // the properties below are optional
-        requestValidatorName: 'ApiAdmin-basicGetRequestValidator',
-        validateRequestBody: false,
-        validateRequestParameters: true,
-      }
-    );
-
-    // integration with SNS topic for external events
-    // source: https://github.com/cdk-patterns/serverless/blob/main/the-big-fan/typescript/lib/the-big-fan-stack.ts
-    coursesHookTypeAndId.addMethod(
-      'GET',
-      new apigateway.AwsIntegration({
-        service: 'sns',
-        integrationHttpMethod: 'POST',
-        path: `${cdk.Aws.ACCOUNT_ID}/${topicExternalEvents.topicName}`,
-        options: {
-          credentialsRole: apiSnsRole,
-          // Tell api gw to send our payload as query params
-          // TODO: seems standard, but why?
-          requestParameters: {
-            'integration.request.header.Content-Type':
-              "'application/x-www-form-urlencoded'",
-          },
-          // TODO: once removed, add VTL unit tests
-          //       http://mapping-template-checker.toqoz.net/
-          //       https://github.com/ToQoz/api-gateway-mapping-template
-          // TODO:
-          // - [ ] better string replacement below
-          requestTemplates: {
-            'application/json': coursesHookTypeAndIdRequestTemplate.replace(
-              'topicExternalEvents.topicArn',
-              topicExternalEvents.topicArn
-            ),
-          },
-          passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-          integrationResponses: [
-            {
-              // if the return code from SNS is 200, use the success response
-              statusCode: '200',
-              responseTemplates: {
-                // Just respond with a generic message
-                'application/json': JSON.stringify({
-                  message: 'message added to topic',
-                }),
-              },
-            },
-            {
-              // NOTE: _If the back end is an AWS Lambda function, the AWS Lambda
-              // function error header is matched. For all other HTTP and AWS back
-              // ends, the HTTP status code is matched._
-              // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.IntegrationResponse.html
-              // selectionPattern: '^.*(Error|40|50).*$',
-              // prettier-ignore
-              // eslint-disable-next-line no-useless-escape
-              selectionPattern: "400",
-              statusCode: '400',
-              responseTemplates: {
-                'application/json': JSON.stringify({
-                  state: 'error',
-                  message:
-                    "$util.escapeJavaScript($input.path('$.Error.Message'))",
-                }),
-              },
-              responseParameters: {
-                'method.response.header.Content-Type': "'application/json'",
-                'method.response.header.Access-Control-Allow-Origin': "'*'",
-                'method.response.header.Access-Control-Allow-Credentials':
-                  "'true'",
-              },
-            },
-          ],
-        },
-      }),
-      {
-        // Here we can define path, querystring, and acceptable headers
-        requestParameters: {
-          'method.request.path.eventType': true,
-          'method.request.path.courseSourceId': true,
-          'method.request.querystring.updatedStatus': false,
-        },
-        requestValidator: basicGetRequestValidator,
-        // what we allow to be returned as a response
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-              'method.response.header.Access-Control-Allow-Credentials': true,
-            },
-            responseModels: {
-              'application/json': responseModel,
-            },
-          },
-          {
-            statusCode: '400',
-            responseParameters: {
-              'method.response.header.Content-Type': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-              'method.response.header.Access-Control-Allow-Credentials': true,
-            },
-            responseModels: {
-              'application/json': errorResponseModel,
-            },
-          },
-        ],
-      }
-    );
-
-    /**
-     * GET /courses/{courseSourceId}
+     * findOne
+     * GET /courses/{id}?{slug?}
      *
      * ! THERE ARE NO TESTS FOR THIS YET (as I was rushing for review)
      */
-    const coursesFind = courses.addResource('{courseSourceId}');
+    const coursesFind = courses.addResource('{externalId}');
 
     /**
-     * Mapping template for this resource/method
+     * findOne: request mapping template
+     * to convert API input/params/body, into acceptable lambda input
      */
-    const coursesFindRequestTemplate = readFileSync(
-      pathResolve(
-        __dirname,
-        '../src/courses/find-one/find-one.mapping-template.vtl'
-      ),
-      'utf8'
-    ).replace(/(\r\n|\n|\r)/gm, '');
-
-    const coursesFindOneFunction = lambda.Function.fromFunctionArn(
-      this,
-      'Function',
-      `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:FindCourseFunction`
+    const coursesFindRequestTemplate = CoApiConstruct.vtlTemplateFromFile(
+      'src/courses/find-one/find-one.map-request.vtl'
     );
 
-    coursesFind.addMethod(
-      'GET',
-      new apigateway.LambdaIntegration(coursesFindOneFunction, {
-        // TODO: once removed, add VTL unit tests
-        //       http://mapping-template-checker.toqoz.net/
-        //       https://github.com/ToQoz/api-gateway-mapping-template
+    /**
+     * findOne: response mapping template
+     * to convert results from lambda into API response
+     */
+    const coursesFindResponseTemplate = CoApiConstruct.vtlTemplateFromFile(
+      'src/courses/find-one/find-one.map-response.vtl'
+    );
+
+    /**
+     * findOne: Accepted Lambda Function Responses
+     * For more info on integrationResponses check CoApiConstruct
+     */
+
+    // SUCCESS
+    const coursesFindOneFunctionSuccessResponse: apigateway.IntegrationResponse =
+      {
+        statusCode: '200',
+        responseTemplates: {
+          'application/json': coursesFindResponseTemplate,
+        },
+      };
+    // ERROR
+    const coursesFindOneFunctionServerErrorResponse =
+      CoApiConstruct.serverErrorResponse();
+    const coursesFindOneFunctionClientErrorResponse =
+      CoApiConstruct.clientErrorResponse();
+
+    /**
+     * findOne: Lambda Function Integration
+     */
+    const coursesFindOneFunctionIntegration = new apigateway.LambdaIntegration(
+      coursesFindOneFunction,
+      {
+        // not a proxy, we're taking control of what is sent/received to/from integration
+        proxy: false,
+
+        // ---
+        // request handling
+        // ---
+
+        // we're not passing any of the request parameters (directly) through
+        // to this integration. All will be routed through the template (below)
+        // requestParameters: {},
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        // this is where we convert request params into lambda input
         requestTemplates: {
           'application/json': coursesFindRequestTemplate,
         },
-        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-        // ! UP TO: everything below here needs completion
+
+        // ---
+        // non-integration response handling
+        // i.e. these responses happen without even hitting the back-end
+        // e.g. (API gateway based) request validation
+        // ---
+
+        // we are not currently going to mess with API gateway responses
+        // we might need to later on if we want to add additional info to error
+        // or if we need to add CORS info to response.
+        // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-gatewayResponse-definition.html
+        // gatewayResponses: [],
+
+        // ---
+        // integration response handling
+        // ---
         integrationResponses: [
-          {
-            // if the return code from SNS is 200, use the success response
-            statusCode: '200',
-            responseTemplates: {
-              // Just respond with a generic message
-              'application/json': JSON.stringify({
-                message: 'message added to topic',
-              }),
-            },
-          },
-          {
-            // NOTE: _If the back end is an AWS Lambda function, the AWS Lambda
-            // function error header is matched. For all other HTTP and AWS back
-            // ends, the HTTP status code is matched._
-            // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.IntegrationResponse.html
-            // selectionPattern: '^.*(Error|40|50).*$',
-            // prettier-ignore
-            // eslint-disable-next-line no-useless-escape
-            selectionPattern: "400",
-            statusCode: '400',
-            responseTemplates: {
-              'application/json': JSON.stringify({
-                state: 'error',
-                message:
-                  "$util.escapeJavaScript($input.path('$.Error.Message'))",
-              }),
-            },
-            responseParameters: {
-              'method.response.header.Content-Type': "'application/json'",
-              'method.response.header.Access-Control-Allow-Origin': "'*'",
-              'method.response.header.Access-Control-Allow-Credentials':
-                "'true'",
-            },
-          },
+          coursesFindOneFunctionServerErrorResponse,
+          coursesFindOneFunctionClientErrorResponse,
+          coursesFindOneFunctionSuccessResponse,
         ],
-        // Here we can define path, querystring, and acceptable headers
-        requestParameters: {
-          'method.request.path.courseSourceId': true,
-        },
-        requestValidator: basicGetRequestValidator,
-        // what we allow to be returned as a response
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Content-Type': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-              'method.response.header.Access-Control-Allow-Credentials': true,
-            },
-            responseModels: {
-              'application/json': responseModel,
-            },
-          },
-          {
-            statusCode: '400',
-            responseParameters: {
-              'method.response.header.Content-Type': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-              'method.response.header.Access-Control-Allow-Credentials': true,
-            },
-            responseModels: {
-              'application/json': errorResponseModel,
-            },
-          },
-        ],
-      })
+      }
     );
+
+    /**
+     * Default method response parameters
+     */
+    // CORS
+    const defaultMethodResponseParametersCors: Record<string, boolean> = {
+      'method.response.header.Content-Type': true,
+      'method.response.header.Access-Control-Allow-Origin': true,
+      'method.response.header.Access-Control-Allow-Credentials': true,
+    };
+
+    /**
+     * findOne: method definition
+     * - custom (non-proxy) lambda integration
+     */
+    coursesFind.addMethod('GET', coursesFindOneFunctionIntegration, {
+      // Here we can define path, querystring, and acceptable headers (for this method)
+      requestParameters: {
+        'method.request.path.id': false,
+        'method.request.querystring.slug': false,
+      },
+      // No point including a validator, as both params are optional
+      // requestValidator: basicGetRequestValidator,
+
+      // now we have funneled
+      // - all possible responses from our Lambda
+      // - into a single success response
+      // - and a couple of (acceptable) error responses
+      // we can define what exactly these look like when they are sent back to the client
+      // there should be a response per status code defined in your acceptable integration responses
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: { ...defaultMethodResponseParametersCors },
+          responseModels: {
+            'application/json': courseResponseDtoModel,
+          },
+        },
+        {
+          statusCode: '400',
+          responseParameters: { ...defaultMethodResponseParametersCors },
+          responseModels: {
+            'application/json': errorModel,
+          },
+        },
+      ],
+    });
 
     /**
      * Outputs
      */
-    new cdk.CfnOutput(this, 'apiUrl', { value: api.urlForPath() });
+    new cdk.CfnOutput(this, 'apiUrl', { value: apiAdmin.api.urlForPath() });
   }
 }
