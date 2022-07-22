@@ -43,3 +43,6 @@ Thumbs.db
 
 # AWS
 .aws-sam
+
+# Localstack / docker
+/volume

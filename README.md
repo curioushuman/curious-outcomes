@@ -33,6 +33,28 @@ This will be the home for all things Curious Outcomes. For now the focus has bee
     - e.g. the shared libs
   - OR we can keep everything separate
   - Simplicity, complexity, update management, version tracking, etc
+- Layers vs local
+  - Modules in the layers directory is distributed to our apps
+    - This could be a combo of packaged (via NPM) or built (straight into the layer) modules
+  - Modules in the local directory are employed by CDK to help in the Cloud Formation synth and deploy process
+    - Again could be a combo of packaged or locally accessed modules
+- Localstack
+  - before you first run, you need to bootstrap
+    - docker-compose up
+    - node_modules/.bin/cdklocal --verbose bootstrap aws://000000000000/ap-southeast-2
+      - Use the 000000000000 account id for localstack stuff
+  - You also need a .env file in the root
+    - CDK_DEPLOY_ACCOUNT=000000000000
+    - CDK_DEPLOY_REGION=ap-southeast-2
+  - to run
+    - docker-compose up
+    - node_modules/.bin/cdklocal --verbose bootstrap aws://000000000000/ap-southeast-2
+      - Use the 000000000000 account id for localstack stuff
+      - You need to bootstrap every time you docker up
+    - nx run local
+      - NOTE: I have not set this up for all projects just yet
+    - nx run co-layers:local
+      - For individual stacks
 
 ## Big issues
 
@@ -82,6 +104,17 @@ const response: APIGatewayProxyResult = {
 - 82.37 same as previous, but (w!)
 - 285.23ms logging, without error (c!)
 - 60.63 same as previous (w!)
+
+### find-course
+
+#### Using fake repository i.e. no DB
+
+Some notes about this series of testing:
+
+- Nest still in debug mode
+
+- 1001.81 c!
+- 580.56 w!
 
 ## TODO
 
