@@ -5,6 +5,17 @@ import { Construct } from 'constructs';
 import { resolve as pathResolve } from 'path';
 import { readFileSync } from 'fs';
 
+// Importing utilities for use in infrastructure processes
+// Initially we're going to import from local sources
+// import {
+//   clientErrors,
+//   serverErrors,
+// } from '../../../../../../dist/layers/co-shared/nodejs/node_modules/@curioushuman/error-factory/src/index.js';
+// Long term we'll put them into packages
+// import { clientErrors, serverErrors } from '@curioushuman/error-factory';
+// ! UPDATE
+// Importing locally won't work, we'll need to deploy as a package
+
 /**
  * Props required to initialize a CO API Construct
  */
@@ -205,19 +216,34 @@ export class CoApiConstruct extends Construct {
    *    },
    */
   public static serverErrorResponse(): apigateway.IntegrationResponse {
-    return {
-      selectionPattern: CoApiConstruct.serverErrorRegex(),
-      statusCode: '500',
-      responseTemplates: {
-        'application/json': JSON.stringify({
-          message: "$util.escapeJavaScript($input.path('$.errorMessage'))",
-        }),
-      },
-    };
+    return CoApiConstruct.errorResponse(
+      '500',
+      CoApiConstruct.serverErrorRegex()
+    );
   }
 
+  /**
+   * Utility to pull together a regex based on our custom errors
+   * that are indicative of an internal server error.
+   *
+   * TODO
+   * - [ ] pull the error messages directly from error-factory
+   */
   private static serverErrorRegex(): string {
-    return '^(Invalid internal communication).+';
+    // const errorMessages = Object.values(serverErrors).map(
+    //   (errorClass) => new errorClass().message.split(':')[0]
+    // );
+    const errorMessages = [
+      'Invalid internal communication',
+      'Source already exists within our database',
+      'Source contains insufficient or invalid data',
+      'Error authenticating at repository',
+      'Error connecting to repository',
+      'The repository is currently unavailable',
+      'This particular feature does not yet exist, but is on our roadmap',
+      'Something unexpected happened',
+    ];
+    return `^(${errorMessages.join('|')}).+`;
   }
 
   /**
@@ -228,19 +254,76 @@ export class CoApiConstruct extends Construct {
    * - [ ] similar RE CORS stuff
    */
   public static clientErrorResponse(): apigateway.IntegrationResponse {
+    return CoApiConstruct.errorResponse(
+      '400',
+      CoApiConstruct.clientErrorRegex()
+    );
+  }
+
+  /**
+   * Utility to pull together a regex based on our custom errors
+   * that are indicative of a client error
+   *
+   * TODO
+   * - [ ] pull the error messages directly from error-factory
+   */
+  private static clientErrorRegex(): string {
+    // const errorMessages = Object.values(clientErrors).map(
+    //   (errorClass) => new errorClass().message.split(':')[0]
+    // );
+    const errorMessages = ['Invalid request'];
+    return `^(${errorMessages.join('|')}).+`;
+  }
+
+  /**
+   * A standard format for our API client errors
+   * Things we need to offer feedback to them for
+   *
+   * TODO:
+   * - [ ] similar RE CORS stuff
+   */
+  public static notFoundErrorResponse(): apigateway.IntegrationResponse {
+    return CoApiConstruct.errorResponse(
+      '404',
+      CoApiConstruct.notFoundErrorRegex()
+    );
+  }
+
+  /**
+   * Utility to pull together a regex based on our custom errors
+   * that are indicative of an item not found scenario
+   *
+   * TODO
+   * - [ ] pull the error messages directly from error-factory
+   */
+  private static notFoundErrorRegex(): string {
+    // const errorMessages = Object.values(clientErrors).map(
+    //   (errorClass) => new errorClass().message.split(':')[0]
+    // );
+    const errorMessages = ['A matching item could not be found'];
+    return `^(${errorMessages.join('|')}).+`;
+  }
+
+  /**
+   * A standard format for our API client errors
+   * Things we need to offer feedback to them for
+   *
+   * TODO:
+   * - [ ] similar RE CORS stuff
+   */
+  public static errorResponse(
+    statusCode: string,
+    selectionPattern: string
+  ): apigateway.IntegrationResponse {
     return {
-      selectionPattern: CoApiConstruct.clientErrorRegex(),
-      statusCode: '400',
+      selectionPattern,
+      statusCode,
       responseTemplates: {
         'application/json': JSON.stringify({
           message: "$util.escapeJavaScript($input.path('$.errorMessage'))",
         }),
       },
     };
-  }
-
-  private static clientErrorRegex(): string {
-    return '^(Invalid request).+';
   }
 
   /**

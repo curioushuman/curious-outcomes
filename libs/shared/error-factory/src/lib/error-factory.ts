@@ -2,16 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 
-import { UnknownException } from './errors/unknown.error';
-import { InternalRequestInvalidError } from './errors/internal-request-invalid.error';
-import { RequestInvalidError } from './errors/request-invalid.error';
-import { RepositoryItemConflictError } from './errors/repository/item-conflict.error';
-import { SourceInvalidError } from './errors/repository/source-invalid.error';
-import { RepositoryAuthenticationError } from './errors/repository/authentication.error';
-import { RepositoryItemNotFoundError } from './errors/repository/item-not-found.error';
-import { RepositoryServerError } from './errors/repository/server.error';
-import { RepositoryServerUnavailableError } from './errors/repository/server-unavailable.error';
-import { NotYetImplementedError } from './errors/not-yet-implemented.error';
+import { allErrors } from './errors/definitions';
+import { UnknownError } from './errors/unknown.error';
 
 /**
  * This is the minimum aspects of an error message you must provide
@@ -36,23 +28,8 @@ export interface ErrorMessageComponents {
  * - [ ] is there a better way than registering ALL errors here?
  */
 
-// * MUST INCLUDE all error definitions below
-// I attempted to include them in the individual subclasses
-// but couldn't get the generic type for this class to work
-const errorDefinitions = {
-  InternalRequestInvalidError,
-  NotYetImplementedError,
-  RepositoryAuthenticationError,
-  RepositoryItemConflictError,
-  RepositoryItemNotFoundError,
-  RepositoryServerError,
-  RepositoryServerUnavailableError,
-  RequestInvalidError,
-  SourceInvalidError,
-};
-
-export type AllErrorTypeNames = keyof typeof errorDefinitions;
-type ErrorType = typeof errorDefinitions[AllErrorTypeNames];
+export type AllErrorTypeNames = keyof typeof allErrors;
+type ErrorType = typeof allErrors[AllErrorTypeNames];
 
 // TODO - should move to utils
 type ExtractInstanceType<T> = T extends new () => infer R ? R : never;
@@ -108,11 +85,11 @@ export abstract class ErrorFactory<
   ): ExtractInstanceType<ErrorType> {
     const errorMessage =
       typeof error === 'string' ? error : this.errorDescription(error);
-    return new errorDefinitions[asErrorType](errorMessage);
+    return new allErrors[asErrorType](errorMessage);
   }
 
-  private newUnknownError(error: Error): UnknownException {
-    return new UnknownException(this.errorDescription(error));
+  private newUnknownError(error: Error): UnknownError {
+    return new UnknownError(this.errorDescription(error));
   }
 
   public errorAsString(error: Error): string {

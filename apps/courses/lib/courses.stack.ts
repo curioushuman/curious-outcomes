@@ -59,7 +59,7 @@ export class CoursesStack extends cdk.Stack {
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoShared',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoShared:6`
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoShared:7`
       ),
     ];
 

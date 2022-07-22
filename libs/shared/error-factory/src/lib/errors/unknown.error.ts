@@ -6,7 +6,7 @@ import { ErrorFactory, ErrorMessageComponents } from '../error-factory';
  * Error message components for this error
  */
 const messageComponents: ErrorMessageComponents = {
-  base: 'Something... Unexpected happened',
+  base: 'Something unexpected happened',
   action: 'DO NOT PANIC, out talented team are hunting it down as we speak',
 };
 
@@ -15,7 +15,7 @@ const messageComponents: ErrorMessageComponents = {
  * Calling it out as unknown so we can track them,
  * and know them.
  */
-export class UnknownException extends InternalServerErrorException {
+export class UnknownError extends InternalServerErrorException {
   constructor(message?: string) {
     super(ErrorFactory.formatMessage(messageComponents, message));
   }
