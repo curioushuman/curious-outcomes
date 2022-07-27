@@ -16,7 +16,8 @@
     "build-local": "nx run-many --parallel=3 --target=build --projects=loggable,fp-ts-utils,co-common,co-courses,co-cdk-utils",
     "deploy-local": "nx run-many --parallel=1 --target=deploy-local --projects=co-layers,courses,api-public,api-admin",
     "destroy-local": "nx run-many --parallel=1 --target=destroy-local --projects=api-public,api-admin,courses,co-layers",
-    "postdestroy-local": "npm run stop-localstack"
+    "postdestroy-local": "npm run stop-localstack",
+    "destroy": "nx run-many --verbose --parallel=1 --target=destroy --projects=api-public,api-admin,courses"
   },
   "private": true,
   "dependencies": {
