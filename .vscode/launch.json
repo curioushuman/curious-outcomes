@@ -2,13 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "AWS SAM debug",
-      "type": "aws-sam",
-      "request": "direct-invoke",
-      "invokeTarget": {
-        "target": "template",
-        "templatePath": "./template.yaml",
-        "logicalId": "FunctionTransformEvent"
+      "name": "debug:nx-test:api-admin",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnFirstSessionStart",
+      // "preLaunchTask": "cdk-debug:on",
+      // "postDebugTask": "cdk-debug:off",
+      "program": "${workspaceFolder}/node_modules/.bin/nx",
+      "args": ["test", "api-admin", "--codeCoverage=false"],
+      "env": {
+        "CDK_DEBUG": "true"
       }
     }
   ]
