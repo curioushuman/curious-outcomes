@@ -1,4 +1,4 @@
-import { Capture, Match, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 
 import { ApiAdminStack } from '../api-admin.stack';
@@ -6,6 +6,7 @@ import { ApiAdminStack } from '../api-admin.stack';
 /**
  * TODO
  * - [ ] Use the openapi file as the inspiration for the tests
+ * - [ ] test api Role has access to lambda, and topic
  */
 
 describe('ApiAdminStack', () => {

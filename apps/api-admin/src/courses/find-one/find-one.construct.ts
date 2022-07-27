@@ -1,5 +1,8 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+
+import { resolve as pathResolve } from 'path';
 
 import { CoApiConstruct } from '../../../../../dist/local/@curioushuman/co-cdk-utils/src';
 
@@ -8,6 +11,7 @@ import { CoApiConstruct } from '../../../../../dist/local/@curioushuman/co-cdk-u
  */
 export interface FindOneProps {
   apiConstruct: CoApiConstruct;
+  lambda: lambda.IFunction;
 }
 
 /**
@@ -15,13 +19,96 @@ export interface FindOneProps {
  */
 export class FindOneConstruct extends Construct {
   private apiConstruct: CoApiConstruct;
+  private lambda: lambda.IFunction;
 
-  public methodOptions: apigateway.MethodOptions;
+  public readonly lambdaIntegration: apigateway.LambdaIntegration;
+  public readonly methodOptions: apigateway.MethodOptions;
 
   constructor(scope: Construct, id: string, props: FindOneProps) {
     super(scope, id);
 
     this.apiConstruct = props.apiConstruct;
+    this.lambda = props.lambda;
+
+    /**
+     * findOne: request mapping template
+     * to convert API input/params/body, into acceptable lambda input
+     */
+    const coursesFindRequestTemplate = CoApiConstruct.vtlTemplateFromFile(
+      pathResolve(__dirname, './find-one.map-request.vtl')
+    );
+
+    /**
+     * findOne: response mapping template
+     * to convert results from lambda into API response
+     */
+    const coursesFindResponseTemplate = CoApiConstruct.vtlTemplateFromFile(
+      pathResolve(__dirname, './find-one.map-response.vtl')
+    );
+
+    /**
+     * findOne: Accepted Lambda Function Responses
+     * For more info on integrationResponses check CoApiConstruct
+     */
+
+    // SUCCESS
+    const coursesFindOneFunctionSuccessResponse: apigateway.IntegrationResponse =
+      {
+        statusCode: '200',
+        responseTemplates: {
+          'application/json': coursesFindResponseTemplate,
+        },
+      };
+    // ERROR
+    const coursesFindOneFunctionServerErrorResponse =
+      CoApiConstruct.serverErrorResponse();
+    const coursesFindOneFunctionClientErrorResponse =
+      CoApiConstruct.clientErrorResponse();
+    const coursesFindOneFunctionNotFoundErrorResponse =
+      CoApiConstruct.notFoundErrorResponse();
+
+    /**
+     * findOne: Lambda Function Integration
+     */
+    this.lambdaIntegration = new apigateway.LambdaIntegration(this.lambda, {
+      // not a proxy, we're taking control of what is sent/received to/from integration
+      proxy: false,
+
+      // ---
+      // request handling
+      // ---
+
+      // we're not passing any of the request parameters (directly) through
+      // to this integration. All will be routed through the template (below)
+      // requestParameters: {},
+      passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+      // this is where we convert request params into lambda input
+      requestTemplates: {
+        'application/json': coursesFindRequestTemplate,
+      },
+
+      // ---
+      // non-integration response handling
+      // i.e. these responses happen without even hitting the back-end
+      // e.g. (API gateway based) request validation
+      // ---
+
+      // we are not currently going to mess with API gateway responses
+      // we might need to later on if we want to add additional info to error
+      // or if we need to add CORS info to response.
+      // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-gatewayResponse-definition.html
+      // gatewayResponses: [],
+
+      // ---
+      // integration response handling
+      // ---
+      integrationResponses: [
+        coursesFindOneFunctionServerErrorResponse,
+        coursesFindOneFunctionClientErrorResponse,
+        coursesFindOneFunctionNotFoundErrorResponse,
+        coursesFindOneFunctionSuccessResponse,
+      ],
+    });
 
     /**
      * Default method response parameters
