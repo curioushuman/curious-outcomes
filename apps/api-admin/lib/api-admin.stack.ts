@@ -4,11 +4,15 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Construct } from 'constructs';
 
+import { resolve as pathResolve } from 'path';
+
 // Importing utilities for use in infrastructure processes
 // Initially we're going to import from local sources
 import { CoApiConstruct } from '../../../dist/local/@curioushuman/co-cdk-utils/src';
 // Long term we'll put them into packages
 // import { CoApiConstruct } from '@curioushuman/co-cdk-utils';
+
+import { FindOneConstruct } from '../src/courses/find-one/find-one.construct';
 
 export class ApiAdminStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -80,11 +84,6 @@ export class ApiAdminStack extends cdk.Stack {
      */
 
     /**
-     * Error
-     */
-    const errorModel = apiAdmin.addErrorResponseModel();
-
-    /**
      * Course
      * NOTE: the below does not include the externalId
      *       as this is not necessary info for the admin
@@ -92,17 +91,14 @@ export class ApiAdminStack extends cdk.Stack {
      * - [ ] can we move this to a schema dir or similar
      * - [ ] we also need to align with the openapi schema yaml
      */
-    const courseResponseDtoModel = apiAdmin.addResponseModel(
-      'course-response-dto',
-      {
-        properties: {
-          id: { type: apigateway.JsonSchemaType.STRING },
-          externalId: { type: apigateway.JsonSchemaType.STRING },
-          name: { type: apigateway.JsonSchemaType.STRING },
-          slug: { type: apigateway.JsonSchemaType.STRING },
-        },
-      }
-    );
+    apiAdmin.addResponseModel('course-response-dto', {
+      properties: {
+        id: { type: apigateway.JsonSchemaType.STRING },
+        externalId: { type: apigateway.JsonSchemaType.STRING },
+        name: { type: apigateway.JsonSchemaType.STRING },
+        slug: { type: apigateway.JsonSchemaType.STRING },
+      },
+    });
 
     /**
      * Root Resources for the API
@@ -112,17 +108,25 @@ export class ApiAdminStack extends cdk.Stack {
     /**
      * findOne
      * GET /courses/{id}?{slug?}
-     *
-     * ! THERE ARE NO TESTS FOR THIS YET (as I was rushing for review)
      */
     const coursesFind = courses.addResource('{externalId}');
+
+    /**
+     * findOne construct
+     * NOTE: this pares away a lot of the setup for this resource
+     */
+    const coursesFindConstruct = new FindOneConstruct(
+      this,
+      'courses-find-one',
+      { apiConstruct: apiAdmin }
+    );
 
     /**
      * findOne: request mapping template
      * to convert API input/params/body, into acceptable lambda input
      */
     const coursesFindRequestTemplate = CoApiConstruct.vtlTemplateFromFile(
-      'src/courses/find-one/find-one.map-request.vtl'
+      pathResolve(__dirname, '../src/courses/find-one/find-one.map-request.vtl')
     );
 
     /**
@@ -130,7 +134,10 @@ export class ApiAdminStack extends cdk.Stack {
      * to convert results from lambda into API response
      */
     const coursesFindResponseTemplate = CoApiConstruct.vtlTemplateFromFile(
-      'src/courses/find-one/find-one.map-response.vtl'
+      pathResolve(
+        __dirname,
+        '../src/courses/find-one/find-one.map-response.vtl'
+      )
     );
 
     /**
@@ -151,6 +158,8 @@ export class ApiAdminStack extends cdk.Stack {
       CoApiConstruct.serverErrorResponse();
     const coursesFindOneFunctionClientErrorResponse =
       CoApiConstruct.clientErrorResponse();
+    const coursesFindOneFunctionNotFoundErrorResponse =
+      CoApiConstruct.notFoundErrorResponse();
 
     /**
      * findOne: Lambda Function Integration
@@ -192,57 +201,21 @@ export class ApiAdminStack extends cdk.Stack {
         integrationResponses: [
           coursesFindOneFunctionServerErrorResponse,
           coursesFindOneFunctionClientErrorResponse,
+          coursesFindOneFunctionNotFoundErrorResponse,
           coursesFindOneFunctionSuccessResponse,
         ],
       }
     );
 
     /**
-     * Default method response parameters
-     */
-    // CORS
-    const defaultMethodResponseParametersCors: Record<string, boolean> = {
-      'method.response.header.Content-Type': true,
-      'method.response.header.Access-Control-Allow-Origin': true,
-      'method.response.header.Access-Control-Allow-Credentials': true,
-    };
-
-    /**
      * findOne: method definition
      * - custom (non-proxy) lambda integration
      */
-    coursesFind.addMethod('GET', coursesFindOneFunctionIntegration, {
-      // Here we can define path, querystring, and acceptable headers (for this method)
-      requestParameters: {
-        'method.request.path.id': false,
-        'method.request.querystring.slug': false,
-      },
-      // No point including a validator, as both params are optional
-      // requestValidator: basicGetRequestValidator,
-
-      // now we have funneled
-      // - all possible responses from our Lambda
-      // - into a single success response
-      // - and a couple of (acceptable) error responses
-      // we can define what exactly these look like when they are sent back to the client
-      // there should be a response per status code defined in your acceptable integration responses
-      methodResponses: [
-        {
-          statusCode: '200',
-          responseParameters: { ...defaultMethodResponseParametersCors },
-          responseModels: {
-            'application/json': courseResponseDtoModel,
-          },
-        },
-        {
-          statusCode: '400',
-          responseParameters: { ...defaultMethodResponseParametersCors },
-          responseModels: {
-            'application/json': errorModel,
-          },
-        },
-      ],
-    });
+    coursesFind.addMethod(
+      'GET',
+      coursesFindOneFunctionIntegration,
+      coursesFindConstruct.methodOptions
+    );
 
     /**
      * Outputs

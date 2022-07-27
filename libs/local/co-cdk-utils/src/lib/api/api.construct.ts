@@ -2,7 +2,6 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
-import { resolve as pathResolve } from 'path';
 import { readFileSync } from 'fs';
 
 // Importing utilities for use in infrastructure processes
@@ -15,6 +14,7 @@ import { readFileSync } from 'fs';
 // import { clientErrors, serverErrors } from '@curioushuman/error-factory';
 // ! UPDATE
 // Importing locally won't work, we'll need to deploy as a package
+// Until then I've removed the use of the @curioushuman/error-factory package
 
 /**
  * Props required to initialize a CO API Construct
@@ -39,17 +39,30 @@ export interface CoApiResponseModelProps {
 }
 
 /**
+ * Props required to initialize a CO API Response Model
+ */
+export interface CoApiRequestValidatorProps {
+  validateRequestBody: boolean;
+  validateRequestParameters: boolean;
+}
+
+type SupportedResourceType = 'ResponseModel' | 'RequestValidator';
+
+/**
  * CO API Construct
  * i.e. a standard API implementation, and some helpers
  *
  * TODO
- * - [ ] validation or camelCasing of prefix
+ * - [ ] validation or camelCasing of applicationNamePrefix
  */
 export class CoApiConstruct extends Construct {
   public id: string;
-  private namePrefix: string;
   public api: apigateway.RestApi;
   public role: iam.Role;
+  public responseModels: { [name: string]: apigateway.Model };
+  public requestValidators: { [name: string]: apigateway.RequestValidator };
+
+  private namePrefix: string;
 
   constructor(scope: Construct, id: string, props: CoApiProps) {
     super(scope, id);
@@ -92,38 +105,58 @@ export class CoApiConstruct extends Construct {
     this.role = new iam.Role(this, `${id}-role`, {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
     });
+
+    /**
+     * Required response models
+     * NOTE: I'm aware the method itself adds the model to the object
+     * this here is only to instantiate the object
+     */
+    this.responseModels = {
+      error: this.addErrorResponseModel(),
+    };
+
+    /**
+     * Basic request validators
+     */
+    this.requestValidators = {
+      BasicGet: this.requestValidator('basic-get', {
+        validateRequestBody: false,
+        validateRequestParameters: true,
+      }),
+    };
   }
 
   /**
-   * Request Validator
-   * TODO
-   * - [ ] this has simply been copied from original, needs to be revamped
+   * Non-error response model
    */
-  // const basicGetRequestValidator = new apigateway.RequestValidator(
-  //   this,
-  //   'ApiAdmin-BasicGetRequestValidator',
-  //   {
-  //     restApi: api,
-
-  //     // the properties below are optional
-  //     requestValidatorName: 'ApiAdmin-basicGetRequestValidator',
-  //     validateRequestBody: false,
-  //     validateRequestParameters: true,
-  //   }
-  // );
+  public requestValidator(
+    id: string,
+    props: CoApiRequestValidatorProps
+  ): apigateway.RequestValidator {
+    const { validateRequestBody, validateRequestParameters } = props;
+    const requestValidatorId = `${this.id}-request-validator-${id}`;
+    const requestValidatorName = this.transformIdToResourceName(
+      requestValidatorId,
+      'ResponseModel'
+    );
+    return new apigateway.RequestValidator(this, requestValidatorId, {
+      restApi: this.api,
+      // the properties below are optional
+      requestValidatorName,
+      validateRequestBody,
+      validateRequestParameters,
+    });
+  }
 
   /**
    * Allows us to keep our VTL templates in a file. This will pull in VTL as a string
    * and remove any new lines (as this is what is required by SNS).
    *
-   * @param appRootRelativeFilepath a filepath relative to root of application
+   * @param absoluteFilepath a filepath that has already been put through `resolve`
    * @returns VTL template as a single string
    */
-  public static vtlTemplateFromFile(appRootRelativeFilepath: string): string {
-    return readFileSync(
-      pathResolve(process.cwd(), appRootRelativeFilepath),
-      'utf8'
-    ).replace(/(\r\n|\n|\r)/gm, '');
+  public static vtlTemplateFromFile(absoluteFilepath: string): string {
+    return readFileSync(absoluteFilepath, 'utf8').replace(/(\r\n|\n|\r)/gm, '');
   }
 
   /**
@@ -143,25 +176,26 @@ export class CoApiConstruct extends Construct {
         message: { type: apigateway.JsonSchemaType.STRING },
       },
     };
-    return this.addResponseModel('error', {
+    return this.addResponseModelToApi('error', {
       properties,
     });
   }
 
   /**
-   * Non-error response model
+   * Adds a response model to the API
    */
-  public addResponseModel(
+  public addResponseModelToApi(
     id: string,
     props: CoApiResponseModelProps
   ): apigateway.Model {
     const { properties } = props;
-    const modelId = `${this.id}-response-model-${id}`;
-    const modelName = this.transformIdToName(modelId);
-    const title = this.transformIdToResponseModelTitle(id);
+    // NOTE: we don't prepend with id as AWS does this for us
+    const modelId = `response-model-${id}`;
+    const modelName = this.transformIdToResourceName(modelId, 'ResponseModel');
+    const title = this.transformIdToResourceTitle(modelId, 'ResponseModel');
     return this.api.addModel(modelId, {
       contentType: 'application/json',
-      modelName: modelName,
+      modelName,
       schema: {
         schema: apigateway.JsonSchemaVersion.DRAFT4,
         type: apigateway.JsonSchemaType.OBJECT,
@@ -172,10 +206,14 @@ export class CoApiConstruct extends Construct {
   }
 
   /**
-   * Using camelCase for our response naming convention
+   * This adds to the API, and retains it in the API construct for future use
    */
-  private transformIdToResponseModelTitle(id: string): string {
-    return `${this.camelCase(id)}Response`;
+  public addResponseModel(
+    id: string,
+    props: CoApiResponseModelProps
+  ): apigateway.Model {
+    this.responseModels[id] = this.addResponseModelToApi(id, props);
+    return this.responseModels[id];
   }
 
   /**
@@ -327,6 +365,17 @@ export class CoApiConstruct extends Construct {
   }
 
   /**
+   * A temp holding place for CORS stuff
+   */
+  public static methodResponseParametersCors(): Record<string, boolean> {
+    return {
+      'method.response.header.Content-Type': true,
+      'method.response.header.Access-Control-Allow-Origin': true,
+      'method.response.header.Access-Control-Allow-Credentials': true,
+    };
+  }
+
+  /**
    * Utility functions
    *
    * TODO
@@ -336,8 +385,24 @@ export class CoApiConstruct extends Construct {
   /**
    * Using camelCase for our resource naming convention
    */
-  private transformIdToName(id: string): string {
-    return this.namePrefix + this.camelCase(id);
+  private transformIdToResourceName(
+    resourceId: string,
+    resourceType: SupportedResourceType
+  ): string {
+    return (
+      this.namePrefix +
+      this.transformIdToResourceTitle(resourceId, resourceType)
+    );
+  }
+
+  /**
+   * Using camelCase for our response naming convention
+   */
+  private transformIdToResourceTitle(
+    resourceId: string,
+    resourceType: SupportedResourceType
+  ): string {
+    return `${this.camelCase(resourceId)}${resourceType}`;
   }
 
   /**
