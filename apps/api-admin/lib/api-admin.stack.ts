@@ -14,6 +14,7 @@ import {
   FindOneConstruct,
   FindOneProps,
 } from '../src/courses/find-one/find-one.construct';
+import { HookConstruct, HookProps } from '../src/courses/hook/hook.construct';
 
 export class ApiAdminStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -130,6 +131,39 @@ export class ApiAdminStack extends cdk.Stack {
       'GET',
       coursesFindConstruct.lambdaIntegration,
       coursesFindConstruct.methodOptions
+    );
+
+    /**
+     * Hook for external events
+     * GET /courses/{eventType}/{courseSourceId}?{updatedStatus?}
+     *
+     * TODO:
+     * - [ ] idempotency for the hook
+     *       do we assume each hit of the hook is an independent event?
+     *       can we do it another way? Maybe specific to the event?
+     *       https://aws.amazon.com/premiumsupport/knowledge-center/lambda-function-idempotent/
+     */
+    const coursesHook = courses.addResource('hook');
+    const coursesHookType = coursesHook.addResource('{eventType}');
+    const coursesHookTypeAndId =
+      coursesHookType.addResource('{courseSourceId}');
+
+    /**
+     * hook construct
+     */
+    const coursesHookConstruct = new HookConstruct(this, 'courses-hook', {
+      apiConstruct: apiAdmin,
+      topic: topicExternalEvents,
+    } as HookProps);
+
+    /**
+     * hook: method definition
+     * - SNS integration
+     */
+    coursesHookTypeAndId.addMethod(
+      'GET',
+      coursesHookConstruct.snsIntegration,
+      coursesHookConstruct.methodOptions
     );
 
     /**
