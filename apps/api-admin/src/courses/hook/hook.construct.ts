@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Construct } from 'constructs';
 
 import { resolve as pathResolve } from 'path';
@@ -37,12 +39,54 @@ export class HookConstruct extends Construct {
      * - [ ] configure dead letter queue
      *       maybe off lambda?
      *       https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda-readme.html#lambda-with-dlq
+     * - [ ] should this and subscribers be in it's own stack?
      */
-    this.topic = new sns.Topic(this, 'CoAllExternalEventsTopic', {
-      displayName: 'SNS topic for throughput of ALL external events',
-      topicName: 'allExternalEventsTopic',
-    });
+    const topicId = 'all-external-events';
+    this.topic = new sns.Topic(
+      this,
+      this.apiConstruct.transformIdToResourceTitle(topicId, 'Topic'),
+      {
+        displayName: 'SNS topic for throughput of ALL external events',
+        topicName: this.apiConstruct.transformIdToResourceName(
+          topicId,
+          'Topic'
+        ),
+      }
+    );
     this.topic.grantPublish(this.apiConstruct.role);
+
+    /**
+     * Subscribers to the topic
+     */
+
+    /**
+     * Create course Lambda Function
+     * Filter: object = course, type = create
+     */
+    const coursesCreateFunction = lambda.Function.fromFunctionAttributes(
+      this,
+      this.apiConstruct.transformIdToResourceTitle(
+        `${id}-create-course`,
+        'Lambda'
+      ),
+      {
+        functionArn: `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:CoCreateCourseFunction`,
+        sameEnvironment: true,
+      }
+    );
+
+    const createCourseExternalEventSubscription =
+      new subscriptions.LambdaSubscription(coursesCreateFunction, {
+        filterPolicy: {
+          object: sns.SubscriptionFilter.stringFilter({
+            allowlist: ['Course'],
+          }),
+          type: sns.SubscriptionFilter.stringFilter({
+            allowlist: ['Created'],
+          }),
+        },
+      });
+    this.topic.addSubscription(createCourseExternalEventSubscription);
 
     /**
      * Response model
@@ -85,7 +129,7 @@ export class HookConstruct extends Construct {
       CoApiConstruct.clientErrorResponse();
 
     /**
-     * hook: Lambda Function Integration
+     * hook: SNS Integration
      */
     this.snsIntegration = new apigateway.AwsIntegration({
       service: 'sns',

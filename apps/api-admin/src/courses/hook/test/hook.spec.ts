@@ -40,6 +40,34 @@ describe('ApiAdminStack : hook', () => {
     template = Template.fromStack(stack);
   });
 
+  describe('Should contain a topic', () => {
+    it('That exists', () => {
+      template.resourceCountIs('AWS::SNS::Topic', 1);
+    });
+
+    describe('That has several subscribers', () => {
+      const filterPolicy = new Capture();
+      const subscriptionEndpointRegex =
+        'courseshookAllExternalEventsTopic[A-Z0-9]+';
+
+      it('Create course', () => {
+        template.hasResourceProperties('AWS::SNS::Subscription', {
+          Protocol: 'lambda',
+          TopicArn: {
+            Ref: Match.stringLikeRegexp(subscriptionEndpointRegex),
+          },
+          FilterPolicy: filterPolicy,
+        });
+      });
+
+      it('Should be filtered to messages of object=Course, type=Created', () => {
+        const filterPolicyObj = filterPolicy.asObject();
+        expect(filterPolicyObj.object).toEqual(['Course']);
+        expect(filterPolicyObj.type).toEqual(['Created']);
+      });
+    });
+  });
+
   describe('/courses/{eventType}/{courseSourceId}?{updatedStatus?}', () => {
     const resourceParentRegex = 'apiadmincourseshookeventType[A-Z0-9]+';
     const resourceIdRegex =

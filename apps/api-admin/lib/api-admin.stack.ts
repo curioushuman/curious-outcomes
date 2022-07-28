@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 // Importing utilities for use in infrastructure processes
@@ -27,20 +26,6 @@ export class ApiAdminStack extends cdk.Stack {
       applicationNamePrefix: 'Co',
       stageName: 'dev',
     });
-
-    /**
-     * courses-create: Lambda Function
-     */
-    const coursesCreateFunction = lambda.Function.fromFunctionAttributes(
-      this,
-      'CoApiAdminCourses-CreateCourseFunction',
-      {
-        functionArn: `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:CoCreateCourseFunction`,
-        sameEnvironment: true,
-      }
-    );
-    // Allow access for API
-    coursesCreateFunction.grantInvoke(apiAdmin.role);
 
     /**
      * Common response models

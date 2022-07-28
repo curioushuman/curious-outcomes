@@ -20,10 +20,6 @@ describe('ApiAdminStack', () => {
     template = Template.fromStack(stack);
   });
 
-  it('Should contain a topic', () => {
-    template.resourceCountIs('AWS::SNS::Topic', 1);
-  });
-
   it('Should contain an API', () => {
     template.resourceCountIs('AWS::ApiGateway::RestApi', 1);
   });

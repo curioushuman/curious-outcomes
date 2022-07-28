@@ -46,7 +46,11 @@ export interface CoApiRequestValidatorProps {
   validateRequestParameters: boolean;
 }
 
-type SupportedResourceType = 'ResponseModel' | 'RequestValidator' | 'Lambda';
+type SupportedResourceType =
+  | 'ResponseModel'
+  | 'RequestValidator'
+  | 'Lambda'
+  | 'Topic';
 
 /**
  * CO API Construct
@@ -384,7 +388,7 @@ export class CoApiConstruct extends Construct {
   /**
    * Using camelCase for our resource naming convention
    */
-  private transformIdToResourceName(
+  public transformIdToResourceName(
     resourceId: string,
     resourceType: SupportedResourceType
   ): string {
