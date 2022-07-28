@@ -34,8 +34,7 @@ export class ApiAdminStack extends cdk.Stack {
 
     /**
      * Course
-     * NOTE: the below does not include the externalId
-     *       as this is not necessary info for the admin
+     *
      * TODO
      * - [ ] can we move this to a schema dir or similar
      * - [ ] we also need to align with the openapi schema yaml

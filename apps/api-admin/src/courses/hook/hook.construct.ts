@@ -137,7 +137,7 @@ export class HookConstruct extends Construct {
       path: `${cdk.Aws.ACCOUNT_ID}/${this.topic.topicName}`,
       options: {
         // TODO: is this necessary?
-        // credentialsRole: apiSnsRole,
+        // credentialsRole: this.apiConstruct.role,
         // Tell api gw to send our payload as query params
         // TODO: seems standard, but why?
         requestParameters: {
