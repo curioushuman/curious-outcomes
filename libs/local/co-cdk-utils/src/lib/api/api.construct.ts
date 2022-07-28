@@ -46,7 +46,7 @@ export interface CoApiRequestValidatorProps {
   validateRequestParameters: boolean;
 }
 
-type SupportedResourceType = 'ResponseModel' | 'RequestValidator';
+type SupportedResourceType = 'ResponseModel' | 'RequestValidator' | 'Lambda';
 
 /**
  * CO API Construct
@@ -189,8 +189,7 @@ export class CoApiConstruct extends Construct {
     props: CoApiResponseModelProps
   ): apigateway.Model {
     const { properties } = props;
-    // NOTE: we don't prepend with id as AWS does this for us
-    const modelId = `response-model-${id}`;
+    const modelId = `${this.id}-response-model-${id}`;
     const modelName = this.transformIdToResourceName(modelId, 'ResponseModel');
     const title = this.transformIdToResourceTitle(modelId, 'ResponseModel');
     return this.api.addModel(modelId, {
@@ -398,7 +397,7 @@ export class CoApiConstruct extends Construct {
   /**
    * Using camelCase for our response naming convention
    */
-  private transformIdToResourceTitle(
+  public transformIdToResourceTitle(
     resourceId: string,
     resourceType: SupportedResourceType
   ): string {
