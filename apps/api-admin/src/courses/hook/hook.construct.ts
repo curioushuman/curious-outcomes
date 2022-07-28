@@ -12,7 +12,6 @@ import { CoApiConstruct } from '../../../../../dist/local/@curioushuman/co-cdk-u
  */
 export interface HookProps {
   apiConstruct: CoApiConstruct;
-  topic: sns.Topic;
 }
 
 /**
@@ -29,7 +28,21 @@ export class HookConstruct extends Construct {
     super(scope, id);
 
     this.apiConstruct = props.apiConstruct;
-    this.topic = props.topic;
+
+    /**
+     * SNS Topic for External events
+     * Our API Gateway posts messages directly to this
+     *
+     * TODO
+     * - [ ] configure dead letter queue
+     *       maybe off lambda?
+     *       https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda-readme.html#lambda-with-dlq
+     */
+    this.topic = new sns.Topic(this, 'CoAllExternalEventsTopic', {
+      displayName: 'SNS topic for throughput of ALL external events',
+      topicName: 'allExternalEventsTopic',
+    });
+    this.topic.grantPublish(this.apiConstruct.role);
 
     /**
      * Response model

@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as sns from 'aws-cdk-lib/aws-sns';
 import { Construct } from 'constructs';
 
 // Importing utilities for use in infrastructure processes
@@ -30,24 +29,6 @@ export class ApiAdminStack extends cdk.Stack {
     });
 
     /**
-     * Resources this API will use
-     */
-
-    /**
-     * courses-findOne: Lambda Function
-     */
-    const coursesFindOneFunction = lambda.Function.fromFunctionAttributes(
-      this,
-      'CoApiAdminCourses-FindCourseFunction',
-      {
-        functionArn: `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:CoFindCourseFunction`,
-        sameEnvironment: true,
-      }
-    );
-    // Allow access for API
-    coursesFindOneFunction.grantInvoke(apiAdmin.role);
-
-    /**
      * courses-create: Lambda Function
      */
     const coursesCreateFunction = lambda.Function.fromFunctionAttributes(
@@ -60,25 +41,6 @@ export class ApiAdminStack extends cdk.Stack {
     );
     // Allow access for API
     coursesCreateFunction.grantInvoke(apiAdmin.role);
-
-    /**
-     * SNS Topic for External events
-     * Our API Gateway posts messages directly to this
-     *
-     * TODO
-     * - [ ] configure dead letter queue
-     *       maybe off lambda?
-     *       https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda-readme.html#lambda-with-dlq
-     */
-    const topicExternalEvents = new sns.Topic(
-      this,
-      'CoAllExternalEventsTopic',
-      {
-        displayName: 'SNS topic for throughput of ALL external events',
-        topicName: 'allExternalEventsTopic',
-      }
-    );
-    topicExternalEvents.grantPublish(apiAdmin.role);
 
     /**
      * Common response models
@@ -120,7 +82,7 @@ export class ApiAdminStack extends cdk.Stack {
     const coursesFindConstruct = new FindOneConstruct(
       this,
       'courses-find-one',
-      { apiConstruct: apiAdmin, lambda: coursesFindOneFunction } as FindOneProps
+      { apiConstruct: apiAdmin } as FindOneProps
     );
 
     /**
@@ -153,7 +115,6 @@ export class ApiAdminStack extends cdk.Stack {
      */
     const coursesHookConstruct = new HookConstruct(this, 'courses-hook', {
       apiConstruct: apiAdmin,
-      topic: topicExternalEvents,
     } as HookProps);
 
     /**

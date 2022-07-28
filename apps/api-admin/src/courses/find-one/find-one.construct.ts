@@ -1,3 +1,4 @@
+import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
@@ -11,7 +12,6 @@ import { CoApiConstruct } from '../../../../../dist/local/@curioushuman/co-cdk-u
  */
 export interface FindOneProps {
   apiConstruct: CoApiConstruct;
-  lambda: lambda.IFunction;
 }
 
 /**
@@ -28,7 +28,24 @@ export class FindOneConstruct extends Construct {
     super(scope, id);
 
     this.apiConstruct = props.apiConstruct;
-    this.lambda = props.lambda;
+
+    /**
+     * Resources this API will use
+     */
+
+    /**
+     * courses-findOne: Lambda Function
+     */
+    this.lambda = lambda.Function.fromFunctionAttributes(
+      this,
+      this.apiConstruct.transformIdToResourceTitle(`${id}`, 'Lambda'),
+      {
+        functionArn: `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:CoFindCourseFunction`,
+        sameEnvironment: true,
+      }
+    );
+    // Allow access for API
+    this.lambda.grantInvoke(this.apiConstruct.role);
 
     /**
      * findOne: request mapping template
