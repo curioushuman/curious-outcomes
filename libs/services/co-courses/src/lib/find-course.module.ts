@@ -14,7 +14,7 @@ import { FindCourseController } from './infra/find-course/find-course.controller
 
 /**
  * TODO
- * - [ ] experiment with breaking this file into multiple modules
+ * - [*] experiment with breaking this file into multiple modules
  *       e.g. find-course.module.ts
  *       This way you can include less files within each lambda
  *       Only worth doing if you're measuring at the same time
@@ -45,7 +45,7 @@ const services = [
   providers: [...queryHandlers, ...repositories, ...services],
   exports: [],
 })
-export class CoursesModule {}
+export class FindCourseModule {}
 
 export const applyDefaults = (app: INestApplicationContext) => {
   app.useLogger(new LoggableLogger());

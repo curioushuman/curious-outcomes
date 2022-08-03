@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 
 import {
   applyDefaults,
-  CoursesModule,
+  FindCourseModule,
   FindCourseController,
 } from '@curioushuman/co-courses';
 import { InternalRequestInvalidError } from '@curioushuman/error-factory';
@@ -30,7 +30,7 @@ let lambdaApp: INestApplicationContext;
  * i.e. we don't load Express, for optimization purposes
  */
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(CoursesModule, {
+  const app = await NestFactory.createApplicationContext(FindCourseModule, {
     bufferLogs: true,
   });
   applyDefaults(app);
