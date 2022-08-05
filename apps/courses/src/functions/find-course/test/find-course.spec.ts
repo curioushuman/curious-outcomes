@@ -1,8 +1,8 @@
 import { HttpException } from '@nestjs/common';
 import { loadFeature, defineFeature } from 'jest-cucumber';
-import { CourseResponseDto } from '../../../dto/course.response.dto';
 
 import { handler } from '../main';
+import { CourseResponseDto } from '../../../dto/course.response.dto';
 
 /**
  * UNIT TEST

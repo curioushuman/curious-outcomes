@@ -2,8 +2,7 @@ import { HttpException } from '@nestjs/common';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 
 import { handler } from '../main';
-import { CourseResponseDto } from '../../../dto/course.response.dto';
-import { FindCourseRequestDto } from '../dto/request.dto';
+import { CreateCourseRequestDto } from '../dto/request.dto';
 
 /**
  * INTEGRATION TEST
@@ -19,23 +18,24 @@ import { FindCourseRequestDto } from '../dto/request.dto';
  * - handler and nest play nicely
  */
 
-const feature = loadFeature('./find-course.int.feature', {
+const feature = loadFeature('./create-course.int.feature', {
   loadRelativePath: true,
 });
 
 defineFeature(feature, (test) => {
-  test('Fail; Invalid request', ({ given, when, then }) => {
+  test('Fail; Invalid request', ({ given, when, then, and }) => {
     let error: HttpException;
-    let dto: FindCourseRequestDto;
-    let response: CourseResponseDto;
+    let dto: CreateCourseRequestDto;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let response: any;
 
-    given('the request is invalid', () => {
+    given('the request contains invalid data', () => {
       dto = {
-        id: 'AnInvalidId',
+        externalId: '',
       };
     });
 
-    when('I attempt to find a course', async () => {
+    when('I attempt to create a course', async () => {
       try {
         response = await handler(dto);
         expect(response).toBeUndefined();
@@ -47,6 +47,10 @@ defineFeature(feature, (test) => {
     then('I should receive a RequestInvalidError', () => {
       expect(error.getStatus()).toBe(400);
       expect(error.message).toEqual(expect.stringMatching(/^Invalid request/i));
+    });
+
+    and('no result is returned', () => {
+      expect(response).toBeUndefined();
     });
   });
 });

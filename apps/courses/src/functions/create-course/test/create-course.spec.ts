@@ -1,6 +1,5 @@
 import { HttpException } from '@nestjs/common';
 import { loadFeature, defineFeature } from 'jest-cucumber';
-import { CourseResponseDto } from '../../../dto/course.response.dto';
 
 import { handler } from '../main';
 
@@ -13,34 +12,34 @@ import { handler } from '../main';
  *
  * Relevant Jest notes (for mocking)
  * https://jestjs.io/docs/es6-class-mocks
- * NOTE: some commented out beginnings at the bottom of the file
  *
  * Scope
  * - validating the request (to the lambda)
- * - finding course
+ * - creating course
  * - returning response
  * - returning error
  */
 
-const feature = loadFeature('./find-course.feature', {
+const feature = loadFeature('./create-course.feature', {
   loadRelativePath: true,
 });
 
 defineFeature(feature, (test) => {
-  test('Fail; Invalid request', ({ given, when, then }) => {
+  test('Fail; Invalid request', ({ given, when, then, and }) => {
     // disabled so we can pass an invalid request
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let dto: any;
     let error: HttpException;
-    let response: CourseResponseDto;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let response: any;
 
-    given('the request is invalid', () => {
+    given('the request contains invalid data', () => {
       dto = {
         whatsThisParameter: 'ThisWontPassMuster',
       };
     });
 
-    when('I attempt to find a course', async () => {
+    when('I attempt to create a course', async () => {
       try {
         response = await handler(dto);
         expect(response).toBeUndefined();
@@ -56,82 +55,9 @@ defineFeature(feature, (test) => {
         expect.stringMatching(/^Invalid internal communication/i)
       );
     });
-  });
 
-  test('Fail; Empty request', ({ given, when, then }) => {
-    // disabled so we can pass an invalid request
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let dto: any;
-    let error: HttpException;
-    let response: CourseResponseDto;
-
-    given('the request is empty', () => {
-      dto = {};
-    });
-
-    when('I attempt to find a course', async () => {
-      try {
-        response = await handler(dto);
-        expect(response).toBeUndefined();
-      } catch (err: unknown) {
-        error = err as HttpException;
-      }
-    });
-
-    then('I should receive an InternalRequestInvalidError', () => {
-      // this should match the regex you use in your API method integration response
-      expect(error.message).toEqual(
-        expect.stringMatching(/^Invalid internal communication/i)
-      );
-    });
-  });
-
-  test('Fail; Empty values request', ({ given, when, then }) => {
-    // disabled so we can pass an invalid request
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let dto: any;
-    let error: HttpException;
-    let response: CourseResponseDto;
-
-    given('the request contains empty values', () => {
-      dto = {
-        id: '',
-      };
-    });
-
-    when('I attempt to find a course', async () => {
-      try {
-        response = await handler(dto);
-        expect(response).toBeUndefined();
-      } catch (err: unknown) {
-        error = err as HttpException;
-      }
-    });
-
-    then('I should receive an InternalRequestInvalidError', () => {
-      // this should match the regex you use in your API method integration response
-      expect(error.message).toEqual(
-        expect.stringMatching(/^Invalid internal communication/i)
-      );
+    and('no result is returned', () => {
+      expect(response).toBeUndefined();
     });
   });
 });
-
-// Started mocking
-// const mockFindOne = jest.fn();
-// jest.mock('./sound-player', () => {
-//   return jest.fn().mockImplementation(() => {
-//     return { findOne: mockFindOne };
-//   });
-// });
-
-// jest.mock('utils/date', () => ({
-//   today: jest.fn(() => '01-01-2020'),
-// }));
-
-// const spy = jest.spyOn(browserUtils, 'openBrowser');
-// spy.mockImplementation();
-
-// const mockController = {
-//   execute: jest.fn(),
-// };

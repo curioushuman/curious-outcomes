@@ -1,6 +1,7 @@
-Feature: Find Course
+Feature: Create Course
 
 Scenario: Fail; Invalid request
-  Given the request is invalid
-  When I attempt to find a course
+  Given the request contains invalid data
+  When I attempt to create a course
   Then I should receive a RequestInvalidError
+  And no result is returned
