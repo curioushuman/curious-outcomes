@@ -6,27 +6,9 @@ Assume everything is AND unless specified by OR and ()
 
 ## Types
 
-### CreateCourseDto
+### CreateCourseRequestDto
 
 - ExternalId
-
-### findSourceDto
-
-- ExternalId
-
-### CourseSource
-
-- id
-- name
-- slug
-- courseId
-
-### Course
-
-- id
-- name
-- slug
-- externalId
 
 ## Errors
 
@@ -76,8 +58,25 @@ Assume everything is AND unless specified by OR and ()
 
 ## Events
 
-- none
+None
 
 ## Notifications
 
-- none
+### CourseCreatedNotification
+
+- course: SavedCourse
+- subject: Course created <`SavedCourse.name`>
+- message: Course <`SavedCourse.name`></br>
+| created by <`Admin.name`></br>
+| at <`SavedCourse.createdAt as time`></br>
+| on <`SavedCourse.createdAt as date`>
+
+### Email
+
+- Subject: string, no longer than 80 chars
+- Message: string, ideally in a template
+
+### Source repository
+
+- Subject: string, no longer than 80 chars
+- Message: string, no longer than 150 chars

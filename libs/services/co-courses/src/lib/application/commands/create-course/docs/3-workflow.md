@@ -3,14 +3,13 @@
 ## Algorithm
 
 ### Input
-- ExternalId
+- CreateCourseDto
 
 ### Output
 
 #### Success
 
-- void + success 201
-- Course Created event
+- void
 
 #### Fail
 
@@ -20,22 +19,22 @@
 
 1. Validate input
 2. Get external record
-3. Validate course
+3. Transform/validate external record
 4. Save course
-5. Send notifications
-6. Emit event
-7. Return success
+5. Return
+   1. void
+   2. Error
 
 ## Steps, detail
 
 ### Step 1. Validate input
 
 #### Input
-- ExternalId
+- CreateCourseDto
 
 #### Output: Success
 
-- DTO for findSource
+- findSourceDto
 
 #### Output: Fail
 
@@ -48,6 +47,7 @@
 If Invalid
   return RequestInvalidError
 Else
+  transform CreateCourseDto
   return findSourceDto
 ```
 
@@ -86,7 +86,7 @@ Else
   return CourseSource
 ```
 
-### Step 3. Transform/validate course
+### Step 3. Transform/validate external record
 
 #### Input
 - CourseSource
@@ -122,7 +122,7 @@ Else
 
 #### Output: Success
 
-- SavedCourse
+- void
 
 #### Output: Fail
 
@@ -136,55 +136,13 @@ Save Course
 If Fails
   return RepositoryServerError
 Else
-  return SavedCourse
+  return void
 ```
 
-### Step 5. Send notifications
-
-#### Input
-- SavedCourse
-
-#### Output: Success
+### Step 5A. Return success
 
 - void
 
-#### Output: Fail
+### Step 5B. Or Error
 
-- NotificationFailedError
-  - Extends InternalServerException
-
-#### Steps (pseudocode)
-
-```
-Send CourseCreatedNotification
-If Fails
-  return NotificationFailedError
-Else
-  return
-```
-
-### Step 6. Emit event
-
-#### Input
-- SavedCourse
-
-#### Output: Success
-
-- void
-
-#### Output: Fail
-
-- EventFailedError
-  - Extends InternalServerException
-
-#### Steps (pseudocode)
-
-```
-Emit CourseCreatedEvent
-If Fails
-  return EventFailedError
-Else
-  return
-```
-
-### Step 7. Return success
+- Return Error as is

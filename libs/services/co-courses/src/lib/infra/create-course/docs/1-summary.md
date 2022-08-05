@@ -6,15 +6,14 @@
 - **Aggregate root**: Courses
 
 ## 2. Data
+
 ### Input data:
 
-- CreateCourseDto
+- CreateCourseRequestDto
 
 ### Dependencies (from other services/sources)
 
-- SourceRepo.findOne(ById)
-  - We need to validate that a source object exists before we save it
-  - We might as well grab the data while we're there
+- None, all internal
 
 ### Output (results, events, errors)
 
@@ -36,7 +35,7 @@
 
 ### Triggered by
 
-- Application infrastructure layer
+- Lambda function(s)
 
 ### Side-effects
 
@@ -45,8 +44,8 @@
 
 ## 4. Decisions
 
-- none
+- None
 
 ## 5. Open Questions/actions
 
-- Attribution of author
+- None

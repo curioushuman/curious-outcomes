@@ -4,8 +4,6 @@
 
 ### Input
 
-One of:
-
 - FindCourseRequestDto
 
 ### Output

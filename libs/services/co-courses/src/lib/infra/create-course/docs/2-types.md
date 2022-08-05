@@ -6,27 +6,9 @@ Assume everything is AND unless specified by OR and ()
 
 ## Types
 
-### CreateCourseDto
+### CreateCourseRequestDto
 
 - ExternalId
-
-### findSourceDto
-
-- ExternalId
-
-### CourseSource
-
-- id
-- name
-- slug
-- courseId
-
-### Course
-
-- id
-- name
-- slug
-- externalId
 
 ## Errors
 
@@ -76,8 +58,8 @@ Assume everything is AND unless specified by OR and ()
 
 ## Events
 
-- none
+- None
 
 ## Notifications
 
-- none
+- None
