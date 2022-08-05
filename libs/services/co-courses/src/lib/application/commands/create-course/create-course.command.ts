@@ -91,8 +91,8 @@ export class CreateCourseHandler
       TE.chain(([source, findCourseDto, courseFromSource]) =>
         pipe(
           performAction(
-            findCourseDto,
-            this.courseRepository.findOne,
+            findCourseDto.value,
+            this.courseRepository.findByExternalId,
             this.errorFactory,
             this.logger,
             `check course exists for source: ${source.id}`

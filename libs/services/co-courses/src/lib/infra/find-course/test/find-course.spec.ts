@@ -8,7 +8,7 @@ import {
 } from '@curioushuman/error-factory';
 
 import { CoursesModule } from '../../../test/courses.module.fake';
-import { applyDefaults } from '../../../courses.module';
+import { FindCourseModule } from '../../../find-course.module';
 import { FindCourseRequestDto } from '../dto/find-course.request.dto';
 import { Course } from '../../../domain/entities/course';
 import { CourseBuilder } from '../../../test/builders/course.builder';
@@ -45,7 +45,7 @@ defineFeature(feature, (test) => {
     app = moduleRef.createNestApplication();
 
     await app.init();
-    applyDefaults(app);
+    FindCourseModule.applyDefaults(app);
     controller = moduleRef.get<FindCourseController>(FindCourseController);
   });
 

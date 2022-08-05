@@ -2,7 +2,6 @@ import { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import {
-  applyDefaults,
   FindCourseModule,
   FindCourseController,
 } from '@curioushuman/co-courses';
@@ -33,7 +32,7 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(FindCourseModule, {
     bufferLogs: true,
   });
-  applyDefaults(app);
+  FindCourseModule.applyDefaults(app);
   return app;
 }
 

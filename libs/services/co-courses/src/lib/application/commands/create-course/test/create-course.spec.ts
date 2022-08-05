@@ -19,9 +19,9 @@ import { CourseRepository } from '../../../../adapter/ports/course.repository';
 import { FakeCourseRepository } from '../../../../adapter/implementations/fake/fake.course.repository';
 import { CourseSourceRepository } from '../../../../adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from '../../../../adapter/implementations/fake/fake.course-source.repository';
-import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.request.dto';
 import { Course } from '../../../../domain/entities/course';
 import { CourseBuilder } from '../../../../test/builders/course.builder';
+import { CreateCourseDto } from '../create-course.dto';
 
 /**
  * UNIT TEST
@@ -40,7 +40,7 @@ const feature = loadFeature('./create-course.feature', {
 defineFeature(feature, (test) => {
   let repository: FakeCourseRepository;
   let handler: CreateCourseHandler;
-  let createCourseDto: CreateCourseRequestDto;
+  let createCourseDto: CreateCourseDto;
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -74,7 +74,7 @@ defineFeature(feature, (test) => {
 
     given('a matching record is found at the source', () => {
       // we know this to exist in our fake repo
-      createCourseDto = CourseBuilder().beta().buildDto();
+      createCourseDto = CourseBuilder().beta().buildCreateCourseDto();
     });
 
     and('the returned source populates a valid course', () => {
@@ -105,7 +105,9 @@ defineFeature(feature, (test) => {
     let error: Error;
 
     given('no record exists that matches our request', () => {
-      createCourseDto = CourseBuilder().noMatchingSource().buildDto();
+      createCourseDto = CourseBuilder()
+        .noMatchingSource()
+        .buildCreateCourseDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -130,7 +132,7 @@ defineFeature(feature, (test) => {
     let error: Error;
 
     given('a matching record is found at the source', () => {
-      createCourseDto = CourseBuilder().invalidSource().buildDto();
+      createCourseDto = CourseBuilder().invalidSource().buildCreateCourseDto();
     });
 
     and('the returned source does not populate a valid Course', () => {
@@ -167,7 +169,7 @@ defineFeature(feature, (test) => {
     });
 
     and('the source DOES already exist in our DB', () => {
-      createCourseDto = CourseBuilder().exists().buildDto();
+      createCourseDto = CourseBuilder().exists().buildCreateCourseDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -196,7 +198,7 @@ defineFeature(feature, (test) => {
     });
 
     and('the returned source is already associated with a Course', () => {
-      createCourseDto = CourseBuilder().withCourse().buildDto();
+      createCourseDto = CourseBuilder().withCourse().buildCreateCourseDto();
     });
 
     when('I attempt to create a course', async () => {

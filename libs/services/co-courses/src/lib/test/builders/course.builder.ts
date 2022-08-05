@@ -1,8 +1,10 @@
 import { createSlug } from '@curioushuman/co-common';
+import { CreateCourseDto } from '../../application/commands/create-course/create-course.dto';
 
 import { Course } from '../../domain/entities/course';
 import { CourseSource } from '../../domain/entities/course-source';
 import { CourseResponseDto } from '../../infra/dto/course.response.dto';
+import { CreateCourseRequestDto } from '../../infra/dto/create-course.request.dto';
 import { FindCourseRequestDto } from '../../infra/find-course/dto/find-course.request.dto';
 import { CourseSourceBuilder } from './course-source.builder';
 
@@ -154,6 +156,18 @@ export const CourseBuilder = () => {
         dto.slug = this.buildNoCheck().slug;
       }
       return dto;
+    },
+
+    buildCreateCourseDto(): CreateCourseDto {
+      return {
+        externalId: this.build().externalId,
+      } as CreateCourseDto;
+    },
+
+    buildCreateCourseRequestDto(): CreateCourseRequestDto {
+      return {
+        externalId: this.buildNoCheck().externalId,
+      } as CreateCourseRequestDto;
     },
 
     buildCourseResponseDto(): CourseResponseDto {

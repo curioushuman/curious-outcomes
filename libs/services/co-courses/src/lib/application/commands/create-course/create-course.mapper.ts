@@ -43,8 +43,9 @@ export class CreateCourseMapper {
   }
 
   public static fromSourceToFindCourseDto(source: CourseSource): FindCourseDto {
-    return FindCourseDto.check({
-      externalId: source.id,
-    });
+    return {
+      identifier: 'externalId',
+      value: source.id,
+    } as FindCourseDto;
   }
 }
