@@ -42,12 +42,16 @@ export class CoursesStack extends cdk.Stack {
 
     /**
      * Required layers
+     *
+     * * DON'T FORGET TO UPDATE THE deploy-local COMMAND IN project.json
+     *   If any of the version numbers change, you'll need to update the command
+     *   to give localstack access to the correct layer version.
      */
     const lambdaLayers = [
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoCourses',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoCourses:6`
+        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoCourses:7`
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,

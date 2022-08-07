@@ -55,6 +55,20 @@ This will be the home for all things Curious Outcomes. For now the focus has bee
       - NOTE: I have not set this up for all projects just yet
     - nx run co-layers:local
       - For individual stacks
+    - Free version of localstack doesn't support layers
+      - You can use live layers
+      - https://docs.localstack.cloud/aws/lambda/#lambda-layers
+      - I've implemented this in the nx scripts within co-layers/project.json
+    - Localstack run using a background process
+      - Include some basic info about how this works, how to view/stop if necessary
+      - https://bashitout.com/2013/05/18/Ampersands-on-the-command-line.html
+    - When deploying local I use the --outputs-file for api-gateway based stacks
+      - As adding --verbose to nx fails the co-layers deploy-local command
+      - But we still need to know what the (new each time) API URLs are for our local testing env.
+    - TO test the local APIs you need to look into this file to get the URL
+      - Put it into Postman
+      - Blah blah blah
+      - Would be nice if we didn't have to do this
 
 ## Big issues
 

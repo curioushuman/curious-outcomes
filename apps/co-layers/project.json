@@ -118,19 +118,24 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "../../node_modules/.bin/rimraf ../../dist/apps/co-layers",
-          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/co-layers"
+          "aws lambda add-layer-version-permission --layer-name TsCdkCoCourses --version-number 7 --statement-id TsCdkCoCoursesLocalStack --principal 886468871268 --action lambda:GetLayerVersion | ./non-zero-success.sh",
+          "aws lambda add-layer-version-permission --layer-name TsCdkCoNodeModules --version-number 1 --statement-id TsCdkCoNodeModulesLocalStack --principal 886468871268 --action lambda:GetLayerVersion | ./non-zero-success.sh",
+          "aws lambda add-layer-version-permission --layer-name TsCdkCoShared --version-number 7 --statement-id TsCdkCoSharedLocalStack --principal 886468871268 --action lambda:GetLayerVersion | ./non-zero-success.sh"
         ],
-        "cwd": "apps/co-layers",
-        "parallel": false
+        "cwd": "tools/scripts",
+        "parallel": true
       }
     },
     "destroy-local": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_ENV=local ../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/co-layers",
+        "commands": [
+          "aws lambda remove-layer-version-permission --layer-name TsCdkCoCourses --version-number 7 --statement-id TsCdkCoCoursesLocalStack",
+          "aws lambda remove-layer-version-permission --layer-name TsCdkCoNodeModules --version-number 1 --statement-id TsCdkCoNodeModulesLocalStack",
+          "aws lambda remove-layer-version-permission --layer-name TsCdkCoShared --version-number 7 --statement-id TsCdkCoSharedLocalStack"
+        ],
         "cwd": "apps/co-layers",
-        "parallel": false
+        "parallel": true
       }
     }
   },

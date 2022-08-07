@@ -150,7 +150,7 @@
       "options": {
         "commands": [
           "../../node_modules/.bin/rimraf ../../dist/apps/api-admin",
-          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/api-admin"
+          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/api-admin --outputs-file ../../dist/apps/api-admin/cdk-outputs.json"
         ],
         "cwd": "apps/api-admin",
         "parallel": false
