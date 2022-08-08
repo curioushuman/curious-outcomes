@@ -114,7 +114,7 @@
         "passWithNoTests": true
       }
     },
-    "deploy-local-use-live": {
+    "add-live-layer-permissions": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
@@ -126,7 +126,7 @@
         "parallel": true
       }
     },
-    "destroy-local-use-live": {
+    "remove-live-layer-permissions": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
@@ -143,7 +143,7 @@
       "options": {
         "commands": [
           "../../node_modules/.bin/rimraf ../../dist/apps/co-layers",
-          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/co-layers"
+          "../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/co-layers"
         ],
         "cwd": "apps/co-layers",
         "parallel": false
@@ -152,7 +152,7 @@
     "destroy-local": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_ENV=local ../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/co-layers",
+        "command": "../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/co-layers",
         "cwd": "apps/co-layers",
         "parallel": false
       }

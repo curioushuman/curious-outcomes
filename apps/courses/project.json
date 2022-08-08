@@ -119,7 +119,7 @@
       "options": {
         "commands": [
           "../../node_modules/.bin/rimraf ../../dist/apps/courses",
-          "NODE_ENV=local ../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/courses"
+          "../../node_modules/.bin/cdklocal deploy --require-approval=never --output ../../dist/apps/courses"
         ],
         "cwd": "apps/courses",
         "parallel": false
@@ -128,7 +128,7 @@
     "destroy-local": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_ENV=local ../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/courses",
+        "command": "../../node_modules/.bin/cdklocal destroy --force --output ../../dist/apps/courses",
         "cwd": "apps/courses",
         "parallel": false
       }

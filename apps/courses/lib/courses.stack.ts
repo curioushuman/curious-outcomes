@@ -111,7 +111,11 @@ export class CoursesStack extends cdk.Stack {
 
   private getLambdaLayerArn(layerName: string) {
     const version = this.getLambdaLayerVersion(layerName);
-    return `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:${layerName}:${version}`;
+    const accountId =
+      process.env.NODE_ENV === 'hybrid'
+        ? process.env.CDK_LIVE_ACCOUNT
+        : cdk.Aws.ACCOUNT_ID;
+    return `arn:aws:lambda:${cdk.Aws.REGION}:${accountId}:layer:${layerName}:${version}`;
   }
 
   /**
@@ -121,8 +125,9 @@ export class CoursesStack extends cdk.Stack {
    * TODO
    * - [ ] replace with dynamic method
    *       https://stackoverflow.com/questions/55749294/latest-lambda-layer-arn
+   *       'aws lambda list-layers' might be useful as well
    *
-   * * DON'T FORGET TO UPDATE THE deploy-local-use-live COMMAND IN project.json
+   * * DON'T FORGET TO UPDATE THE add-live-layer-permissions COMMAND IN co-layers/project.json
    *   If any of the version numbers change, you'll need to update the command
    *   to give localstack access to the correct layer version.
    */

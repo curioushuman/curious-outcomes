@@ -74,6 +74,9 @@ This will be the home for all things Curious Outcomes. For now the focus has bee
     - For some reason the first request to the public API always fails
       - OR it needs more time to settle
       - If you get an error that indicates nest/core cannot be found, give it a minute and try again
+      - weirdly, it is intermittent
+      - even when running it with live lambda layers it was hit and miss, rather than consistent
+      - SUPER frustrating
 
 ## Big issues
 

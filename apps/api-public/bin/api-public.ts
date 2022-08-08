@@ -12,7 +12,7 @@ let account = process.env.CDK_DEFAULT_ACCOUNT;
 let region = process.env.CDK_DEFAULT_REGION;
 
 // this will pick up our local environments
-if (process.env.NODE_ENV === 'local') {
+if (process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'hybrid') {
   // cwd will be the app root
   dotenv.config({ path: pathResolve(process.cwd(), '../../.env') });
   account = process.env.CDK_DEPLOY_ACCOUNT;
