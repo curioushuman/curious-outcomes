@@ -82,5 +82,7 @@ export class ApiPublicStack extends cdk.Stack {
      * Outputs
      */
     new cdk.CfnOutput(this, 'apiUrl', { value: apiPublic.api.urlForPath() });
+    new cdk.CfnOutput(this, 'account', { value: cdk.Aws.ACCOUNT_ID });
+    new cdk.CfnOutput(this, 'region', { value: cdk.Aws.REGION });
   }
 }

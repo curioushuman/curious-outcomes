@@ -11,7 +11,7 @@ import { resolve as pathResolve } from 'path';
  * Variations can ben handled below in the stack definition
  */
 const lambdaProps = {
-  architecture: lambda.Architecture.ARM_64,
+  architecture: lambda.Architecture.X86_64,
   bundling: {
     minify: true,
     sourceMap: true,
@@ -42,26 +42,22 @@ export class CoursesStack extends cdk.Stack {
 
     /**
      * Required layers
-     *
-     * * DON'T FORGET TO UPDATE THE deploy-local COMMAND IN project.json
-     *   If any of the version numbers change, you'll need to update the command
-     *   to give localstack access to the correct layer version.
      */
     const lambdaLayers = [
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoCourses',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoCourses:7`
+        this.getLambdaLayerArn('TsCdkCoCourses')
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoNodeModules',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoNodeModules:1`
+        this.getLambdaLayerArn('TsCdkCoNodeModules')
       ),
       lambda.LayerVersion.fromLayerVersionArn(
         this,
         'CdkLayerCoShared',
-        `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:TsCdkCoShared:7`
+        this.getLambdaLayerArn('TsCdkCoShared')
       ),
     ];
 
@@ -111,5 +107,41 @@ export class CoursesStack extends cdk.Stack {
      * Outputs
      * (If any)
      */
+  }
+
+  private getLambdaLayerArn(layerName: string) {
+    const version = this.getLambdaLayerVersion(layerName);
+    return `arn:aws:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:layer:${layerName}:${version}`;
+  }
+
+  /**
+   * This is a dirty way of hard coding the layer version numbers
+   * However, it leaves us open to replacing it with more dynamic versions later on
+   *
+   * TODO
+   * - [ ] replace with dynamic method
+   *       https://stackoverflow.com/questions/55749294/latest-lambda-layer-arn
+   *
+   * * DON'T FORGET TO UPDATE THE deploy-local-use-live COMMAND IN project.json
+   *   If any of the version numbers change, you'll need to update the command
+   *   to give localstack access to the correct layer version.
+   */
+  private getLambdaLayerVersion(layerName: string) {
+    if (process.env.NODE_ENV === 'local') {
+      return 1;
+    }
+    let version = 1;
+    switch (layerName) {
+      case 'TsCdkCoCourses':
+        version = 7;
+        break;
+      case 'TsCdkCoNodeModules':
+        version = 1;
+        break;
+      case 'TsCdkCoShared':
+        version = 7;
+        break;
+    }
+    return version;
   }
 }

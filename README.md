@@ -69,6 +69,11 @@ This will be the home for all things Curious Outcomes. For now the focus has bee
       - Put it into Postman
       - Blah blah blah
       - Would be nice if we didn't have to do this
+    - LOCALSTACK_API_KEY needs to be in .env
+      - if we're using this
+    - For some reason the first request to the public API always fails
+      - OR it needs more time to settle
+      - If you get an error that indicates nest/core cannot be found, give it a minute and try again
 
 ## Big issues
 

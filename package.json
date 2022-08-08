@@ -15,13 +15,12 @@
     "deploy": "nx run-many --verbose --parallel=1 --target=deploy --projects=co-layers,courses,api-public,api-admin",
     "destroy": "nx run-many --verbose --parallel=1 --target=destroy --projects=api-public,api-admin,courses",
     "--SUPPORTING": "SCRIPTS--",
-    "build": "nx run-many --all --target=build --parallel",
-    "build-support": "nx run-many --parallel=3 --target=build --projects=loggable,fp-ts-utils,co-common,co-courses,co-cdk-utils",
-    "start-localstack": "docker-compose up &",
-    "stop-localstack": "pkill docker-compose up",
-    "bootstrap-localstack": "sleep 10 && node_modules/.bin/cdklocal bootstrap aws://000000000000/ap-southeast-2",
     "predeploy-local": "npm run start-localstack && npm run bootstrap-localstack && npm run build-support",
-    "postdestroy-local": "npm run stop-localstack"
+    "start-localstack": "docker-compose up &",
+    "bootstrap-localstack": "sleep 10 && node_modules/.bin/cdklocal bootstrap aws://000000000000/ap-southeast-2",
+    "build-support": "nx run-many --parallel=3 --target=build --projects=loggable,fp-ts-utils,co-common,co-courses,co-cdk-utils",
+    "postdestroy-local": "npm run stop-localstack",
+    "stop-localstack": "pkill docker-compose up"
   },
   "private": true,
   "dependencies": {
