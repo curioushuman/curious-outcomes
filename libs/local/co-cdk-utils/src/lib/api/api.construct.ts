@@ -131,7 +131,7 @@ export class CoApiConstruct extends Construct {
   }
 
   /**
-   * Non-error response model
+   * Wrapper function to create a request validator
    */
   public requestValidator(
     id: string,

@@ -13,7 +13,7 @@ This will be the home for all things Curious Outcomes. For now the focus has bee
 - CDK setup
   - https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html
     - Bootstrapping
-      - cdk bootstrap aws://793735516609/ap-southeast-2
+      - cdk bootstrap aws://{AWS_ACCOUNT_ID}/ap-southeast-2
     - See if you can get some of this into a setup script
 - Web packed vs packaged AKA Bundling process
   - Short term for shared libs we're web-packing them into service libs

@@ -17,10 +17,11 @@
     "deploy": "nx run-many --verbose --parallel=1 --target=deploy --projects=co-layers,courses,api-public,api-admin",
     "destroy": "nx run-many --verbose --parallel=1 --target=destroy --projects=api-public,api-admin,courses",
     "--SUPPORTING": "SCRIPTS--",
+    "predeploy": "npm run set-env-develop",
     "set-env-develop": "cat .env | awk '{sub(/hybrid|local/,\"develop\")}1' | tee .env-tmp && mv .env-tmp .env",
     "predeploy-local": "npm run set-env-local && npm run build-localstack",
     "set-env-local": "cat .env | awk '{sub(/hybrid|develop/,\"local\")}1' | tee .env-tmp && mv .env-tmp .env",
-    "predeploy-hybrid": "npm run set-env-hybrid && build-localstack && npm run add-live-layer-permissions && sleep 2",
+    "predeploy-hybrid": "npm run set-env-hybrid && npm run build-localstack && npm run add-live-layer-permissions && sleep 2",
     "set-env-hybrid": "cat .env | awk '{sub(/develop|local/,\"hybrid\")}1' | tee .env-tmp && mv .env-tmp .env",
     "build-localstack": "npm run start-localstack && npm run bootstrap-localstack && npm run build-support",
     "start-localstack": "docker-compose up &",
@@ -30,7 +31,10 @@
     "postdestroy-local": "npm run stop-localstack",
     "postdestroy-hybrid": "npm run remove-live-layer-permissions && npm run stop-localstack",
     "remove-live-layer-permissions": "nx run co-layers:remove-live-layer-permissions",
-    "stop-localstack": "pkill docker-compose up"
+    "stop-localstack": "pkill docker-compose up",
+    "--USEFUL": "SCRIPTS--",
+    "list-apis": "aws apigateway get-rest-apis",
+    "list-layers": "aws lambda list-layers"
   },
   "private": true,
   "dependencies": {

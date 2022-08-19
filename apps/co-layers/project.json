@@ -27,6 +27,9 @@
       "dependsOn": [{
         "target": "build",
         "projects": "dependencies"
+      },{
+        "target": "build-node-modules",
+        "projects": "self"
       }]
     },
     "synth": {
@@ -39,6 +42,9 @@
       "dependsOn": [{
         "target": "build",
         "projects": "dependencies"
+      },{
+        "target": "build-node-modules",
+        "projects": "self"
       }]
     },
     "bootstrap": {
@@ -58,6 +64,9 @@
       "dependsOn": [{
         "target": "build",
         "projects": "dependencies"
+      },{
+        "target": "build-node-modules",
+        "projects": "self"
       }]
     },
     "destroy": {
@@ -76,6 +85,9 @@
       "dependsOn": [{
         "target": "build",
         "projects": "dependencies"
+      },{
+        "target": "build-node-modules",
+        "projects": "self"
       }]
     },
     "metadata": {
@@ -147,7 +159,14 @@
         ],
         "cwd": "apps/co-layers",
         "parallel": false
-      }
+      },
+      "dependsOn": [{
+        "target": "build",
+        "projects": "dependencies"
+      },{
+        "target": "build-node-modules",
+        "projects": "self"
+      }]
     },
     "destroy-local": {
       "executor": "nx:run-commands",
@@ -156,8 +175,21 @@
         "cwd": "apps/co-layers",
         "parallel": false
       }
+    },
+    "build-node-modules": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf dist/layers/co-node-modules",
+          "mkdir -p dist/layers/co-node-modules/nodejs",
+          "cp package.json package-lock.json dist/layers/co-node-modules/nodejs",
+          "cd dist/layers/co-node-modules/nodejs && npm install -production"
+        ],
+        "cwd": "",
+        "parallel": false
+      }
     }
   },
   "tags": ["scope:layers"],
-  "implicitDependencies": ["co-common", "co-courses", "error-factory", "fp-ts-utils", "loggable"]
+  "implicitDependencies": ["co-cdk-utils", "co-common", "co-courses", "error-factory", "fp-ts-utils", "loggable"]
 }
