@@ -182,10 +182,9 @@
         "commands": [
           "rimraf dist/layers/co-node-modules",
           "mkdir -p dist/layers/co-node-modules/nodejs",
-          "cp package.json package-lock.json dist/layers/co-node-modules/nodejs",
-          "cd dist/layers/co-node-modules/nodejs && npm install -production"
+          "cp package.json dist/layers/co-node-modules/nodejs",
+          "cd dist/layers/co-node-modules/nodejs && npm install --production"
         ],
-        "cwd": "",
         "parallel": false
       }
     }

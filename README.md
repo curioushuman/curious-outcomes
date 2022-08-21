@@ -6,6 +6,9 @@ This will be the home for all things Curious Outcomes. For now the focus has bee
 
 ## Things that need to be outlined
 
+- Using PNPM
+  - Need to install
+  - e.g. brew install pnpm
 - OpenAPI file
   - In separate files
     - Inc. link
