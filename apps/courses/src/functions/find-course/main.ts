@@ -50,6 +50,9 @@ async function waitForApp() {
  * and return the response.
  *
  * NOTES:
+ * ! Localstack (LS) currently behaves a little bit differently than AWS
+ *   LS passes the lambda an APIGatewayEvent rather than the custom DTO we define
+ *   I've decided to wait until they fix this
  * * ALWAYS THROW THE ERROR, don't catch it and return an error-based response
  *   API Gateway integration response regex only pays attention to errors handled
  *   by AWS.
