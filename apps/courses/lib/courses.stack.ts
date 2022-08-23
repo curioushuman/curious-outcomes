@@ -138,13 +138,13 @@ export class CoursesStack extends cdk.Stack {
     let version = 1;
     switch (layerName) {
       case 'TsCdkCoCourses':
-        version = 7;
+        version = 6;
         break;
       case 'TsCdkCoNodeModules':
         version = 1;
         break;
       case 'TsCdkCoShared':
-        version = 7;
+        version = 6;
         break;
     }
     return version;
