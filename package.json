@@ -10,7 +10,7 @@
     "lint": "nx run-many --all --target=lint --parallel",
     "test": "nx run-many --all --target=test --parallel",
     "--DEPLOYMENT": "SCRIPTS--",
-    "deploy-local": "nx run-many --parallel=1 --target=deploy-local --projects=co-layers,courses,api-public,api-admin",
+    "deploy-local": "nx run co-layers:deploy-local && nx run-many --parallel=1 --target=deploy-local --projects=courses,api-public,api-admin",
     "destroy-local": "nx run-many --parallel=1 --target=destroy-local --projects=api-public,api-admin,courses,co-layers",
     "deploy-hybrid": "nx run-many --parallel=1 --target=deploy-local --projects=courses,api-public,api-admin",
     "destroy-hybrid": "nx run-many --parallel=1 --target=destroy-local --projects=api-public,api-admin,courses",
